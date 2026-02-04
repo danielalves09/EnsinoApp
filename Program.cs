@@ -1,9 +1,21 @@
+using EnsinoApp.Data;
+using EnsinoApp.Models.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+
+builder.Services.AddDbContext<EnsinoAppContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("EnsinoAppConnection")));
+
+builder.Services.AddIdentity<Usuario, IdentityRole<int>>()
+    .AddEntityFrameworkStores<EnsinoAppContext>()
+    .AddDefaultTokenProviders();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
