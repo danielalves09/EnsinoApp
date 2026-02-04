@@ -1,3 +1,5 @@
+using EnsinoApp.Models.Enums;
+
 namespace EnsinoApp.Models.Entities
 {
     public class RelatorioSemanal
@@ -7,7 +9,7 @@ namespace EnsinoApp.Models.Entities
         public int IdTurma { get; set; }
         public int IdLicao { get; set; }
         public string Observacoes { get; set; } = null!;
-        public int? Avaliacao { get; set; }
+        public StatusPresenca Presenca { get; set; }
         public int IdUsuario { get; set; }
         public DateTime DataRegistro { get; set; }
 

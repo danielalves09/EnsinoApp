@@ -16,6 +16,10 @@ public class RelatorioSemanalConfiguration : IEntityTypeConfiguration<RelatorioS
         builder.Property(r => r.DataLicao).IsRequired();
         builder.Property(r => r.Observacoes).IsRequired();
 
+        builder.Property(r => r.Presenca)
+                   .HasConversion<int>()
+                   .IsRequired();
+
         builder.HasOne(r => r.Casal)
                .WithMany(c => c.Relatorios)
                .HasForeignKey(r => r.IdCasal)
