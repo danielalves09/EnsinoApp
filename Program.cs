@@ -10,8 +10,8 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-builder.Services.AddDbContext<EnsinoAppContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("EnsinoAppConnection")));
+builder.Services.AddDbContext<EnsinoAppContext>();
+
 
 builder.Services.AddIdentity<Usuario, IdentityRole<int>>()
     .AddEntityFrameworkStores<EnsinoAppContext>()

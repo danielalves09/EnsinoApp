@@ -2,7 +2,7 @@ namespace EnsinoApp.Models.Entities
 {
     public class RelatorioSemanal
     {
-        public int IdRelatorio { get; set; }
+        public int Id { get; set; }
         public int IdCasal { get; set; }
         public int IdTurma { get; set; }
         public int IdLicao { get; set; }
