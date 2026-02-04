@@ -18,9 +18,10 @@ namespace EnsinoApp.Models.Entities
         public bool Ativo { get; set; }
         public DateTime DataCriacao { get; set; }
 
+
         // Relacionamentos
         public Campus Campus { get; set; } = null!;
         public ICollection<RelatorioSemanal> Relatorios { get; set; } = new List<RelatorioSemanal>();
-        public ICollection<TurmaLider> TurmasLider { get; set; } = new List<TurmaLider>();
+        public ICollection<Turma> TurmasLideraras { get; set; } = new List<Turma>();
     }
 }

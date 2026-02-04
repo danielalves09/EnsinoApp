@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EnsinoApp.Data.Migrations
 {
     [DbContext(typeof(EnsinoAppContext))]
-    [Migration("20260204194520_CriarTabelas")]
+    [Migration("20260204211803_CriarTabelas")]
     partial class CriarTabelas
     {
         /// <inheritdoc />
@@ -299,10 +299,10 @@ namespace EnsinoApp.Data.Migrations
                     b.Property<int>("IdCampus")
                         .HasColumnType("int");
 
-                    b.Property<int>("IdCoordenador")
+                    b.Property<int>("IdCurso")
                         .HasColumnType("int");
 
-                    b.Property<int>("IdCurso")
+                    b.Property<int>("IdLider")
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
@@ -314,26 +314,11 @@ namespace EnsinoApp.Data.Migrations
 
                     b.HasIndex("IdCampus");
 
-                    b.HasIndex("IdCoordenador");
-
                     b.HasIndex("IdCurso");
 
+                    b.HasIndex("IdLider");
+
                     b.ToTable("Turmas", (string)null);
-                });
-
-            modelBuilder.Entity("EnsinoApp.Models.Entities.TurmaLider", b =>
-                {
-                    b.Property<int>("IdTurma")
-                        .HasColumnType("int");
-
-                    b.Property<int>("IdUsuario")
-                        .HasColumnType("int");
-
-                    b.HasKey("IdTurma", "IdUsuario");
-
-                    b.HasIndex("IdUsuario");
-
-                    b.ToTable("TurmasLideres", (string)null);
                 });
 
             modelBuilder.Entity("EnsinoApp.Models.Entities.Usuario", b =>
@@ -658,42 +643,23 @@ namespace EnsinoApp.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("EnsinoApp.Models.Entities.Usuario", "Coordenador")
-                        .WithMany()
-                        .HasForeignKey("IdCoordenador")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("EnsinoApp.Models.Entities.Curso", "Curso")
                         .WithMany("Turmas")
                         .HasForeignKey("IdCurso")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("EnsinoApp.Models.Entities.Usuario", "Lider")
+                        .WithMany("TurmasLideraras")
+                        .HasForeignKey("IdLider")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Campus");
 
-                    b.Navigation("Coordenador");
-
                     b.Navigation("Curso");
-                });
 
-            modelBuilder.Entity("EnsinoApp.Models.Entities.TurmaLider", b =>
-                {
-                    b.HasOne("EnsinoApp.Models.Entities.Turma", "Turma")
-                        .WithMany("Lideres")
-                        .HasForeignKey("IdTurma")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EnsinoApp.Models.Entities.Usuario", "Usuario")
-                        .WithMany("TurmasLider")
-                        .HasForeignKey("IdUsuario")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Turma");
-
-                    b.Navigation("Usuario");
+                    b.Navigation("Lider");
                 });
 
             modelBuilder.Entity("EnsinoApp.Models.Entities.Usuario", b =>
@@ -804,8 +770,6 @@ namespace EnsinoApp.Data.Migrations
                 {
                     b.Navigation("Casais");
 
-                    b.Navigation("Lideres");
-
                     b.Navigation("Relatorios");
                 });
 
@@ -813,7 +777,7 @@ namespace EnsinoApp.Data.Migrations
                 {
                     b.Navigation("Relatorios");
 
-                    b.Navigation("TurmasLider");
+                    b.Navigation("TurmasLideraras");
                 });
 #pragma warning restore 612, 618
         }

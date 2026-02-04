@@ -23,7 +23,6 @@ public class EnsinoAppContext : IdentityDbContext<Usuario, IdentityRole<int>, in
     public DbSet<Curso> Cursos => Set<Curso>();
     public DbSet<Licao> Licoes => Set<Licao>();
     public DbSet<Turma> Turmas => Set<Turma>();
-    public DbSet<TurmaLider> TurmasLideres => Set<TurmaLider>();
     public DbSet<Casal> Casais => Set<Casal>();
     public DbSet<RelatorioSemanal> Relatorios => Set<RelatorioSemanal>();
 
@@ -46,7 +45,6 @@ public class EnsinoAppContext : IdentityDbContext<Usuario, IdentityRole<int>, in
         modelBuilder.ApplyConfiguration(new CursoConfiguration());
         modelBuilder.ApplyConfiguration(new LicaoConfiguration());
         modelBuilder.ApplyConfiguration(new TurmaConfiguration());
-        modelBuilder.ApplyConfiguration(new TurmaLiderConfiguration());
         modelBuilder.ApplyConfiguration(new CasalConfiguration());
         modelBuilder.ApplyConfiguration(new RelatorioSemanalConfiguration());
 

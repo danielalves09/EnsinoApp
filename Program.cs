@@ -7,15 +7,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
-var app = builder.Build();
-
 builder.Services.AddDbContext<EnsinoAppContext>();
 
 
 builder.Services.AddIdentity<Usuario, IdentityRole<int>>()
     .AddEntityFrameworkStores<EnsinoAppContext>()
     .AddDefaultTokenProviders();
+
+
+
+var app = builder.Build();
+
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
