@@ -33,5 +33,10 @@ public class CampusController : Controller
 
     }
 
+    public IActionResult Adicionar()
+    {
+        return View();
+    }
+
 
 }
