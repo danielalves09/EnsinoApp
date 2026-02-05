@@ -1,4 +1,6 @@
 using EnsinoApp.Data;
+using EnsinoApp.Interfaces.Campus;
+using EnsinoApp.Interfaces.Supervisao;
 using EnsinoApp.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<EnsinoAppContext>();
+builder.Services.AddScoped<ICampusRepository, CampusRepository>();
+builder.Services.AddScoped<ISupervisaoRepository, SupervisaoRepository>();
 
 
 builder.Services.AddIdentity<Usuario, IdentityRole<int>>()
