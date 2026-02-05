@@ -1,9 +1,10 @@
 using EnsinoApp.Data;
-using EnsinoApp.Interfaces.Campus;
-using EnsinoApp.Interfaces.Supervisao;
+using EnsinoApp.Repositories.Campus;
+using EnsinoApp.Repositories.Supervisao;
 using EnsinoApp.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using EnsinoApp.Services.Campus;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<EnsinoAppContext>();
 builder.Services.AddScoped<ICampusRepository, CampusRepository>();
 builder.Services.AddScoped<ISupervisaoRepository, SupervisaoRepository>();
+builder.Services.AddScoped<ICampusService, CampusService>();
 
 
 builder.Services.AddIdentity<Usuario, IdentityRole<int>>()
