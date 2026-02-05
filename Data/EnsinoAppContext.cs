@@ -44,8 +44,9 @@ public class EnsinoAppContext : IdentityDbContext<Usuario, IdentityRole<int>, in
         modelBuilder.ApplyConfiguration(new UsuarioConfiguration());
         modelBuilder.ApplyConfiguration(new CursoConfiguration());
         modelBuilder.ApplyConfiguration(new LicaoConfiguration());
-        modelBuilder.ApplyConfiguration(new TurmaConfiguration());
         modelBuilder.ApplyConfiguration(new CasalConfiguration());
+        modelBuilder.ApplyConfiguration(new TurmaConfiguration());
+        modelBuilder.ApplyConfiguration(new MatriculaConfiguration());
         modelBuilder.ApplyConfiguration(new RelatorioSemanalConfiguration());
 
     }

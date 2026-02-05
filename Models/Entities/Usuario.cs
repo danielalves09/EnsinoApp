@@ -22,6 +22,6 @@ namespace EnsinoApp.Models.Entities
         // Relacionamentos
         public Campus Campus { get; set; } = null!;
         public ICollection<RelatorioSemanal> Relatorios { get; set; } = new List<RelatorioSemanal>();
-        public ICollection<Turma> TurmasLideraras { get; set; } = new List<Turma>();
+        public ICollection<Turma> TurmasLideradas { get; set; } = new List<Turma>();
     }
 }

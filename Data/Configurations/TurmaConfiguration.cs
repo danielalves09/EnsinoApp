@@ -27,18 +27,10 @@ public class TurmaConfiguration : IEntityTypeConfiguration<Turma>
                      .OnDelete(DeleteBehavior.Restrict);
 
               builder.HasOne(t => t.Lider)
-                     .WithMany(t => t.TurmasLideraras)
+                     .WithMany(t => t.TurmasLideradas)
                      .HasForeignKey(t => t.IdLider)
                      .OnDelete(DeleteBehavior.Restrict);
 
-              builder.HasMany(t => t.Casais)
-                     .WithOne(c => c.Turma)
-                     .HasForeignKey(c => c.IdTurma)
-                     .OnDelete(DeleteBehavior.Restrict);
 
-              builder.HasMany(t => t.Relatorios)
-                     .WithOne(r => r.Turma)
-                     .HasForeignKey(r => r.IdTurma)
-                     .OnDelete(DeleteBehavior.Restrict);
        }
 }

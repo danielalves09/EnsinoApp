@@ -6,11 +6,12 @@ namespace EnsinoApp.Models.Entities
     {
         public int Id { get; set; }
         public int IdCampus { get; set; }
-        public int IdTurma { get; set; }
         public string NomeConjuge1 { get; set; } = null!;
         public string NomeConjuge2 { get; set; } = null!;
-        public string Telefone { get; set; } = null!;
-        public string Email { get; set; } = null!;
+        public string TelefoneConjuge1 { get; set; } = null!;
+        public string TelefoneConjuge2 { get; set; } = null!;
+        public string EmailConjuge1 { get; set; } = null!;
+        public string EmailConjuge2 { get; set; } = null!;
 
         public StatusCasal Status { get; set; }
 
@@ -23,12 +24,9 @@ namespace EnsinoApp.Models.Entities
         public string Estado { get; set; } = null!;
         public string Cep { get; set; } = null!;
 
-        //campo opcional GC
-        public string? NomeGC { get; set; }
 
         // Relacionamentos
         public Campus Campus { get; set; } = null!;
-        public Turma Turma { get; set; } = null!;
-        public ICollection<RelatorioSemanal> Relatorios { get; set; } = new List<RelatorioSemanal>();
+        public ICollection<Matricula> Matriculas { get; set; } = new List<Matricula>();
     }
 }

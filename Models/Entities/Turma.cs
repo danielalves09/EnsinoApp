@@ -15,7 +15,6 @@ namespace EnsinoApp.Models.Entities
         public Curso Curso { get; set; } = null!;
         public Campus Campus { get; set; } = null!;
         public Usuario Lider { get; set; } = null!;
-        public ICollection<Casal> Casais { get; set; } = new List<Casal>();
-        public ICollection<RelatorioSemanal> Relatorios { get; set; } = new List<RelatorioSemanal>();
+        public ICollection<Matricula> Matriculas { get; set; } = new List<Matricula>();
     }
 }

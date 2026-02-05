@@ -7,28 +7,28 @@ namespace EnsinoApp.Data.Configurations;
 
 public class CasalConfiguration : IEntityTypeConfiguration<Casal>
 {
-    public void Configure(EntityTypeBuilder<Casal> builder)
-    {
-        builder.ToTable("Casais");
+       public void Configure(EntityTypeBuilder<Casal> builder)
+       {
+              builder.ToTable("Casais");
 
-        builder.HasKey(c => c.Id);
-        builder.Property(c => c.NomeConjuge1).IsRequired();
-        builder.Property(c => c.NomeConjuge2).IsRequired();
-        builder.Property(c => c.Status).HasConversion<int>().HasDefaultValue(StatusCasal.Ativo);
+              builder.HasKey(c => c.Id);
+              builder.Property(c => c.NomeConjuge1).IsRequired();
+              builder.Property(c => c.NomeConjuge2).IsRequired();
+              builder.Property(c => c.TelefoneConjuge1).IsRequired();
+              builder.Property(c => c.TelefoneConjuge2).IsRequired();
+              builder.Property(c => c.EmailConjuge1).IsRequired();
+              builder.Property(c => c.EmailConjuge2).IsRequired();
 
-        builder.HasOne(c => c.Campus)
-               .WithMany(cam => cam.Casais)
-               .HasForeignKey(c => c.IdCampus)
-               .OnDelete(DeleteBehavior.Restrict);
+              builder.HasIndex(c => c.EmailConjuge1).IsUnique();
+              builder.HasIndex(c => c.EmailConjuge2).IsUnique();
 
-        builder.HasOne(c => c.Turma)
-               .WithMany(t => t.Casais)
-               .HasForeignKey(c => c.IdTurma)
-               .OnDelete(DeleteBehavior.Restrict);
+              builder.Property(c => c.Status).HasConversion<int>().HasDefaultValue(StatusCasal.Ativo);
 
-        builder.HasMany(c => c.Relatorios)
-               .WithOne(r => r.Casal)
-               .HasForeignKey(r => r.IdCasal)
-               .OnDelete(DeleteBehavior.Cascade);
-    }
+              builder.HasOne(c => c.Campus)
+                     .WithMany(cam => cam.Casais)
+                     .HasForeignKey(c => c.IdCampus)
+                     .OnDelete(DeleteBehavior.Restrict);
+
+
+       }
 }
