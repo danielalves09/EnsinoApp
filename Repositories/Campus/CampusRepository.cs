@@ -2,7 +2,7 @@
 using EnsinoApp.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace EnsinoApp.Interfaces.Campus;
+namespace EnsinoApp.Repositories.Campus;
 
 public class CampusRepository : ICampusRepository
 {

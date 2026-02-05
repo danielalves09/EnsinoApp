@@ -1,6 +1,5 @@
-using EnsinoApp.Intefaces;
 
-namespace EnsinoApp.Interfaces.Supervisao;
+namespace EnsinoApp.Repositories.Supervisao;
 
 
 public interface ISupervisaoRepository : ICrudRepository<Models.Entities.Supervisao>

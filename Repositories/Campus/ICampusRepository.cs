@@ -1,8 +1,7 @@
-using EnsinoApp.Intefaces;
 using EnsinoApp.Models.Entities;
 
 
-namespace EnsinoApp.Interfaces.Campus;
+namespace EnsinoApp.Repositories.Campus;
 
 public interface ICampusRepository : ICrudRepository<Models.Entities.Campus>
 {

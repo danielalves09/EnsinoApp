@@ -2,7 +2,7 @@
 using EnsinoApp.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace EnsinoApp.Interfaces.Supervisao;
+namespace EnsinoApp.Repositories.Supervisao;
 
 public class SupervisaoRepository : ISupervisaoRepository
 {

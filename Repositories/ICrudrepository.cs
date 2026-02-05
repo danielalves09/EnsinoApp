@@ -1,4 +1,4 @@
-namespace EnsinoApp.Intefaces;
+namespace EnsinoApp.Repositories;
 
 public interface ICrudRepository<Model>
 {
