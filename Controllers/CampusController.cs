@@ -1,3 +1,4 @@
+using EnsinoApp.Models.Entities;
 using EnsinoApp.Services.Campus;
 using EnsinoApp.ViewModels.campus;
 using Microsoft.AspNetCore.Mvc;
@@ -38,5 +39,27 @@ public class CampusController : Controller
         return View();
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult Adicionar(AdicionarCampusViewModel dados)
+    {
+        var novoCampus = new Campus
+        {
+            Nome = dados.Nome,
+            Telefone = dados.Telefone,
+            Rua = dados.Rua,
+            Numero = dados.Numero,
+            Complemento = dados.Complemento,
+            Bairro = dados.Bairro,
+            Cidade = dados.Cidade,
+            Estado = dados.Estado,
+            Cep = dados.Cep
+        };
+
+        _campusService.Create(novoCampus);
+
+        return RedirectToAction(nameof(Index));
+
+    }
 
 }

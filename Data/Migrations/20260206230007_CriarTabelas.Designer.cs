@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EnsinoApp.Data.Migrations
 {
     [DbContext(typeof(EnsinoAppContext))]
-    [Migration("20260205021413_CriarTabelas")]
+    [Migration("20260206230007_CriarTabelas")]
     partial class CriarTabelas
     {
         /// <inheritdoc />
@@ -38,7 +38,6 @@ namespace EnsinoApp.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Cep")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Cidade")
@@ -46,7 +45,6 @@ namespace EnsinoApp.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Complemento")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Estado")

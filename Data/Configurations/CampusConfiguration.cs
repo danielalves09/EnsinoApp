@@ -14,11 +14,10 @@ public class CampusConfiguration : IEntityTypeConfiguration<Campus>
         builder.Property(c => c.Telefone).IsRequired();
         builder.Property(c => c.Rua).IsRequired();
         builder.Property(c => c.Numero).IsRequired();
-        builder.Property(c => c.Complemento).IsRequired();
         builder.Property(c => c.Bairro).IsRequired();
         builder.Property(c => c.Cidade).IsRequired();
         builder.Property(c => c.Estado).IsRequired();
-        builder.Property(c => c.Cep).IsRequired();
+
 
     }
 }
