@@ -1,6 +1,8 @@
 using System.Diagnostics;
 using EnsinoApp.Models;
+using EnsinoApp.Models.Entities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EnsinoApp.Controllers
@@ -9,14 +11,33 @@ namespace EnsinoApp.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly UserManager<Usuario> _userManager;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, UserManager<Usuario> userManager)
         {
             _logger = logger;
+            _userManager = userManager;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            string nomeUsuario = "Visitante";
+
+            if (User.Identity!.IsAuthenticated)
+            {
+                // Busca o usuário logado pelo Id
+                var user = await _userManager.GetUserAsync(User);
+
+                if (user != null)
+                {
+                    //Opção para exibir o nome do casal futuramente
+                    //nomeUsuario = user.NomeMarido + (string.IsNullOrEmpty(user.NomeEsposa) ? "" : " & " + user.NomeEsposa);
+                    nomeUsuario = user.NomeMarido;
+                }
+            }
+
+            ViewBag.NomeUsuario = nomeUsuario;
+
             return View();
         }
 
