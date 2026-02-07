@@ -445,7 +445,7 @@ namespace EnsinoApp.Data.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.ToTable("Usuarios", (string)null);
+                    b.ToTable("AspNetUsers", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<int>", b =>
@@ -707,9 +707,9 @@ namespace EnsinoApp.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("EnsinoApp.Models.Entities.Supervisao", "Supervisao")
-                        .WithMany("Lideres")
+                        .WithMany("Usuarios")
                         .HasForeignKey("IdSupervisao")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Campus");
 
@@ -804,7 +804,7 @@ namespace EnsinoApp.Data.Migrations
 
             modelBuilder.Entity("EnsinoApp.Models.Entities.Supervisao", b =>
                 {
-                    b.Navigation("Lideres");
+                    b.Navigation("Usuarios");
                 });
 
             modelBuilder.Entity("EnsinoApp.Models.Entities.Turma", b =>

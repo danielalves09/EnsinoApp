@@ -17,7 +17,7 @@ public class SupervisaoConfiguration : IEntityTypeConfiguration<Supervisao>
                .HasForeignKey(s => s.IdCampus)
                .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasMany(s => s.Lideres)
+        builder.HasMany(s => s.Usuarios)
                .WithOne(u => u.Supervisao)
                .HasForeignKey(u => u.IdSupervisao)
                .OnDelete(DeleteBehavior.SetNull);

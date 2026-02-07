@@ -1,5 +1,6 @@
 using EnsinoApp.Data;
 using EnsinoApp.Models.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace EnsinoApp.Repositories.Usuarios;
 
@@ -15,22 +16,33 @@ public class UsuariosRepository : IUsuariosRepository
 
     public IEnumerable<Usuario> FindAll()
     {
-        return _context.Users.ToList();
+        return _context.Users
+            .Include(u => u.Campus)
+            .Include(u => u.Supervisao)
+            .ToList();
     }
 
     public IEnumerable<Usuario> FindByCampus(int idCampus)
     {
-        throw new NotImplementedException();
+        return _context.Users
+           .Include(u => u.Campus)
+           .Where(u => u.IdCampus == idCampus)
+           .ToList();
     }
 
     public IEnumerable<Usuario> findBySupervisao(int idSupervisao)
     {
-        throw new NotImplementedException();
+        return _context.Users
+            .Include(u => u.Supervisao)
+            .Where(u => u.IdSupervisao == idSupervisao)
+            .ToList();
     }
 
     public Usuario? FindById(int id)
     {
         return _context.Users
+            .Include(u => u.Campus)
+            .Include(u => u.Supervisao)
             .FirstOrDefault(u => u.Id == id);
     }
 }

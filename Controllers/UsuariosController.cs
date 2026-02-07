@@ -23,27 +23,6 @@ public class UsuariosController : Controller
         _usuarioService = usuarioService;
     }
 
-
-    public IActionResult Index()
-    {
-        var usuarios = _usuarioService.FindAll();
-
-        var model = usuarios.Select(u => new ListarUsuarioViewModel
-        {
-            Id = u.Id,
-            Email = u.Email!,
-            NomeMarido = u.NomeMarido,
-            NomeEsposa = u.NomeEsposa,
-            Campus = "",//u.Campus.Nome,
-            Supervisao = "",//u.Supervisao != null ? u.Supervisao.Nome : "-",
-            Ativo = u.Ativo
-        }).ToList();
-
-        return View(model);
-
-    }
-
-    [HttpGet]
     public IActionResult Index(string filtro)
     {
         var usuarios = _usuarioService.FindAll();
@@ -65,8 +44,8 @@ public class UsuariosController : Controller
             Email = u.Email!,
             NomeMarido = u.NomeMarido,
             NomeEsposa = u.NomeEsposa,
-            Campus = "",// u.Campus.Nome,
-            Supervisao = "",// u.Supervisao?.Nome ?? "-",
+            Campus = u.Campus.Nome,
+            Supervisao = u.Supervisao?.Nome ?? "-",
             Ativo = u.Ativo
         });
 

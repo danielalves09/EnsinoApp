@@ -167,7 +167,7 @@ namespace EnsinoApp.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Usuarios",
+                name: "AspNetUsers",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -195,19 +195,19 @@ namespace EnsinoApp.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Usuarios", x => x.Id);
+                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Usuarios_Campuses_IdCampus",
+                        name: "FK_AspNetUsers_Campuses_IdCampus",
                         column: x => x.IdCampus,
                         principalTable: "Campuses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Usuarios_Supervisoes_IdSupervisao",
+                        name: "FK_AspNetUsers_Supervisoes_IdSupervisao",
                         column: x => x.IdSupervisao,
                         principalTable: "Supervisoes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -224,9 +224,9 @@ namespace EnsinoApp.Data.Migrations
                 {
                     table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AspNetUserClaims_Usuarios_UserId",
+                        name: "FK_AspNetUserClaims_AspNetUsers_UserId",
                         column: x => x.UserId,
-                        principalTable: "Usuarios",
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -244,9 +244,9 @@ namespace EnsinoApp.Data.Migrations
                 {
                     table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
                     table.ForeignKey(
-                        name: "FK_AspNetUserLogins_Usuarios_UserId",
+                        name: "FK_AspNetUserLogins_AspNetUsers_UserId",
                         column: x => x.UserId,
-                        principalTable: "Usuarios",
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -268,9 +268,9 @@ namespace EnsinoApp.Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_AspNetUserRoles_Usuarios_UserId",
+                        name: "FK_AspNetUserRoles_AspNetUsers_UserId",
                         column: x => x.UserId,
-                        principalTable: "Usuarios",
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -288,9 +288,9 @@ namespace EnsinoApp.Data.Migrations
                 {
                     table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
                     table.ForeignKey(
-                        name: "FK_AspNetUserTokens_Usuarios_UserId",
+                        name: "FK_AspNetUserTokens_AspNetUsers_UserId",
                         column: x => x.UserId,
-                        principalTable: "Usuarios",
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -312,6 +312,12 @@ namespace EnsinoApp.Data.Migrations
                 {
                     table.PrimaryKey("PK_Turmas", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_Turmas_AspNetUsers_IdLider",
+                        column: x => x.IdLider,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
                         name: "FK_Turmas_Campuses_IdCampus",
                         column: x => x.IdCampus,
                         principalTable: "Campuses",
@@ -321,12 +327,6 @@ namespace EnsinoApp.Data.Migrations
                         name: "FK_Turmas_Cursos_IdCurso",
                         column: x => x.IdCurso,
                         principalTable: "Cursos",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Turmas_Usuarios_IdLider",
-                        column: x => x.IdLider,
-                        principalTable: "Usuarios",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -379,6 +379,12 @@ namespace EnsinoApp.Data.Migrations
                 {
                     table.PrimaryKey("PK_RelatoriosSemanais", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_RelatoriosSemanais_AspNetUsers_IdUsuario",
+                        column: x => x.IdUsuario,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
                         name: "FK_RelatoriosSemanais_Licoes_IdLicao",
                         column: x => x.IdLicao,
                         principalTable: "Licoes",
@@ -390,12 +396,6 @@ namespace EnsinoApp.Data.Migrations
                         principalTable: "Matriculas",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_RelatoriosSemanais_Usuarios_IdUsuario",
-                        column: x => x.IdUsuario,
-                        principalTable: "Usuarios",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -424,6 +424,28 @@ namespace EnsinoApp.Data.Migrations
                 name: "IX_AspNetUserRoles_RoleId",
                 table: "AspNetUserRoles",
                 column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "EmailIndex",
+                table: "AspNetUsers",
+                column: "NormalizedEmail");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_IdCampus",
+                table: "AspNetUsers",
+                column: "IdCampus");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_IdSupervisao",
+                table: "AspNetUsers",
+                column: "IdSupervisao");
+
+            migrationBuilder.CreateIndex(
+                name: "UserNameIndex",
+                table: "AspNetUsers",
+                column: "NormalizedUserName",
+                unique: true,
+                filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Casais_EmailConjuge1",
@@ -497,28 +519,6 @@ namespace EnsinoApp.Data.Migrations
                 name: "IX_Turmas_IdLider",
                 table: "Turmas",
                 column: "IdLider");
-
-            migrationBuilder.CreateIndex(
-                name: "EmailIndex",
-                table: "Usuarios",
-                column: "NormalizedEmail");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Usuarios_IdCampus",
-                table: "Usuarios",
-                column: "IdCampus");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Usuarios_IdSupervisao",
-                table: "Usuarios",
-                column: "IdSupervisao");
-
-            migrationBuilder.CreateIndex(
-                name: "UserNameIndex",
-                table: "Usuarios",
-                column: "NormalizedUserName",
-                unique: true,
-                filter: "[NormalizedUserName] IS NOT NULL");
         }
 
         /// <inheritdoc />
@@ -558,10 +558,10 @@ namespace EnsinoApp.Data.Migrations
                 name: "Turmas");
 
             migrationBuilder.DropTable(
-                name: "Cursos");
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "Usuarios");
+                name: "Cursos");
 
             migrationBuilder.DropTable(
                 name: "Supervisoes");

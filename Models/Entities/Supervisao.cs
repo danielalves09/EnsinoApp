@@ -7,6 +7,6 @@ namespace EnsinoApp.Models.Entities
         public int IdCampus { get; set; }
 
         public Campus Campus { get; set; } = null!;
-        public ICollection<Usuario> Lideres { get; set; } = new List<Usuario>();
+        public ICollection<Usuario> Usuarios { get; set; } = new List<Usuario>();
     }
 }
