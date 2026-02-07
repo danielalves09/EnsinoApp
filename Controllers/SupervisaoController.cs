@@ -2,11 +2,12 @@ using EnsinoApp.Models.Entities;
 using EnsinoApp.Services.Campus;
 using EnsinoApp.Services.Supervisao;
 using EnsinoApp.ViewModels.Supervisao;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EnsinoApp.Controllers;
 
-
+[Authorize]
 public class SupervisaoController : Controller
 {
     private readonly ISupervisaoService _supervisaoService;

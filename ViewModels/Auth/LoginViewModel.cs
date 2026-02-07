@@ -2,13 +2,14 @@ using System.ComponentModel.DataAnnotations;
 
 public class LoginViewModel
 {
-    [Required]
-    [EmailAddress]
-    public string Email { get; set; } = string.Empty;
+    [Required(ErrorMessage = "Email obrigatório")]
+    [EmailAddress(ErrorMessage = "Informe um email válido")]
+    public string Email { get; set; } = null!;
 
-    [Required]
+    [Required(ErrorMessage = "Senha obrigatória")]
     [DataType(DataType.Password)]
-    public string Senha { get; set; } = string.Empty;
+    public string Password { get; set; } = null!;
 
-    public bool LembrarMe { get; set; }
+    [Display(Name = "Lembrar-me")]
+    public bool RememberMe { get; set; }
 }

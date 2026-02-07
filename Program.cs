@@ -22,10 +22,22 @@ builder.Services.AddScoped<ISupervisaoService, SupervisaoService>();
 builder.Services.AddScoped<IUsuariosService, UsuariosService>();
 
 
-builder.Services.AddIdentity<Usuario, IdentityRole<int>>()
-    .AddEntityFrameworkStores<EnsinoAppContext>()
-    .AddDefaultTokenProviders();
+builder.Services.AddIdentity<Usuario, IdentityRole<int>>(options =>
+{
+    options.Password.RequireDigit = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequiredLength = 6;
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+})
+.AddEntityFrameworkStores<EnsinoAppContext>()
+.AddDefaultTokenProviders();
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Auth/Login";
+    options.AccessDeniedPath = "/Auth/Login";
+});
 
 
 var app = builder.Build();
@@ -43,6 +55,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();

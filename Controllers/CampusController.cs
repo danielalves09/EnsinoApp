@@ -2,10 +2,12 @@ using System.Text.Json;
 using EnsinoApp.Models.Entities;
 using EnsinoApp.Services.Campus;
 using EnsinoApp.ViewModels.campus;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EnsinoApp.Controllers;
 
+[Authorize]
 public class CampusController : Controller
 {
 

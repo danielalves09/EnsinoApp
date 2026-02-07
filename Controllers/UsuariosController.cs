@@ -2,11 +2,14 @@ using EnsinoApp.Models.Entities;
 using EnsinoApp.Services.Campus;
 using EnsinoApp.Services.Usuarios;
 using EnsinoApp.ViewModels.Usuario;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EnsinoApp.Controllers;
 
+
+[Authorize]
 public class UsuariosController : Controller
 {
 
