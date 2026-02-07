@@ -1,3 +1,4 @@
+using System.Text.Json;
 using EnsinoApp.Models.Entities;
 using EnsinoApp.Services.Campus;
 using EnsinoApp.ViewModels.campus;
@@ -59,6 +60,19 @@ public class CampusController : Controller
         _campusService.Create(novoCampus);
 
         return RedirectToAction(nameof(Index));
+
+    }
+
+    public IActionResult Buscar(string filtro)
+    {
+        var campus = _campusService.FindAll(filtro).Select(c => new
+        {
+            Id = c.Id,
+            Nome = c.Nome
+        });
+
+        return Json(campus);
+
 
     }
 

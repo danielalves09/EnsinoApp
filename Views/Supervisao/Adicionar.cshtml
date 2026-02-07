@@ -1,0 +1,142 @@
+@model EnsinoApp.ViewModels.Supervisao.AdicionarSupervisaoViewModel;
+@{
+    ViewData["Title"] = "Cadastrar Nova Supervisão";
+}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Cadastrar Supervisão</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class=content>
+    <div class=row>
+        <div class=col-12>
+            <div class="card shadow">
+                <div class="card-body">
+
+                    <form asp-action="Adicionar" method="post">
+
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <!-- Nome e Campus -->
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label asp-for="Nome" class="form-label"></label>
+                                <input asp-for="Nome" class="form-control" />
+                                <span asp-validation-for="Nome" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="IdCampus" class="control-label"></label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Buscar Campus"
+                                           id="NomeCampus" readonly>
+                                    <div class="input-group-append">
+                                        <button class="btn btn-default" type="button" id="BtnBuscarCampus"
+                                                data-toggle="modal" data-target="#ModalCampus">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <input asp-for="IdCampus" class="form-control" type="hidden" id="IdCampus">
+                                    <span asp-validation-for="IdCampus" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <!-- Botões -->
+                            <div class="d-flex justify-content-between mt-4">
+                                <a asp-action="Index" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left"></i> Voltar
+                                </a>
+
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Salvar Supervisão
+                                </button>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+<div class="modal" tabindex="-1" role="dialog" id="ModalCampus">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Buscar Campus</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col">
+                        <div class="input-group mb-3">
+                            <input type="text" id="TxtFiltro" class="form-control" placeholder="Buscar pelo nome do campus" />
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button" id="BtnBuscar">
+                                    <span class="fa fa-search"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-hover table-sm d-none" id="TbCampus">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <div class="alert alert-warning d-none" id="DivMensagem">Nenhum campus localizado.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+
+        <script>
+    function buscarCampus() {
+        if ($("#TxtFiltro").val().trim().length > 0){
+            $.getJSON("/campus/buscar?filtro=" + $("#TxtFiltro").val(), function(resultado){
+                if(resultado.length > 0) {
+                    var linhas = resultado.map(p => "<tr data-dismiss='modal' style='cursor: pointer' title='Clique para selecionar' data-id='" + p.id + "'><td>" + p.nome + "</td></tr>").join("");
+                    $("#TbCampus tbody").html(linhas);                   
+                    $("#TbCampus tbody tr").click(function(){
+                        var id = $(this).attr("data-id");
+                        var nome = $(this).children()[0].innerText;
+                        $("#IdCampus").val(id);
+                        $("#NomeCampus").val(nome);
+                    });
+                    $("#TbCampus").removeClass("d-none");
+                    $("#DivMensagem").addClass("d-none");
+                } else {
+                    $("#TbCampus").addClass("d-none");
+                    $("#DivMensagem").removeClass("d-none");
+                }
+            });
+        }
+    }
+
+    $("#TxtFiltro").keyup(function(e){
+        if(e.keyCode == 13){
+            buscarCampus();
+        }
+    });
+
+    $("#BtnBuscar").click(function(){
+        buscarCampus();
+    });
+</script>
+    }

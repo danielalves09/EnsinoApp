@@ -28,6 +28,14 @@ public class CampusService : ICampusService
         return _campusRepository.FindAll();
     }
 
+    public ICollection<Models.Entities.Campus> FindAll(string filtro)
+    {
+        var campusEncontrados = _campusRepository.FindAll(filtro);
+
+        return campusEncontrados;
+
+    }
+
     public Models.Entities.Campus? FindById(int id)
     {
         var campusFind = _campusRepository.FindById(id);

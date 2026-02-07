@@ -32,7 +32,7 @@ public class SupervisaoRepository : ISupervisaoRepository
 
     public ICollection<Models.Entities.Supervisao> FindAll()
     {
-        return _context.Supervisoes.AsNoTracking().ToList();
+        return _context.Supervisoes.Include(s => s.Campus).AsNoTracking().ToList();
     }
 
     public Models.Entities.Supervisao? FindById(int id)

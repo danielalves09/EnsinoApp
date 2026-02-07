@@ -1,0 +1,99 @@
+@model IEnumerable<EnsinoApp.ViewModels.Supervisao.ListarSupervisaoViewModel>
+@{
+    ViewData["Title"] = "Gerenciar Supervisões";
+}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Gerenciar Supervisões</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between">
+                        <form asp-action="Index">
+                            <div class="input-group input-group-sm" style="width: 300px;">
+                                <input type="text" class="form-control" placeholder="Buscar supervisão" name="filtro"
+                                       value="@ViewBag.Filtro">
+
+                                <div class="input-group-append">
+                                    <button type="submit" class="btn btn-default">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <a href="/supervisao/adicionar" class="btn btn-outline-primary btn-sm">Nova Supervisão</a>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body table-responsive p-0">
+                    <table class="table table-head-fixed text-nowrap">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Campus</th>
+                                <th style="width: 40px"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var p in Model!)
+                            {
+                                <tr>
+                                    <td>@p.Nome</td>
+                                    <td>@p.NomeCampus</td>
+                                    <td>
+                                        <a href="/supervisao/editar/@p.Id" class="btn btn-secondary btn-sm mr-1"
+                                               title="Editar">
+                                            <span class="fas fa-edit"></span>
+                                        </a>
+                                        <a asp-controller="Supervisao" asp-action="Excluir" asp-route-id="@p.Id"
+                                               onclick="return confirm('Tem certeza que deseja excluir a supervisao?')"
+                                               class="btn btn-sm btn-danger" tytle="Excluir">
+                                            <span class="fas fa-trash"></span>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+
+
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer clearfix">
+                    @if (ViewBag.Totalpaginas > 1)
+                    {
+                        <ul class="pagination pagination-sm m-0 float-right">
+                            @if (ViewBag.NumeroPagina > 1)
+                            {
+                                <li class="page-item"><a class="page-link"
+                                                             href="@Url.Action("Index", "Medicos", new { Filtro = ViewBag.Filtro, Pagina = ViewBag.NumeroPagina - 1 })">&laquo;</a>
+                                </li>
+                            }
+                            <li class="page-item page-link">Página @ViewBag.NumeroPagina de @ViewBag.TotalPaginas</li>
+                            @if (ViewBag.NumeroPagina < ViewBag.TotalPaginas)
+                            {
+                                <li class="page-item"><a class="page-link"
+                                                             href="@Url.Action("Index", "Medicos", new { Filtro = ViewBag.Filtro, Pagina = ViewBag.NumeroPagina + 1 })">&raquo;</a>
+                                </li>
+                            }
+                        </ul>
+
+                    }
+                </div>
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+</section>
+<!-- /.content -->
