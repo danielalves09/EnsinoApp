@@ -35,6 +35,13 @@ public class SupervisaoRepository : ISupervisaoRepository
         return _context.Supervisoes.Include(s => s.Campus).AsNoTracking().ToList();
     }
 
+    public ICollection<Models.Entities.Supervisao> FindAll(string filtro)
+    {
+        var supervisoesEncontradas = _context.Supervisoes.Where(c => c.Nome.Contains(filtro)).ToList();
+
+        return supervisoesEncontradas;
+    }
+
     public Models.Entities.Supervisao? FindById(int id)
     {
         return _context.Supervisoes.AsNoTracking().FirstOrDefault(c => c.Id == id);

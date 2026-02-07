@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using EnsinoApp.Services.Campus;
 using EnsinoApp.Services.Supervisao;
+using EnsinoApp.Repositories.Usuarios;
+using EnsinoApp.Services.Usuarios;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,8 +16,10 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<EnsinoAppContext>();
 builder.Services.AddScoped<ICampusRepository, CampusRepository>();
 builder.Services.AddScoped<ISupervisaoRepository, SupervisaoRepository>();
+builder.Services.AddScoped<IUsuariosRepository, UsuariosRepository>();
 builder.Services.AddScoped<ICampusService, CampusService>();
 builder.Services.AddScoped<ISupervisaoService, SupervisaoService>();
+builder.Services.AddScoped<IUsuariosService, UsuariosService>();
 
 
 builder.Services.AddIdentity<Usuario, IdentityRole<int>>()

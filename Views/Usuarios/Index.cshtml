@@ -1,0 +1,90 @@
+@model IEnumerable<EnsinoApp.ViewModels.Usuario.ListarUsuarioViewModel>
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Usuários</h1>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between">
+                        <form method="get">
+                            <div class="input-group input-group-sm" style="width: 300px;">
+                                <input type="text" class="form-control" placeholder="Buscar por nome ou email"
+                                       name="filtro" />
+
+                                <div class="input-group-append">
+                                    <button type="submit" class="btn btn-default">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <a href="/Usuarios/adicionar" class="btn btn-outline-primary btn-sm">Novo Usuário</a>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body table-responsive p-0">
+                    <table class="table table-head-fixed text-nowrap">
+                        <thead>
+                            <tr>
+                                <th>Casal</th>
+                                <th>Email</th>
+                                <th>Campus</th>
+                                <th>Supervisão</th>
+                                <th>Status</th>
+                                <th style="width: 140px;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (EnsinoApp.ViewModels.Usuario.ListarUsuarioViewModel item in Model)
+                            {
+                                <tr>
+                                    <td>@item.NomeCompleto</td>
+                                    <td>@item.Email</td>
+                                    <td>@item.Campus</td>
+                                    <td>@item.Supervisao</td>
+                                    <td>
+                                        @if (item.Ativo)
+                                        {
+                                            <span class="badge bg-success">Ativo</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Inativo</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <a href="/usuarios/editar/@item.Id" class="btn btn-secondary btn-sm mr-1"
+                                               title="Editar">
+                                            <span class="fas fa-edit"></span>
+                                        </a>
+                                        <a asp-controller="Usuarios" asp-action="Excluir" asp-route-id="@item.Id"
+                                               onclick="return confirm('Tem certeza que deseja excluir o usuário?')"
+                                               class="btn btn-sm btn-danger" tytle="Excluir">
+                                            <span class="fas fa-trash"></span>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+</section>
+<!-- /.content -->

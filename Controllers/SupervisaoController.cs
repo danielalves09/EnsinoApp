@@ -55,4 +55,17 @@ public class SupervisaoController : Controller
         return RedirectToAction(nameof(Index));
 
     }
+
+    public IActionResult Buscar(string filtro)
+    {
+        var supervisao = _supervisaoService.FindAll(filtro).Select(c => new
+        {
+            Id = c.Id,
+            Nome = c.Nome
+        });
+
+        return Json(supervisao);
+
+
+    }
 }

@@ -30,6 +30,13 @@ public class SupervisaoService : ISupervisaoService
         return _supervisaoRepository.FindAll();
     }
 
+    public ICollection<Models.Entities.Supervisao> FindAll(string filtro)
+    {
+        var supervisoesEncontradas = _supervisaoRepository.FindAll(filtro);
+
+        return supervisoesEncontradas;
+    }
+
     public Models.Entities.Supervisao? FindById(int id)
     {
         var supervisaoFind = _supervisaoRepository.FindById(id);
