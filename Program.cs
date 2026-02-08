@@ -8,6 +8,8 @@ using EnsinoApp.Services.Campus;
 using EnsinoApp.Services.Supervisao;
 using EnsinoApp.Repositories.Usuarios;
 using EnsinoApp.Services.Usuarios;
+using EnsinoApp.Repositories.Cursos;
+using EnsinoApp.Services.Cursos;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,9 +19,11 @@ builder.Services.AddDbContext<EnsinoAppContext>();
 builder.Services.AddScoped<ICampusRepository, CampusRepository>();
 builder.Services.AddScoped<ISupervisaoRepository, SupervisaoRepository>();
 builder.Services.AddScoped<IUsuariosRepository, UsuariosRepository>();
+builder.Services.AddScoped<ICursoRepository, CursoRepository>();
 builder.Services.AddScoped<ICampusService, CampusService>();
 builder.Services.AddScoped<ISupervisaoService, SupervisaoService>();
 builder.Services.AddScoped<IUsuariosService, UsuariosService>();
+builder.Services.AddScoped<ICursoService, CursoService>();
 
 
 builder.Services.AddIdentity<Usuario, IdentityRole<int>>(options =>

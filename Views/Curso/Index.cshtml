@@ -1,0 +1,107 @@
+@model IEnumerable<EnsinoApp.ViewModels.Cursos.CursoViewModel>
+@{
+    ViewData["Title"] = "Gerenciar Campus";
+}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Gerenciar Cursos</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between">
+                        <form asp-action="Index">
+                            <div class="input-group input-group-sm" style="width: 300px;">
+                                <input type="text" class="form-control" placeholder="Buscar curso" name="filtro"
+                                       value="@ViewBag.Filtro">
+
+                                <div class="input-group-append">
+                                    <button type="submit" class="btn btn-default">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <a href="/curso/adicionar" class="btn btn-outline-primary btn-sm">Novo curso <i
+                            class="fas fa-plus"></i></a>
+                        </div>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body table-responsive p-0">
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Descrição</th>
+                                    <th>Campus</th>
+                                    <th>Ativo</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (EnsinoApp.ViewModels.Cursos.CursoViewModel c in Model)
+                                {
+                                    <tr>
+                                        <td>@c.Nome</td>
+                                        <td>@c.Descricao</td>
+                                        <td>@c.NomeCampus</td>
+                                        <td> @if (c.Ativo)
+                                            {
+                                                <span class="badge bg-success">Ativo</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">Inativo</span>
+                                            }
+                                            <td>
+                                                <a class="btn btn-primary btn-sm" asp-action="Edit" asp-route-id="@c.Id"><i
+                                                    class="fas fa-edit"></i></a>
+                                                    <a asp-controller="Curso" asp-action="Deletar" asp-route-id="@c.Id"
+                                                           onclick="return confirm('Tem certeza que deseja excluir o curso?')"
+                                                           class="btn btn-sm btn-danger" tytle="Excluir">
+                                                        <span class="fas fa-trash"></span>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- /.card-body -->
+                            <div class="card-footer clearfix">
+                                @if (ViewBag.Totalpaginas > 1)
+                                {
+                                    <ul class="pagination pagination-sm m-0 float-right">
+                                        @if (ViewBag.NumeroPagina > 1)
+                                        {
+                                            <li class="page-item"><a class="page-link"
+                                                                         href="@Url.Action("Index", "Curso", new { Filtro = ViewBag.Filtro, Pagina = ViewBag.NumeroPagina - 1 })">&laquo;</a>
+                                            </li>
+                                        }
+                                        <li class="page-item page-link">Página @ViewBag.NumeroPagina de @ViewBag.TotalPaginas</li>
+                                        @if (ViewBag.NumeroPagina < ViewBag.TotalPaginas)
+                                        {
+                                            <li class="page-item"><a class="page-link"
+                                                                         href="@Url.Action("Index", "Curso", new { Filtro = ViewBag.Filtro, Pagina = ViewBag.NumeroPagina + 1 })">&raquo;</a>
+                                            </li>
+                                        }
+                                    </ul>
+
+                                }
+                            </div>
+                        </div>
+                        <!-- /.card -->
+                    </div>
+                </div>
+            </section>
+            <!-- /.content -->

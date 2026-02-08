@@ -22,7 +22,7 @@
                         <form asp-action="Index">
                             <div class="input-group input-group-sm" style="width: 300px;">
                                 <input type="text" class="form-control" placeholder="Buscar campus" name="filtro"
-                                    value="@ViewBag.Filtro">
+                                       value="@ViewBag.Filtro">
 
                                 <div class="input-group-append">
                                     <button type="submit" class="btn btn-default">
@@ -52,12 +52,12 @@
                                     <td>@p.Nome</td>
                                     <td>@p.Telefone</td>
                                     <td>
-                                        <a href="/campus/editar/@p.Id" class="btn btn-secondary btn-sm mr-1" title="Editar">
+                                        <a href="/campus/editar/@p.Id" class="btn btn-primary btn-sm mr-1" title="Editar">
                                             <span class="fas fa-edit"></span>
                                         </a>
                                         <a asp-controller="Campus" asp-action="Excluir" asp-route-id="@p.Id"
-                                            onclick="return confirm('Tem certeza que deseja excluir o campus?')"
-                                            class="btn btn-sm btn-danger" tytle="Excluir">
+                                               onclick="return confirm('Tem certeza que deseja excluir o campus?')"
+                                               class="btn btn-sm btn-danger" tytle="Excluir">
                                             <span class="fas fa-trash"></span>
                                         </a>
                                     </td>
@@ -76,14 +76,14 @@
                             @if (ViewBag.NumeroPagina > 1)
                             {
                                 <li class="page-item"><a class="page-link"
-                                        href="@Url.Action("Index", "Medicos", new { Filtro = ViewBag.Filtro, Pagina = ViewBag.NumeroPagina - 1 })">&laquo;</a>
+                                                             href="@Url.Action("Index", "Medicos", new { Filtro = ViewBag.Filtro, Pagina = ViewBag.NumeroPagina - 1 })">&laquo;</a>
                                 </li>
                             }
                             <li class="page-item page-link">Página @ViewBag.NumeroPagina de @ViewBag.TotalPaginas</li>
                             @if (ViewBag.NumeroPagina < ViewBag.TotalPaginas)
                             {
                                 <li class="page-item"><a class="page-link"
-                                        href="@Url.Action("Index", "Medicos", new { Filtro = ViewBag.Filtro, Pagina = ViewBag.NumeroPagina + 1 })">&raquo;</a>
+                                                             href="@Url.Action("Index", "Medicos", new { Filtro = ViewBag.Filtro, Pagina = ViewBag.NumeroPagina + 1 })">&raquo;</a>
                                 </li>
                             }
                         </ul>
