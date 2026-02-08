@@ -50,4 +50,29 @@ public class CursoRepository : ICursoRepository
 
         return model;
     }
+
+    public IEnumerable<Curso> FindAllDashboard()
+    {
+        return _context.Cursos
+                .Include(c => c.Campus)
+                .Include(c => c.Turmas)
+                    .ThenInclude(t => t.Lider)
+                .Include(c => c.Turmas)
+                    .ThenInclude(t => t.Matriculas)
+                        .ThenInclude(m => m.Casal)
+                .AsNoTracking()
+                .ToList();
+    }
+    public Curso? FindByIdDashboard(int id)
+    {
+        return _context.Cursos
+                .Include(c => c.Campus)
+                .Include(c => c.Turmas)
+                    .ThenInclude(t => t.Lider)
+                .Include(c => c.Turmas)
+                    .ThenInclude(t => t.Matriculas)
+                        .ThenInclude(m => m.Casal)
+                .FirstOrDefault(c => c.Id == id);
+    }
+
 }

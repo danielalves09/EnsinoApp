@@ -38,9 +38,19 @@ public class CursoService : ICursoService
         throw new NotImplementedException();
     }
 
+    public IEnumerable<Curso> FindAllDashboard()
+    {
+        return _repository.FindAllDashboard();
+    }
+
     public Curso? FindById(int id)
     {
         return _repository.FindById(id);
+    }
+
+    public Curso? FindByIdDashboard(int id)
+    {
+        return _repository.FindByIdDashboard(id);
     }
 
     public Curso Update(Curso model)

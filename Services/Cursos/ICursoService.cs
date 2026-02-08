@@ -13,4 +13,7 @@ public interface ICursoService
     Models.Entities.Curso Update(Models.Entities.Curso model);
     void Delete(int id);
 
+    IEnumerable<Models.Entities.Curso> FindAllDashboard();
+    Models.Entities.Curso? FindByIdDashboard(int id);
+
 }

@@ -4,6 +4,7 @@ using EnsinoApp.Services.Campus;
 using EnsinoApp.ViewModels.Cursos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using EnsinoApp.Models.Enums;
 
 namespace EnsinoApp.Controllers;
 
@@ -112,4 +113,43 @@ public class CursoController : Controller
         _cursoService.Delete(id);
         return RedirectToAction(nameof(Index));
     }
+
+    public IActionResult Dashboard(int id)
+    {
+        var curso = _cursoService.FindByIdDashboard(id); // Certifique-se que inclui Turmas -> Matriculas -> Casal
+
+        if (curso == null) return NotFound();
+
+        var turmas = curso.Turmas.Select(t => new CursoDashboardViewModel.TurmaInfo
+        {
+            Id = t.Id,
+            NomeLider = t.Lider.NomeMarido + " e " + t.Lider.NomeEsposa,
+            DataInicio = t.DataInicio,
+            DataFim = t.DataFim,
+            Status = t.Status,
+            Casais = t.Matriculas.Select(m => new CursoDashboardViewModel.CasalInfo
+            {
+                Id = m.Casal.Id,
+                NomeMarido = m.Casal.NomeConjuge1,
+                NomeEsposa = m.Casal.NomeConjuge2,
+                Status = (Models.Enums.StatusPresenca)m.Casal.Status
+            }).ToList()
+        }).ToList();
+
+        var model = new CursoDashboardViewModel
+        {
+            Id = curso.Id,
+            Nome = curso.Nome,
+            Descricao = curso.Descricao,
+            Ativo = curso.Ativo,
+            NomeCampus = curso.Campus.Nome,
+            TotalTurmas = curso.Turmas.Count,
+            TotalCasais = curso.Turmas.Sum(t => t.Matriculas.Count),
+            CasaisAtivos = curso.Turmas.Sum(t => t.Matriculas.Count(m => m.Casal.Status == StatusCasal.Ativo)),
+            Turmas = turmas
+        };
+
+        return View(model);
+    }
+
 }
