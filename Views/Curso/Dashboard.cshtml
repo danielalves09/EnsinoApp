@@ -19,28 +19,55 @@
 <div class="container-fluid mb-4">
     <div class="row">
         <div class="col-md-4">
-            <div class="card text-white bg-primary shadow">
+            <div class="info-box shadow">
+                <span class="info-box-icon bg-primary"><i class="bi bi-building"></i></span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text">Total de Turmas</span>
+                    <span class="info-box-number">@Model.TotalTurmas</span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            @* <div class="card text-white bg-primary shadow">
                 <div class="card-body">
                     <h5 class="card-title"><i class="bi bi-building"></i> Total de Turmas</h5>
                     <p class="card-text display-6">@Model.TotalTurmas</p>
                 </div>
-            </div>
+            </div> *@
         </div>
         <div class="col-md-4">
-            <div class="card text-white bg-success shadow">
+            <div class="info-box shadow">
+                <span class="info-box-icon bg-success"><i class="bi bi-people"></i></span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text">Total de Casais</span>
+                    <span class="info-box-number">@Model.TotalCasais</span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            @* <div class="card text-white bg-success shadow">
                 <div class="card-body">
                     <h5 class="card-title"><i class="bi bi-people"></i> Total de Casais</h5>
                     <p class="card-text display-6">@Model.TotalCasais</p>
                 </div>
-            </div>
+            </div> *@
         </div>
         <div class="col-md-4">
-            <div class="card text-white bg-warning shadow">
+            <div class="info-box shadow">
+                <span class="info-box-icon bg-warning"><i class="bi bi-person-check"></i></span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text">Casais Ativos</span>
+                    <span class="info-box-number">@Model.CasaisAtivos</span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            @*   <div class="card text-white bg-warning shadow">
                 <div class="card-body">
                     <h5 class="card-title"><i class="bi bi-person-check"></i> Casais Ativos</h5>
                     <p class="card-text display-6">@Model.CasaisAtivos</p>
                 </div>
-            </div>
+            </div> *@
         </div>
     </div>
 </div>
@@ -51,12 +78,12 @@
         @foreach (var turma in Model.Turmas)
         {
             var cardColor = turma.Status == StatusTurma.Acomecar ? "bg-warning" :
-                            turma.Status == StatusTurma.EmAndamento ? "bg-success" : "bg-secondary";
+                            turma.Status == StatusTurma.EmAndamento ? "bg-primary" : "bg-success";
 
             <div class="col-md-6 mb-4">
                 <div class="card shadow @cardColor text-white">
                     <div class="card-header">
-                        <h5>@turma.NomeLider</h5>
+                        <h5>Turma #@turma.Id - Líderes: @turma.NomeLider</h5>
                         <small>@turma.DataInicio.ToString("dd/MM/yyyy") - @turma.DataFim.ToString("dd/MM/yyyy")</small>
                         <span class="badge float-end">@turma.Status</span>
                     </div>
@@ -73,31 +100,36 @@
                             <tbody>
                                 @foreach (var casal in turma.Casais)
                                 {
-                                    var badgeColor = casal.Status == StatusPresenca.Presente ? "bg-success" :
-                                                     casal.Status == StatusPresenca.Ausente ? "bg-danger" : "bg-secondary";
+                                    var badgeColor = casal.StatusCasal == StatusCasal.Ativo ? "bg-success" :
+                                                     casal.StatusCasal == StatusCasal.Desistente ? "bg-danger" : "bg-secondary";
 
                                     <tr>
                                         <td>@casal.NomeMarido</td>
                                         <td>@casal.NomeEsposa</td>
-                                        <td><span class="badge @badgeColor">@casal.Status</span></td>
+                                        <td><span class="badge @badgeColor">@casal.StatusCasal</span></td>
                                     </tr>
                                 }
                             </tbody>
                         </table>
 
                         <!-- Gráfico de presença -->
-                        <canvas id="chartTurma@turma.Id" width="100%" height="50"></canvas>
+                        @*  <div class="row " style="margin:20px 0;height: 200px; width: 200px;">
+                            <canvas id="@turma.Id"></canvas>
+                        </div>
                         <script>
-                            const ctx@turma.Id = document.getElementById('chartTurma@turma.Id').getContext('2d');
-                            new Chart(ctx@turma.Id, {
+
+                            document.addEventListener("DOMContentLoaded", function () {
+                            console.log('Entrou no script');
+                            const ctx = document.getElementById('@turma.Id').getContext('2d');
+                            new Chart(ctx, {
                             type: 'pie',
                             data: {
                             labels: ['Presente', 'Ausente', 'Desistente'],
                             datasets: [{
                             data: [
-                            @turma.Casais.Count(c => c.Status == EnsinoApp.Models.Enums.StatusPresenca.Presente),
-                            @turma.Casais.Count(c => c.Status == EnsinoApp.Models.Enums.StatusPresenca.Ausente),
-                            @turma.Casais.Count(c => c.Status == EnsinoApp.Models.Enums.StatusPresenca.Desistente)
+                            @turma.Casais.Count(c => c.StatusPresenca == EnsinoApp.Models.Enums.StatusPresenca.Presente),
+                            @turma.Casais.Count(c => c.StatusPresenca == EnsinoApp.Models.Enums.StatusPresenca.Ausente),
+                            @turma.Casais.Count(c => c.StatusPresenca == EnsinoApp.Models.Enums.StatusPresenca.Desistente)
                             ],
                             backgroundColor: ['#198754', '#dc3545', '#6c757d']
                             }]
@@ -105,11 +137,14 @@
                             options: {
                             responsive: true,
                             plugins: {
-                            legend: { position: 'bottom' }
+                            legend: {
+                            position: 'bottom'
+                            }
                             }
                             }
                             });
-                        </script>
+                            });
+                        </script> *@
                     </div>
                 </div>
             </div>

@@ -16,6 +16,11 @@ namespace EnsinoApp.ViewModels.Cursos
         public int TotalCasais { get; set; }
         public int CasaisAtivos { get; set; }
 
+        // Filtro
+        public StatusTurma? FiltroStatusTurma { get; set; }
+        public StatusPresenca? FiltroStatusCasal { get; set; }
+        public string? BuscaCasal { get; set; }
+
         public List<TurmaInfo> Turmas { get; set; } = new List<TurmaInfo>();
 
         public class TurmaInfo
@@ -33,7 +38,8 @@ namespace EnsinoApp.ViewModels.Cursos
             public int Id { get; set; }
             public string NomeMarido { get; set; } = null!;
             public string NomeEsposa { get; set; } = null!;
-            public StatusPresenca Status { get; set; }
+            public StatusCasal StatusCasal { get; set; }
+            public StatusPresenca StatusPresenca { get; set; }
         }
     }
 }

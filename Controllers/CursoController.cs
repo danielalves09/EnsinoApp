@@ -132,7 +132,8 @@ public class CursoController : Controller
                 Id = m.Casal.Id,
                 NomeMarido = m.Casal.NomeConjuge1,
                 NomeEsposa = m.Casal.NomeConjuge2,
-                Status = (Models.Enums.StatusPresenca)m.Casal.Status
+                StatusCasal = (Models.Enums.StatusCasal)m.Casal.Status,
+                StatusPresenca = (Models.Enums.StatusPresenca)m.Casal.Status
             }).ToList()
         }).ToList();
 
@@ -151,5 +152,7 @@ public class CursoController : Controller
 
         return View(model);
     }
+
+
 
 }
