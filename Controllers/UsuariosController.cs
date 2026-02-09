@@ -101,4 +101,21 @@ public class UsuariosController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [HttpGet]
+    public IActionResult Buscar(string filtro)
+    {
+        var usuarios = _usuarioService.FindAll()
+            .Where(u => u.NomeMarido.ToLower().Contains(filtro.ToLower()) || u.NomeEsposa.ToLower().Contains(filtro.ToLower()))
+            .Select(u => new
+            {
+                u.Id,
+                Nome = $"{u.NomeMarido} / {u.NomeEsposa}",
+                u.Email,
+                NomeCampus = u.Campus.Nome
+            })
+            .ToList();
+
+        return Json(usuarios);
+    }
+
 }

@@ -153,6 +153,22 @@ public class CursoController : Controller
         return View(model);
     }
 
+    public IActionResult Buscar(string filtro, string campusId)
+    {
+        var curso = _cursoService.FindAll().Where(c => c.Nome.ToLower().Contains(filtro.ToLower()) && c.IdCampus == int.Parse(campusId)).Select(c => new
+        {
+            Id = c.Id,
+            Nome = c.Nome,
+            NomeCampus = c.Campus.Nome,
+        });
+
+        Console.WriteLine(curso);
+
+        return Json(curso);
+
+
+    }
+
 
 
 }

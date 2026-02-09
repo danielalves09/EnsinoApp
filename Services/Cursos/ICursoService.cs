@@ -6,8 +6,6 @@ namespace EnsinoApp.Services.Cursos;
 public interface ICursoService
 {
     ICollection<Models.Entities.Curso> FindAll();
-    ICollection<Models.Entities.Curso> FindAll(string filtro);
-
     Models.Entities.Curso Create(Models.Entities.Curso model);
     Models.Entities.Curso? FindById(int id);
     Models.Entities.Curso Update(Models.Entities.Curso model);

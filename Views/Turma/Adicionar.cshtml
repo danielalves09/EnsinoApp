@@ -1,0 +1,270 @@
+@using EnsinoApp.Models.Enums
+@model EnsinoApp.ViewModels.Turmas.TurmaViewModel;
+@{
+    ViewData["Title"] = "Cadastrar Nova Supervisão";
+}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Cadastrar Turma</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class=content>
+    <div class=row>
+        <div class=col-12>
+            <div class="card shadow">
+                <div class="card-body">
+                    <form asp-action="Adicionar" method="post">
+                        <div asp-validation-summary="All" class="text-danger"></div>
+
+                        <!-- Campus -->
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <label asp-for="IdCampus" class="form-label">Campus</label>
+                            <div class="input-group">
+                                <input asp-for="NomeCampus" class="form-control" readonly
+                                       placeholder="Selecione um Campus" />
+                                <input type="hidden" asp-for="IdCampus" />
+                                <button type="button" id="BtnBuscarCampus" class="btn btn-outline-primary" data-toggle="modal"
+                                        data-target="#ModalCampus">Buscar</button>
+                            </div>
+                            </div>
+                        </div>
+
+                        <!-- Curso -->
+                         <div class="mb-3">
+                            <div class="input-group">
+                                <label asp-for="IdCurso" class="form-label">Curso</label>
+                            <div class="input-group">
+                                <input asp-for="NomeCurso" class="form-control" readonly
+                                       placeholder="Selecione um Curso" />
+                                <input type="hidden" asp-for="IdCurso" />
+                                <button type="button" id="BtnBuscarCurso" class="btn btn-outline-primary" data-toggle="modal"
+                                        data-target="#ModalCurso">Buscar</button>
+                            </div>
+                            </div>
+                        </div>
+
+                        <!-- Líder -->
+                        <div class="mb-3">
+                            <label>Líderes</label>
+                            <div class="input-group">
+                                <input type="hidden" asp-for="IdLider" />
+                                <input asp-for="NomeLider" placeholder="Selecione os líderes da Turma" class="form-control" readonly />
+                                <button type="button" id="btnBuscarUsuario" class="btn btn-outline-primary" data-toggle="modal"
+                                        data-target="#modalUsuario">
+                                    Buscar
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label>Data Início</label>
+                                <input asp-for="DataInicio" class="form-control" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label>Data Fim</label>
+                                <input asp-for="DataFim" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Status</label>
+                            <select asp-for="Status" asp-items="Html.GetEnumSelectList<StatusTurma>()"
+                                    class="form-control"></select>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Voltar
+                            </a>
+                            <button type="submit" class="btn btn-primary">Salvar <i class="fas fa-save"></i></button>
+                        </div>                        
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ================= MODAL CAMPUS ================= -->
+<div class="modal fade" id="ModalCampus" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Buscar Campus</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="TxtFiltroCampus" class="form-control mb-2"
+                       placeholder="Digite o nome do campus" />
+                <table class="table table-hover" id="TbCampus">
+                    <tbody></tbody>
+                </table>
+                <div id="DivMensagemCampus" class="d-none">Nenhum campus encontrado.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= MODAL CURSO ================= -->
+<div class="modal fade" id="ModalCurso" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Buscar Curso</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="TxtFiltroCurso" class="form-control mb-2"
+                       placeholder="Digite o nome do curso" />
+                <table class="table table-hover" id="TbCurso">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Campus</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div id="DivMensagemCurso" class="d-none">Nenhum curso encontrado.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de busca de Líder -->
+<div class="modal fade" id="modalUsuario" tabindex="-1" aria-labelledby="modalUsuarioLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalUsuarioLabel">Buscar Líder</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <input type="text" id="TxtFiltroUsuario" class="form-control" placeholder="Digite nome do líder...">
+                </div>               
+
+                <div id="DivMensagemUsuario" class="alert alert-warning d-none">
+                    Nenhum líder encontrado.
+                </div>
+
+                <table class="table table-hover d-none" id="TbUsuario">
+                    <thead>
+                        <tr>
+                            <th>Líderes</th>
+                            <th>Email</th>
+                            <th>Campus</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Linhas preenchidas via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script>
+                                                                   function buscarCampus() {
+    var filtro = $("#TxtFiltroCampus").val().trim();
+    if(filtro.length === 0) return;
+
+    $.getJSON("/Campus/Buscar?filtro=" + filtro, function(resultado){
+        if(resultado.length > 0) {
+            var linhas = resultado.map(p => "<tr style='cursor:pointer' data-id='" + p.id + "'><td>" + p.nome + "</td></tr>").join("");
+            $("#TbCampus tbody").html(linhas);
+
+            $("#TbCampus tbody tr").click(function(){
+                var id = $(this).attr("data-id");
+                var nome = $(this).children()[0].innerText;
+                $("#IdCampus").val(id);
+                $("#NomeCampus").val(nome);
+                $("#ModalCampus").modal('hide');
+            });
+        } else {
+            $("#TbCampus tbody").html("");
+            $("#DivMensagemCampus").removeClass("d-none");
+        }
+    });
+}
+
+//CURSO
+
+ function buscarCurso() {
+    var filtro = $("#TxtFiltroCurso").val().trim();
+    var campusId = $("#IdCampus").val().trim();
+    if(filtro.length === 0) return;
+
+            $.getJSON("/Curso/Buscar?filtro=" + filtro+"&campusId="+campusId, function(resultado){
+        if(resultado.length > 0) {
+            var linhas = resultado.map(p => "<tr style='cursor:pointer' data-id='" + p.id + "'><td>" + p.nome + "</td><td>" + p.nomeCampus + "</td></tr>").join("");
+            $("#TbCurso tbody").html(linhas);
+
+            $("#TbCurso tbody tr").click(function(){
+                var id = $(this).attr("data-id");
+                var nome = $(this).children()[0].innerText;
+                $("#IdCurso").val(id);
+                $("#NomeCurso").val(nome);
+                $("#ModalCurso").modal('hide');
+            });
+        } else {
+            $("#TbCurso tbody").html("");
+            $("#DivMensagemCurso").removeClass("d-none");
+        }
+    });
+}
+
+function buscarUsuario() {
+        var filtro = $("#TxtFiltroUsuario").val().trim();
+        if (filtro.length === 0) return;
+
+        $.getJSON("/usuarios/buscar?filtro=" + encodeURIComponent(filtro), function(resultado) {
+            if (resultado.length > 0) {
+                var linhas = resultado.map(u => `
+                    <tr style="cursor:pointer" data-id="${u.id}" data-nome="${u.nome}" data-bs-dismiss="modal">
+                        <td>${u.nome}</td>
+                        <td>${u.email}</td>
+                        <td>${u.nomeCampus}</td>
+                    </tr>
+                `).join("");
+                $("#TbUsuario tbody").html(linhas);
+                $("#TbUsuario tbody tr").click(function() {
+                    var id = $(this).attr("data-id");
+                    var nome = $(this).attr("data-nome");
+                    $("#IdLider").val(id);
+                    $("#NomeLider").val(nome);
+                    $("#modalUsuario").modal('hide');
+                });
+
+                $("#TbUsuario").removeClass("d-none");
+                $("#DivMensagemUsuario").addClass("d-none");
+            } else {
+                $("#TbUsuario").addClass("d-none");
+                $("#DivMensagemUsuario").removeClass("d-none");
+            }
+        });
+    }
+
+$("#TxtFiltroCampus").on("keyup", function(){ buscarCampus(); });
+$("#TxtFiltroCurso").on("keyup", function(){ buscarCurso(); });
+$("#TxtFiltroUsuario").on("keyup", function(){ buscarUsuario(); });
+    </script>
+}

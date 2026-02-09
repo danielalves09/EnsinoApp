@@ -10,20 +10,28 @@ using EnsinoApp.Repositories.Usuarios;
 using EnsinoApp.Services.Usuarios;
 using EnsinoApp.Repositories.Cursos;
 using EnsinoApp.Services.Cursos;
+using EnsinoApp.Repositories.Turmas;
+using EnsinoApp.Services.Turmas;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<EnsinoAppContext>();
+
+//Repositories
 builder.Services.AddScoped<ICampusRepository, CampusRepository>();
 builder.Services.AddScoped<ISupervisaoRepository, SupervisaoRepository>();
 builder.Services.AddScoped<IUsuariosRepository, UsuariosRepository>();
 builder.Services.AddScoped<ICursoRepository, CursoRepository>();
+builder.Services.AddScoped<ITurmaRepository, TurmaRepository>();
+
+//Services
 builder.Services.AddScoped<ICampusService, CampusService>();
 builder.Services.AddScoped<ISupervisaoService, SupervisaoService>();
 builder.Services.AddScoped<IUsuariosService, UsuariosService>();
 builder.Services.AddScoped<ICursoService, CursoService>();
+builder.Services.AddScoped<ITurmaService, TurmaService>();
 
 
 builder.Services.AddIdentity<Usuario, IdentityRole<int>>(options =>

@@ -33,11 +33,6 @@ public class CursoService : ICursoService
         return _repository.FindAll();
     }
 
-    public ICollection<Curso> FindAll(string filtro)
-    {
-        throw new NotImplementedException();
-    }
-
     public IEnumerable<Curso> FindAllDashboard()
     {
         return _repository.FindAllDashboard();
