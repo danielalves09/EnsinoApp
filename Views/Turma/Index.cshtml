@@ -1,0 +1,83 @@
+@model IEnumerable<EnsinoApp.ViewModels.Turmas.TurmaViewModel>
+@{
+    ViewData["Title"] = "Gerenciar Turmas";
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Gerenciar Turmas</h1>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content">
+    <form method="get" class="mb-3">
+        <div class="row g-2">
+            <div class="col-md-3">
+                @Html.DropDownList(
+    "IdCurso",
+    (SelectList)ViewBag.Cursos,
+    "Selecione um curso",
+    new { @class = "form-control" }
+)
+
+            </div>
+            <div class="col-md-3">
+                            
+                                @Html.DropDownList(
+                "IdCampus",
+                (SelectList)ViewBag.Campuses,
+                "Selecione um campus",
+                new { @class = "form-control" }
+)
+                
+            </div>
+            <div class="col-md-3">
+                 @Html.DropDownList(
+                "Status",
+                (SelectList)ViewBag.Status,
+                "Status",
+                new { @class = "form-control" })
+                
+               
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary">Filtrar</button>
+                <a asp-action="Index" class="btn btn-secondary">Limpar</a>
+            </div>
+        </div>
+    </form>
+
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>Curso</th>
+                <th>Campus</th>
+                <th>Líderes</th>
+                <th>Data Início</th>
+                <th>Data Fim</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var t in Model)
+            {
+                <tr>
+                    <td>@t.NomeCurso</td>
+                    <td>@t.NomeCampus</td>
+                    <td>@t.NomeLider</td>
+                    <td>@t.DataInicio.ToShortDateString()</td>
+                    <td>@t.DataFim.ToShortDateString()</td>
+                    <td>@t.Status</td>
+                    <td>
+                        <a asp-action="Dashboard" asp-route-id="@t.Id" class="btn btn-sm btn-info">Dashboard</a>
+                        <a asp-action="Editar" asp-route-id="@t.Id" class="btn btn-sm btn-warning">Editar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</section>
