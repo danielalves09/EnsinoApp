@@ -24,6 +24,7 @@ public class EnsinoAppContext : IdentityDbContext<Usuario, IdentityRole<int>, in
     public DbSet<Licao> Licoes => Set<Licao>();
     public DbSet<Turma> Turmas => Set<Turma>();
     public DbSet<Casal> Casais => Set<Casal>();
+    public DbSet<Matricula> Matriculas => Set<Matricula>();
     public DbSet<RelatorioSemanal> Relatorios => Set<RelatorioSemanal>();
 
 
