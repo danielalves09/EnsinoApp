@@ -27,6 +27,8 @@ public class EnsinoAppContext : IdentityDbContext<Usuario, IdentityRole<int>, in
     public DbSet<Matricula> Matriculas => Set<Matricula>();
     public DbSet<RelatorioSemanal> Relatorios => Set<RelatorioSemanal>();
 
+    public DbSet<InscricaoOnline> InscricoesOnline => Set<InscricaoOnline>();
+
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -49,6 +51,7 @@ public class EnsinoAppContext : IdentityDbContext<Usuario, IdentityRole<int>, in
         modelBuilder.ApplyConfiguration(new TurmaConfiguration());
         modelBuilder.ApplyConfiguration(new MatriculaConfiguration());
         modelBuilder.ApplyConfiguration(new RelatorioSemanalConfiguration());
+        modelBuilder.ApplyConfiguration(new InscricaoOnlineConfiguration());
 
     }
 }
