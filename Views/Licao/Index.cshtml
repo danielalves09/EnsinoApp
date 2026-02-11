@@ -1,0 +1,73 @@
+@model IEnumerable<EnsinoApp.ViewModels.Licao.LicaoViewModel>
+@{
+    ViewData["Title"] = "Lições do Curso";
+    var cursoNome = ViewBag.CursoNome;
+    var cursoId = ViewBag.CursoId;
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h3 class="mb-4">📚 Lições do Curso: @cursoNome</h3>
+                <a asp-controller="Curso" asp-action="Index" class="btn  btn-xs">
+                    <i class="fas fa-arrow-left"></i> Voltar aos cursos
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between">
+                        <div class="mb-3">
+
+                        </div>
+                        <div class=mb-3>
+                            <a asp-action="Adicionar" asp-route-cursoId="@cursoId" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus"></i> Adicionar Lição
+                            </a>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body table-responsive p-0">
+                    <table class="table table-head-fixed text-nowrap">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Título</th>
+                                <th>Descrição</th>
+                                <th>Data</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var licao in Model)
+                            {
+                                <tr>
+                                    <td>@licao.Numero</td>
+                                    <td>@licao.Titulo</td>
+                                    <td>@licao.Descricao</td>
+                                    <td>
+                                        <a asp-action="Editar" asp-route-id="@licao.Id" class="btn btn-sm btn-warning">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@licao.Id" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash"></i> Excluir
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>

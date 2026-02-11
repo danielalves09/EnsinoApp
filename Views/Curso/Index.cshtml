@@ -68,11 +68,14 @@
                                                        title="Visão Geral do Curso">
                                                     <i class="fas fa-chart-pie"></i>
                                                 </a>
+                                                <a asp-controller="Licao" asp-action="Index" asp-route-cursoId="@c.Id" class="btn btn-success btn-sm">
+                                                <i class="fas fa-list" title="Gerenciar Lições"></i>
+                                                </a>
                                                 <a class="btn btn-primary btn-sm" asp-action="Edit" asp-route-id="@c.Id" title="Editar Curso"><i
                                                     class="fas fa-edit"></i></a>
                                                     <a asp-controller="Curso" asp-action="Deletar" asp-route-id="@c.Id"
                                                            onclick="return confirm('Tem certeza que deseja excluir o curso?')"
-                                                           class="btn btn-sm btn-danger" tytle="Excluir" title="Excluir Curso">
+                                                           class="btn btn-sm btn-danger" title="Excluir" title="Excluir Curso">
                                                         <span class="fas fa-trash"></span>
                                                     </a>
                                                 </td>
