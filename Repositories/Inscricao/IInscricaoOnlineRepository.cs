@@ -1,3 +1,5 @@
+using EnsinoApp.ViewModels.Inscricao;
+
 namespace EnsinoApp.Repositories.Inscricao;
 
 public interface IInscricaoOnlineRepository
@@ -7,4 +9,8 @@ public interface IInscricaoOnlineRepository
     Task<Models.Entities.InscricaoOnline?> CreateAsync(Models.Entities.InscricaoOnline inscricao);
     Task UpdateAsync(Models.Entities.InscricaoOnline inscricao);
     Task DeleteAsync(int id);
+
+    int ContarTotal();
+    int ContarPendentes();
+    List<InscricaoOnlineResumoViewModel> ObterPendentesResumo();
 }

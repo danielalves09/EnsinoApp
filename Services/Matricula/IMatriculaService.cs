@@ -7,4 +7,7 @@ public interface IMatriculaService
     Task CreateAsync(Models.Entities.Matricula matricula);
     Task UpdateAsync(Models.Entities.Matricula matricula);
     Task DeleteAsync(int id);
+
+    int ContarAtivas();
+        void MatricularCasal(int idCasal, int idTurma);
 }

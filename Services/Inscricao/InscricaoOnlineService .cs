@@ -2,6 +2,7 @@ using EnsinoApp.Data;
 using EnsinoApp.Models.Entities;
 using EnsinoApp.Models.Enums;
 using EnsinoApp.Repositories.Inscricao;
+using EnsinoApp.ViewModels.Inscricao;
 
 namespace EnsinoApp.Services.Inscricao;
 
@@ -29,7 +30,7 @@ public class InscricaoOnlineService : IInscricaoOnlineService
         if (inscricao == null || inscricao.Processada) return;
 
         // Criar Casal
-        var casal = new Casal
+        var casal = new Models.Entities.Casal
         {
             NomeConjuge1 = inscricao.NomeMarido,
             NomeConjuge2 = inscricao.NomeEsposa,
@@ -68,5 +69,18 @@ public class InscricaoOnlineService : IInscricaoOnlineService
         await _context.SaveChangesAsync();
     }
 
+    public int ContarTotal()
+    {
+        return _repository.ContarTotal();
+    }
 
+    public int ContarPendentes()
+    {
+        return _repository.ContarPendentes();
+    }
+
+    public List<InscricaoOnlineResumoViewModel> ObterPendentesResumo()
+    {
+        return _repository.ObterPendentesResumo();
+    }
 }

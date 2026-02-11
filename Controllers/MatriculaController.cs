@@ -1,4 +1,6 @@
 using EnsinoApp.Models.Entities;
+using EnsinoApp.Services.Casal;
+using EnsinoApp.Services.Inscricao;
 using EnsinoApp.Services.Matricula;
 using EnsinoApp.Services.Turmas;
 using EnsinoApp.ViewModels.Matricula;
@@ -8,19 +10,39 @@ namespace EnsinoApp.Controllers;
 
 public class MatriculaController : Controller
 {
+    private readonly ICasalService _casalService;
+    private readonly IInscricaoOnlineService _inscricaoService;
     private readonly IMatriculaService _matriculaService;
-    //private readonly ICasalService _casalService;
     private readonly ITurmaService _turmaService;
 
-    public MatriculaController(IMatriculaService service)
+    public MatriculaController(
+            ICasalService casalService,
+            IInscricaoOnlineService inscricaoService,
+            IMatriculaService matriculaService,
+            ITurmaService turmaService)
     {
-        _matriculaService = service;
+        _casalService = casalService;
+        _inscricaoService = inscricaoService;
+        _matriculaService = matriculaService;
+        _turmaService = turmaService;
     }
 
-    public async Task<IActionResult> Index()
+    public IActionResult Index()
     {
-        var matriculas = await _matriculaService.FindAllAsync();
-        return View(matriculas);
+        var dashboard = new MatriculaDashboardViewModel
+        {
+            TotalCasais = _casalService.ContarTotal(),
+            TotalInscricoes = _inscricaoService.ContarTotal(),
+            InscricoesPendentes = _inscricaoService.ContarPendentes(),
+            MatriculasAtivas = _matriculaService.ContarAtivas(),
+            TurmasAtivas = _turmaService.ContarAtivas(),
+
+            InscricoesPendentesLista = _inscricaoService.ObterPendentesResumo(),
+            Casais = _casalService.ObterResumoCasais(),
+            Turmas = _turmaService.ObterResumoTurmasAtivas()
+        };
+
+        return View(dashboard);
     }
 
     public async Task<IActionResult> Details(int id)

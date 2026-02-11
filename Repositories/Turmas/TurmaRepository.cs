@@ -1,5 +1,7 @@
 using EnsinoApp.Data;
 using EnsinoApp.Models.Entities;
+using EnsinoApp.Models.Enums;
+using EnsinoApp.ViewModels.Turmas;
 using Microsoft.EntityFrameworkCore;
 
 namespace EnsinoApp.Repositories.Turmas;
@@ -55,6 +57,24 @@ public class TurmaRepository : ITurmaRepository
         throw new NotImplementedException();
     }
 
+    public int ContarAtivas()
+    {
+        return _context.Turmas.Count(t => t.Status == StatusTurma.EmAndamento);
+    }
+
+    public List<TurmaResumoViewModel> ObterTurmasAtivasResumo()
+    {
+        return _context.Turmas
+            .Where(t => t.Status == StatusTurma.EmAndamento)
+            .Select(t => new TurmaResumoViewModel
+            {
+                Id = t.Id,
+                Curso = t.Curso.Nome,
+                Campus = t.Campus.Nome,
+                DataInicio = t.DataInicio
+            })
+            .ToList();
+    }
 
 
 

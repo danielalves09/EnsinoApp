@@ -1,5 +1,6 @@
 using EnsinoApp.Models.Entities;
 using EnsinoApp.Repositories.Turmas;
+using EnsinoApp.ViewModels.Turmas;
 
 namespace EnsinoApp.Services.Turmas;
 
@@ -10,6 +11,11 @@ public class TurmaService : ITurmaService
     public TurmaService(ITurmaRepository repository)
     {
         _repository = repository;
+    }
+
+    public int ContarAtivas()
+    {
+        return _repository.ContarAtivas();
     }
 
     public Turma Create(Turma turma)
@@ -31,6 +37,11 @@ public class TurmaService : ITurmaService
     public Turma? FindById(int id)
     {
         return _repository.FindById(id);
+    }
+
+    public List<TurmaResumoViewModel> ObterResumoTurmasAtivas()
+    {
+        return _repository.ObterTurmasAtivasResumo();
     }
 
     public Turma Update(Turma turma)

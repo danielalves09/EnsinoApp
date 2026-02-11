@@ -1,4 +1,5 @@
 using EnsinoApp.Data;
+using EnsinoApp.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace EnsinoApp.Repositories.Matricula;
@@ -54,6 +55,27 @@ public class MatriculaRepository : IMatriculaRepository
             _context.Matriculas.Remove(matricula);
             await _context.SaveChangesAsync();
         }
+    }
+
+    public int ContarAtivas()
+    {
+        return _context.Matriculas.Count(m => m.Status == StatusMatricula.Ativa);
+    }
+
+    public bool ExisteMatriculaAtiva(int idCasal, int idTurma)
+    {
+        return _context.Matriculas.Any(m =>
+            m.IdCasal == idCasal &&
+            m.IdTurma == idTurma &&
+            m.Status == StatusMatricula.Ativa);
+    }
+
+    public bool ExisteMatriculaAtivaPorCasal(int idCasal)
+    {
+        return _context.Matriculas.Any(m =>
+            m.IdCasal == idCasal &&
+            m.Status == StatusMatricula.Ativa
+        );
     }
 
 

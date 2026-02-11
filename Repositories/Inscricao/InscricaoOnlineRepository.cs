@@ -1,5 +1,6 @@
 using EnsinoApp.Data;
 using EnsinoApp.Models.Entities;
+using EnsinoApp.ViewModels.Inscricao;
 using Microsoft.EntityFrameworkCore;
 
 namespace EnsinoApp.Repositories.Inscricao;
@@ -51,5 +52,30 @@ public class InscricaoOnlineRepository : IInscricaoOnlineRepository
             _context.Set<InscricaoOnline>().Remove(inscricao);
             await _context.SaveChangesAsync();
         }
+    }
+
+    public int ContarTotal()
+    {
+        return _context.InscricoesOnline.Count();
+    }
+
+    public int ContarPendentes()
+    {
+        return _context.InscricoesOnline.Count(i => !i.Processada);
+    }
+
+    public List<InscricaoOnlineResumoViewModel> ObterPendentesResumo()
+    {
+        return _context.InscricoesOnline
+            .Where(i => !i.Processada)
+            .Select(i => new InscricaoOnlineResumoViewModel
+            {
+                Id = i.Id,
+                NomeCasal = $"{i.NomeMarido} e {i.NomeEsposa}",
+                Curso = i.Curso.Nome,
+                Campus = i.Campus.Nome,
+                DataInscricao = i.DataInscricao
+            })
+            .ToList();
     }
 }
