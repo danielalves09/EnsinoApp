@@ -76,6 +76,12 @@ public class TurmaRepository : ITurmaRepository
             .ToList();
     }
 
-
-
+    public async Task<IEnumerable<Turma>> FindAllAtivasAsync(int idCurso)
+    {
+        return await _context.Turmas
+                .Include(t => t.Curso)
+                .Include(t => t.Lider)
+                .Where(t => t.IdCurso == idCurso && t.Status == Models.Enums.StatusTurma.Acomecar)
+                .ToListAsync();
+    }
 }

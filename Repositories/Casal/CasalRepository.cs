@@ -1,6 +1,7 @@
 
 
 using EnsinoApp.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace EnsinoApp.Repositories.Casal;
 
@@ -12,29 +13,49 @@ public class CasalRepository : ICasalRepository
     {
         _context = context;
     }
+
+    public async Task<List<Models.Entities.Casal>> FindAllAsync()
+    {
+        return await _context.Casais
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
+    public async Task<Models.Entities.Casal?> FindByIdAsync(int id)
+    {
+        return await _context.Casais
+            .FirstOrDefaultAsync(m => m.Id == id);
+    }
+
+    public async Task<Models.Entities.Casal> CreateAsync(Models.Entities.Casal casal)
+    {
+        _context.Casais.Add(casal);
+        await _context.SaveChangesAsync();
+
+        return casal;
+    }
+
+    public async Task UpdateAsync(Models.Entities.Casal casal)
+    {
+        _context.Casais.Update(casal);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+        var casal = await _context.Casais.FindAsync(id);
+        if (casal != null)
+        {
+            _context.Casais.Remove(casal);
+            await _context.SaveChangesAsync();
+        }
+    }
+
+
+
     public int ContarTotal()
     {
         return _context.Casais.Count();
-    }
-
-    public Models.Entities.Casal Create(Models.Entities.Casal model)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Delete(int id)
-    {
-        throw new NotImplementedException();
-    }
-
-    public ICollection<Models.Entities.Casal> FindAll()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Models.Entities.Casal? FindById(int id)
-    {
-        throw new NotImplementedException();
     }
 
     public List<Models.Entities.Casal> ObterTodos()
@@ -44,8 +65,5 @@ public class CasalRepository : ICasalRepository
                 .ToList();
     }
 
-    public Models.Entities.Casal Update(Models.Entities.Casal model)
-    {
-        throw new NotImplementedException();
-    }
+
 }

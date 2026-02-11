@@ -38,10 +38,12 @@ public class InscricaoOnlineRepository : IInscricaoOnlineRepository
         return inscricao;
     }
 
-    public async Task UpdateAsync(Models.Entities.InscricaoOnline inscricao)
+    public async Task<InscricaoOnline> UpdateAsync(InscricaoOnline inscricao)
     {
         _context.Set<InscricaoOnline>().Update(inscricao);
         await _context.SaveChangesAsync();
+
+        return inscricao;
     }
 
     public async Task DeleteAsync(int id)
@@ -78,4 +80,7 @@ public class InscricaoOnlineRepository : IInscricaoOnlineRepository
             })
             .ToList();
     }
+
+
+
 }

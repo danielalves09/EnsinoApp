@@ -23,6 +23,7 @@ public class InscricaoOnlineService : IInscricaoOnlineService
     {
         return _repository.CreateAsync(inscricao);
     }
+    public Task<Models.Entities.InscricaoOnline> UpdateAsync(Models.Entities.InscricaoOnline inscricao) => _repository.UpdateAsync(inscricao);
 
     public async Task ProcessarAsync(int id)
     {
@@ -83,4 +84,6 @@ public class InscricaoOnlineService : IInscricaoOnlineService
     {
         return _repository.ObterPendentesResumo();
     }
+
+
 }

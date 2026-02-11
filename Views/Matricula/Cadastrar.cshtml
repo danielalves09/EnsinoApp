@@ -1,0 +1,54 @@
+@model EnsinoApp.ViewModels.Matricula.MatriculaFormViewModel
+
+@{
+    ViewData["Title"] = "Matricular Casal";
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>📝 Matricular Casal</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class=content>
+    <div class=row>
+        <div class=col-12>
+            <div class="card shadow">
+                <div class="card-body">
+
+                    <form asp-action="Cadastrar" method="post">
+                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                        <input type="hidden" asp-for="IdInscricao" />
+
+                        <div class="mb-3">
+                            <label class="form-label">Casal</label>
+                            <input class="form-control" asp-for="NomeCasal" readonly />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Campus</label>
+                            <input class="form-control" asp-for="NomeCampus" readonly />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">GC</label>
+                            <input class="form-control" asp-for="NomeGC" readonly />
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="IdTurma" class="form-label"></label>
+                            @Html.DropDownList("IdTurma", (SelectList)Model.SelectTurmas, "Selecione uma turma",
+                                new { @class = "form-control" })
+                            <span asp-validation-for="IdTurma" class="text-danger"></span>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-check"></i> Matricular
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

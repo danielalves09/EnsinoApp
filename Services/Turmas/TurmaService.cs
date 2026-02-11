@@ -34,6 +34,25 @@ public class TurmaService : ITurmaService
 
     }
 
+    public async Task<IEnumerable<TurmaSelectListViewModel>> FindAllAtivasAsync(int idCurso)
+    {
+        var turmas = await _repository.FindAllAtivasAsync(idCurso);
+
+        return turmas.Select(t => new TurmaSelectListViewModel
+        {
+            Id = t.Id,
+            Descricao = $"{t.Curso.Nome} (Líderes: {GetPrimeiroNome(t.Lider.NomeMarido)} e {GetPrimeiroNome(t.Lider.NomeEsposa)})"
+        });
+    }
+    private string GetPrimeiroNome(string nomeCompleto)
+    {
+        if (string.IsNullOrEmpty(nomeCompleto)) return string.Empty;
+        var partes = nomeCompleto.Split(' ');
+        if (partes.Length >= 2)
+            return $"{partes[0]}"; // Primeiro nome
+        return partes[0];
+    }
+
     public Turma? FindById(int id)
     {
         return _repository.FindById(id);

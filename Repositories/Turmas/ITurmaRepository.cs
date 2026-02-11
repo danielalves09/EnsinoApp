@@ -8,5 +8,5 @@ public interface ITurmaRepository : ICrudRepository<Turma>
 {
     int ContarAtivas();
     List<TurmaResumoViewModel> ObterTurmasAtivasResumo();
-
+    Task<IEnumerable<Turma>> FindAllAtivasAsync(int idCurso);
 }

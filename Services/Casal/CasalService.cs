@@ -18,6 +18,15 @@ public class CasalService : ICasalService
         _casalRepository = casalRepository;
         _matriculaRepository = matriculaRepository;
     }
+
+    public Task<List<Models.Entities.Casal>> FindAllAsync() => _casalRepository.FindAllAsync();
+    public Task<Models.Entities.Casal?> FindByIdAsync(int id) => _casalRepository.FindByIdAsync(id);
+    public Task<Models.Entities.Casal> CreateAsync(Models.Entities.Casal casal) => _casalRepository.CreateAsync(casal);
+    public Task UpdateAsync(Models.Entities.Casal casal) => _casalRepository.UpdateAsync(casal);
+    public Task DeleteAsync(int id) => _casalRepository.DeleteAsync(id);
+
+
+
     public int ContarTotal()
     {
         return _casalRepository.ContarTotal();
@@ -35,3 +44,4 @@ public class CasalService : ICasalService
         }).ToList();
     }
 }
+

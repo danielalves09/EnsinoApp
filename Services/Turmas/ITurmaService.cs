@@ -13,4 +13,6 @@ public interface ITurmaService
 
     int ContarAtivas();
     List<TurmaResumoViewModel> ObterResumoTurmasAtivas();
+
+    Task<IEnumerable<TurmaSelectListViewModel>> FindAllAtivasAsync(int idCurso);
 }

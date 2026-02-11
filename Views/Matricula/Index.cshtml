@@ -95,7 +95,8 @@
                         <th>Casal</th>
                         <th>Curso</th>
                         <th>Campus</th>
-                        <th>Data</th>
+                        <th>Data Inscrição</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -106,6 +107,12 @@
                             <td>@item.Curso</td>
                             <td>@item.Campus</td>
                             <td>@item.DataInscricao.ToShortDateString()</td>
+                            <td>
+                                <a class="btn btn-sm btn-primary" asp-controller="Matricula" asp-action="Cadastrar"
+                                       asp-route-id="@item.Id">
+                                    <i class="fas fa-user-plus"></i> Matricular
+                                </a>
+                            </td>
                         </tr>
                     }
                 </tbody>

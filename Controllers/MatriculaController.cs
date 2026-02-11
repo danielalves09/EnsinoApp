@@ -1,10 +1,12 @@
 using EnsinoApp.Models.Entities;
+using EnsinoApp.Models.Enums;
 using EnsinoApp.Services.Casal;
 using EnsinoApp.Services.Inscricao;
 using EnsinoApp.Services.Matricula;
 using EnsinoApp.Services.Turmas;
 using EnsinoApp.ViewModels.Matricula;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace EnsinoApp.Controllers;
 
@@ -45,43 +47,87 @@ public class MatriculaController : Controller
         return View(dashboard);
     }
 
-    public async Task<IActionResult> Details(int id)
+    public async Task<IActionResult> Cadastrar(int id)
     {
-        var matricula = await _matriculaService.FindByIdAsync(id);
-        if (matricula == null) return NotFound();
-        return View(matricula);
-    }
+        var inscricao = await _inscricaoService.FindByIdAsync(id);
+        if (inscricao == null)
+            return NotFound();
 
-    public IActionResult Cadastrar()
-    {
-        //ViewBag.Casais = _casalService.FindAll();
-        ViewBag.Turmas = _turmaService.FindAll();
-        return View(new MatriculaViewModel());
+        var model = new MatriculaFormViewModel
+        {
+            IdInscricao = inscricao.Id,
+            NomeCasal = $"{inscricao.NomeMarido} e {inscricao.NomeEsposa}",
+            NomeGC = inscricao.NomeGC,
+            NomeCampus = inscricao.Campus.Nome,
+            SelectTurmas = new SelectList(await _turmaService.FindAllAtivasAsync(inscricao.IdCurso), "Id", "Descricao")
+        };
+
+        return View(model);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Cadastrar(MatriculaViewModel model)
+    public async Task<IActionResult> Cadastrar(MatriculaFormViewModel model)
     {
+        Console.WriteLine("Entrou na função");
         if (!ModelState.IsValid)
         {
-            //ViewBag.Casais = _casalService.FindAll();
-            ViewBag.Turmas = _turmaService.FindAll();
+            model.SelectTurmas = new SelectList(await _turmaService.FindAllAtivasAsync(model.IdCurso), "Id", "Descricao");
             return View(model);
         }
 
+        var inscricao = await _inscricaoService.FindByIdAsync(model.IdInscricao);
+        if (inscricao == null)
+            return NotFound();
+
+        var casal = new Casal
+        {
+            NomeConjuge1 = inscricao.NomeMarido,
+            NomeConjuge2 = inscricao.NomeEsposa,
+            TelefoneConjuge1 = inscricao.TelefoneMarido,
+            TelefoneConjuge2 = inscricao.TelefoneEsposa,
+            EmailConjuge1 = inscricao.EmailMarido,
+            EmailConjuge2 = inscricao.EmailEsposa,
+            Rua = inscricao.Rua,
+            Numero = inscricao.Numero,
+            Complemento = inscricao.Complemento,
+            Bairro = inscricao.Bairro,
+            Cidade = inscricao.Cidade,
+            Estado = inscricao.Estado,
+            Cep = inscricao.Cep,
+            Status = StatusCasal.Ativo,
+            IdCampus = inscricao.IdCampus
+        };
+
+
+        casal = await _casalService.CreateAsync(casal);
+
+
         var matricula = new Matricula
         {
-            IdCasal = model.IdCasal,
+            IdCasal = casal.Id,
             IdTurma = model.IdTurma,
-            DataMatricula = DateTime.Now,
-            NomeGC = model.NomeGC,
-            Status = Models.Enums.StatusMatricula.Ativa
+            NomeGC = inscricao.NomeGC,
+            Status = StatusMatricula.Ativa,
+            DataMatricula = DateTime.Now
         };
 
         await _matriculaService.CreateAsync(matricula);
-        return RedirectToAction(nameof(Index));
+
+
+        inscricao.Processada = true;
+        await _inscricaoService.UpdateAsync(inscricao);
+
+
+
+        return RedirectToAction("Index");
     }
+
+
+
+
+
+
 
 
 }
