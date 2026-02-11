@@ -1,0 +1,302 @@
+@model EnsinoApp.ViewModels.Inscricao.InscricaoOnlineViewModel
+@{
+    Layout = null;
+    ViewData["Title"] = "Inscrição Online";
+}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+    <!-- jQuery + jQuery Mask -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+
+    <style>
+        body {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        min-height: 100vh;
+        font-family: 'Segoe UI', sans-serif;
+        }
+
+        .card {
+        border-radius: 12px;
+        }
+
+        .section-title {
+        font-weight: 600;
+        margin-top: 30px;
+        margin-bottom: 15px;
+        }
+
+        .logo {
+        font-size: 28px;
+        font-weight: 700;
+        color: #0d6efd;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+
+                <!-- Cabeçalho -->
+                <div class="text-center mb-4">
+                    <div class="logo mb-2"><i class="fas fa-heart"></i> EnsinoApp</div>
+                    <div class="logo mb-2"><img class="rounded-circle" width="100px" src="~/images/logoVideira.png" />
+                    </div>
+                    <h4>Inscrição Online para os Cursos</h4>
+                    <p class="text-muted">
+                        Preencha os dados abaixo para realizar sua inscrição.
+                    </p>
+                </div>
+
+                <!-- Card do Formulário -->
+                <div class="card shadow">
+                    <div class="card-body p-4">
+
+                        <form asp-action="Cadastrar" method="post">
+                            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                            <!-- Dados do Casal -->
+                            <h6 class="section-title">👫 Dados do Casal</h6>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="NomeMarido" class="form-label"></label>
+                                    <input asp-for="NomeMarido" class="form-control" />
+                                    <span asp-validation-for="NomeMarido" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="NomeEsposa" class="form-label"></label>
+                                    <input asp-for="NomeEsposa" class="form-control" />
+                                    <span asp-validation-for="NomeEsposa" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <!-- Contato -->
+                            <h6 class="section-title">📞 Contato</h6>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="TelefoneMarido" class="form-label"></label>
+                                    <input asp-for="TelefoneMarido" class="form-control telefone" />
+                                    <span asp-validation-for="TelefoneMarido" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="TelefoneEsposa" class="form-label"></label>
+                                    <input asp-for="TelefoneEsposa" class="form-control telefone" />
+                                    <span asp-validation-for="TelefoneEsposa" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="EmailMarido" class="form-label"></label>
+                                    <input asp-for="EmailMarido" class="form-control" />
+                                    <span asp-validation-for="EmailMarido" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="EmailEsposa" class="form-label"></label>
+                                    <input asp-for="EmailEsposa" class="form-control" />
+                                    <span asp-validation-for="EmailEsposa" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <!-- Endereço -->
+                            <h6 class="section-title">🏠 Endereço</h6>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label asp-for="Cep" class="form-label"></label>
+                                    <input asp-for="Cep" class="form-control" id="Cep" />
+                                    <span asp-validation-for="Cep" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-8 mb-3">
+                                    <label asp-for="Rua" class="form-label"></label>
+                                    <input asp-for="Rua" class="form-control" id="Rua" />
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <label asp-for="Numero" class="form-label"></label>
+                                    <input asp-for="Numero" class="form-control" />
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label asp-for="Complemento" class="form-label"></label>
+                                    <input asp-for="Complemento" class="form-control" />
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label asp-for="Bairro" class="form-label"></label>
+                                    <input asp-for="Bairro" class="form-control" id="Bairro" />
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label asp-for="Cidade" class="form-label"></label>
+                                    <input asp-for="Cidade" class="form-control" id="Cidade" />
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="Estado" class="form-label"></label>
+                                    <select asp-for="Estado" class="form-control" id="Estado">
+                                        <option value="">Selecione o Estado</option>
+                                        <option value="AC">AC</option>
+                                        <option value="AL">AL</option>
+                                        <option value="AP">AP</option>
+                                        <option value="AM">AM</option>
+                                        <option value="BA">BA</option>
+                                        <option value="CE">CE</option>
+                                        <option value="DF">DF</option>
+                                        <option value="ES">ES</option>
+                                        <option value="GO">GO</option>
+                                        <option value="MA">MA</option>
+                                        <option value="MT">MT</option>
+                                        <option value="MS">MS</option>
+                                        <option value="MG">MG</option>
+                                        <option value="PA">PA</option>
+                                        <option value="PB">PB</option>
+                                        <option value="PR">PR</option>
+                                        <option value="PE">PE</option>
+                                        <option value="PI">PI</option>
+                                        <option value="RJ">RJ</option>
+                                        <option value="RN">RN</option>
+                                        <option value="RS">RS</option>
+                                        <option value="RO">RO</option>
+                                        <option value="RR">RR</option>
+                                        <option value="SC">SC</option>
+                                        <option value="SP">SP</option>
+                                        <option value="SE">SE</option>
+                                        <option value="TO">TO</option>
+                                    </select>
+                                    <span asp-validation-for="Estado" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <!-- Informações Adicionais -->
+                            <h6 class="section-title">⛪ Informações Adicionais</h6>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="IdCampus" class="form-label"></label>
+                                @Html.DropDownList("IdCampus", (SelectList)ViewBag.Campuses, "Selecione um Campus",
+                                    new { @class = "form-control" })
+                                <span asp-validation-for="IdCampus" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="IdCurso" class="form-label"></label>
+                                <select asp-for="IdCurso" class="form-control" id="IdCurso">
+                                    <option value="">Selecione um Campus primeiro</option>
+                                </select>
+                                <span asp-validation-for="IdCurso" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ParticipaGC" class="form-label">Participa de GC?</label>
+                                <select asp-for="ParticipaGC" class="form-control" id="ParticipaGC">
+                                    <option value="">Selecione</option>
+                                    <option value="true">Sim</option>
+                                    <option value="false">Não</option>
+                                </select>
+                                <span asp-validation-for="ParticipaGC" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3" id="nomeGCContainer">
+                                <label asp-for="NomeGC" class="form-label"></label>
+                                <input asp-for="NomeGC" class="form-control" />
+                                <span asp-validation-for="NomeGC" class="text-danger"></span>
+                            </div>
+
+                            <!-- Botão -->
+                            <div class="d-grid mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-paper-plane"></i> Enviar Inscrição
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Rodapé -->
+                <div class="text-center mt-4 text-muted small">
+                    © @DateTime.Now.Year - EnsinoApp • Todos os direitos reservados
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(document).ready(function () {
+        // Máscara de telefone
+        $('.telefone').mask('(00) 00000-0000');
+
+        // Mostrar/ocultar NomeGC
+        function toggleNomeGC() {
+        if ($('#ParticipaGC').val() === "true") {
+        $('#nomeGCContainer').show();
+        } else {
+        $('#nomeGCContainer').hide();
+        $('#NomeGC').val('');
+        }
+        }
+
+        toggleNomeGC();
+        $('#ParticipaGC').change(toggleNomeGC);
+
+        // Autocomplete endereço via CEP
+        $('#Cep').blur(function () {
+        var cep = $(this).val().replace(/\D/g, '');
+        if (cep.length === 8) {
+        $.getJSON("https://viacep.com.br/ws/" + cep + "/json/", function (data) {
+        if (!("erro" in data)) {
+        $('#Rua').val(data.logradouro);
+        $('#Bairro').val(data.bairro);
+        $('#Cidade').val(data.localidade);
+        $('#Estado').val(data.uf);
+        }
+        });
+        }
+        });
+
+        // Dropdown dependente de cursos
+        $('#IdCampus').change(function () {
+        var campusId = $(this).val();
+        var cursoDropdown = $('#IdCurso');
+
+        cursoDropdown.empty();
+        cursoDropdown.append('<option value="">Carregando...</option>');
+
+        if (campusId) {
+        $.getJSON('@Url.Action("GetCursosPorCampus", "Inscricao")', { campusId: campusId }, function (data) {
+        cursoDropdown.empty();
+        cursoDropdown.append('<option value="">Selecione um Curso</option>');
+        $.each(data, function (index, curso) {
+        cursoDropdown.append('<option value="' + curso.id + '">' + curso.nome + '</option>');
+        });
+        });
+        } else {
+        cursoDropdown.empty();
+        cursoDropdown.append('<option value="">Selecione um Campus primeiro</option>');
+        }
+        });
+        });
+    </script>
+
+
+
+</body>
+
+</html>

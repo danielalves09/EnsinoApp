@@ -29,10 +29,12 @@ public class InscricaoOnlineRepository : IInscricaoOnlineRepository
             .FirstOrDefaultAsync(i => i.Id == id);
     }
 
-    public async Task CreateAsync(Models.Entities.InscricaoOnline inscricao)
+    public async Task<Models.Entities.InscricaoOnline?> CreateAsync(Models.Entities.InscricaoOnline inscricao)
     {
         _context.Set<InscricaoOnline>().Add(inscricao);
         await _context.SaveChangesAsync();
+
+        return inscricao;
     }
 
     public async Task UpdateAsync(Models.Entities.InscricaoOnline inscricao)

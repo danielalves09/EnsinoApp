@@ -12,6 +12,10 @@ using EnsinoApp.Repositories.Cursos;
 using EnsinoApp.Services.Cursos;
 using EnsinoApp.Repositories.Turmas;
 using EnsinoApp.Services.Turmas;
+using EnsinoApp.Repositories.Matricula;
+using EnsinoApp.Repositories.Inscricao;
+using EnsinoApp.Services.Matricula;
+using EnsinoApp.Services.Inscricao;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +29,9 @@ builder.Services.AddScoped<ISupervisaoRepository, SupervisaoRepository>();
 builder.Services.AddScoped<IUsuariosRepository, UsuariosRepository>();
 builder.Services.AddScoped<ICursoRepository, CursoRepository>();
 builder.Services.AddScoped<ITurmaRepository, TurmaRepository>();
+builder.Services.AddScoped<IMatriculaRepository, MatriculaRepository>();
+builder.Services.AddScoped<IInscricaoOnlineRepository, InscricaoOnlineRepository>();
+
 
 //Services
 builder.Services.AddScoped<ICampusService, CampusService>();
@@ -32,6 +39,8 @@ builder.Services.AddScoped<ISupervisaoService, SupervisaoService>();
 builder.Services.AddScoped<IUsuariosService, UsuariosService>();
 builder.Services.AddScoped<ICursoService, CursoService>();
 builder.Services.AddScoped<ITurmaService, TurmaService>();
+builder.Services.AddScoped<IMatriculaService, MatriculaService>();
+builder.Services.AddScoped<IInscricaoOnlineService, InscricaoOnlineService>();
 
 
 builder.Services.AddIdentity<Usuario, IdentityRole<int>>(options =>

@@ -54,5 +54,10 @@ public class InscricaoOnlineConfiguration : IEntityTypeConfiguration<InscricaoOn
             .WithMany()
             .HasForeignKey(i => i.IdCampus)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(i => i.Curso)
+            .WithMany()
+            .HasForeignKey(i => i.IdCurso)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

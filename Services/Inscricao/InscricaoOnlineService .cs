@@ -16,9 +16,12 @@ public class InscricaoOnlineService : IInscricaoOnlineService
         _context = context;
     }
 
-    public Task<List<Models.Entities.InscricaoOnline>> GetAllAsync() => _repository.FindAllAsync();
-    public Task<Models.Entities.InscricaoOnline?> GetByIdAsync(int id) => _repository.FindByIdAsync(id);
-    public Task CreateAsync(Models.Entities.InscricaoOnline inscricao) => _repository.CreateAsync(inscricao);
+    public Task<List<Models.Entities.InscricaoOnline>> FindAllAsync() => _repository.FindAllAsync();
+    public Task<Models.Entities.InscricaoOnline?> FindByIdAsync(int id) => _repository.FindByIdAsync(id);
+    Task<InscricaoOnline?> IInscricaoOnlineService.CreateAsync(InscricaoOnline inscricao)
+    {
+        return _repository.CreateAsync(inscricao);
+    }
 
     public async Task ProcessarAsync(int id)
     {
@@ -64,4 +67,6 @@ public class InscricaoOnlineService : IInscricaoOnlineService
 
         await _context.SaveChangesAsync();
     }
+
+
 }

@@ -2,8 +2,8 @@ namespace EnsinoApp.Services.Inscricao;
 
 public interface IInscricaoOnlineService
 {
-    Task<List<Models.Entities.InscricaoOnline>> GetAllAsync();
-    Task<Models.Entities.InscricaoOnline?> GetByIdAsync(int id);
-    Task CreateAsync(Models.Entities.InscricaoOnline inscricao);
+    Task<List<Models.Entities.InscricaoOnline>> FindAllAsync();
+    Task<Models.Entities.InscricaoOnline?> FindByIdAsync(int id);
+    Task<Models.Entities.InscricaoOnline?> CreateAsync(Models.Entities.InscricaoOnline inscricao);
     Task ProcessarAsync(int id);
 }
