@@ -22,7 +22,6 @@ namespace EnsinoApp.Controllers
         // Lista todas as lições de um curso
         public async Task<IActionResult> Index(int cursoId)
         {
-            Console.WriteLine("Entrou aqui ==========" + cursoId);
             var curso = _cursoService.FindById(cursoId);
             if (curso == null) return NotFound();
 

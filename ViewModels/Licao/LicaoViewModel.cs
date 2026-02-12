@@ -17,7 +17,6 @@ namespace EnsinoApp.ViewModels.Licao
         [StringLength(500)]
         public string? Descricao { get; set; }
 
-        [Required]
         [DataType(DataType.Date)]
         public DateTime? DataAula { get; set; }
     }

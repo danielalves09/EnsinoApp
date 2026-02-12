@@ -1,0 +1,41 @@
+@model EnsinoApp.ViewModels.Licao.LicaoViewModel
+@{
+    ViewData["Title"] = "Excluir Lição";
+}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h3 class="mb-4 text-danger">❌ Excluir Lição</h3>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class=content>
+    <div class=row>
+        <div class=col-12>
+            <div class="card shadow">
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        Tem certeza que deseja excluir a lição "<strong>@Model.Titulo</strong>" do curso?
+                    </div>
+
+                    <form asp-action="DeleteConfirmed" method="post">
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" asp-route-cursoId="@Model.IdCurso" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Cancelar
+                            </a>
+
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash"></i> Excluir
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
