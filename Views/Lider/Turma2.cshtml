@@ -1,0 +1,37 @@
+@model IEnumerable<EnsinoApp.Models.Entities.Matricula>
+
+@{
+    ViewData["Title"] = "Turma";
+}
+
+<h2 class="mb-3">Casais da Turma</h2>
+
+<div class="mb-3">
+    <a asp-action="CriarRelatorio" asp-route-idTurma="@Model.First().IdTurma" class="btn btn-success">
+        + Novo Relatório Semanal
+    </a>
+
+    <a asp-action="Relatorios" asp-route-idTurma="@Model.First().IdTurma" class="btn btn-outline-secondary">
+        Ver Relatórios
+    </a>
+</div>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-light">
+        <tr>
+            <th>Casal</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Casal.NomeConjuge1 e @item.Casal.NomeConjuge2</td>
+                <td>
+                    @(item.Status == EnsinoApp.Models.Enums.StatusMatricula.Ativa ? "Ativo" : "Inativo")
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

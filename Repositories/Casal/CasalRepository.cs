@@ -51,8 +51,6 @@ public class CasalRepository : ICasalRepository
         }
     }
 
-
-
     public int ContarTotal()
     {
         return _context.Casais.Count();
@@ -65,5 +63,15 @@ public class CasalRepository : ICasalRepository
                 .ToList();
     }
 
+    public async Task<IEnumerable<(string Campus, int Total)>> GetCasaisPorCampusAsync()
+    {
+        return await _context.Casais
+            .Include(c => c.Campus)
+            .GroupBy(c => c.Campus.Nome)
+            .Select(g => new { Campus = g.Key, Total = g.Count() })
+            .AsNoTracking()
+            .ToListAsync()
+            .ContinueWith(t => t.Result.Select(x => (x.Campus, x.Total)));
+    }
 
 }

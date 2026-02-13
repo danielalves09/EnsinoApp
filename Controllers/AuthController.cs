@@ -32,7 +32,6 @@ public class AuthController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
-        // Tenta localizar o usuário
         var user = await _userManager.FindByEmailAsync(model.Email);
         if (user == null)
         {
@@ -40,12 +39,31 @@ public class AuthController : Controller
             return View(model);
         }
 
-        // Tenta logar
         var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: false);
 
         if (result.Succeeded)
         {
-            return returnUrl != null ? LocalRedirect(returnUrl) : RedirectToAction("Index", "Home");
+            //return returnUrl != null ? LocalRedirect(returnUrl) : RedirectToAction("Index", "Home");
+
+            // Se veio de uma URL protegida, respeita o returnUrl
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+
+            if (await _userManager.IsInRoleAsync(user, "Lider"))
+            {
+                return RedirectToAction("Index", "Lider");
+            }
+
+            if (
+                await _userManager.IsInRoleAsync(user, "Admin") ||
+                await _userManager.IsInRoleAsync(user, "Pastor") ||
+                await _userManager.IsInRoleAsync(user, "Coordenador")
+            )
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         ModelState.AddModelError(string.Empty, "Email ou senha inválidos");

@@ -1,37 +1,138 @@
-@model IEnumerable<EnsinoApp.Models.Entities.Matricula>
+@using EnsinoApp.Models.Enums
+@model EnsinoApp.ViewModels.Turmas.TurmaDashboardViewModel;
 
-@{
-    ViewData["Title"] = "Turma";
+<section class="content-header">
+    <a asp-action="Index" class="btn  btn-xs">
+        <i class="fas fa-arrow-left"></i> Voltar
+    </a>
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>@Model.NomeCurso - Dashboard</h1>
+                <small>Campus: @Model.NomeCampus | Líderes: @Model.NomeLider</small>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card card-outline card-primary mb-3">
+                <div class="card-header">Casais Matriculados</div>
+                <div class="card-body">
+                    <h3 class="card-title">@Model.CasaisMatriculados.Count</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-outline card-success mb-3">
+                <div class="card-header">Progresso de Presença</div>
+                <div class="card-body">
+                    <canvas id="chartPresenca"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-outline card-warning mb-3">
+                <div class="card-header">Status da Turma</div>
+                <div class="card-body">
+                    <p>
+                        @if (@Model.Status == StatusTurma.Acomecar)
+                        {
+                            <span class="badge bg-primary">A começar</span>
+                        }
+                        else if (@Model.Status == StatusTurma.EmAndamento)
+                        {
+                            <span class="badge bg-primary">Em Andamento</span>
+                        }
+                        else if (@Model.Status == StatusTurma.Concluida)
+                        {
+                            <span class="badge bg-success">Concluída</span>
+                        }
+                        else if (@Model.Status == StatusTurma.Cancelada)
+                        {
+                            <span class="badge bg-danger">Cancelada</span>
+                        }
+
+                    </p>
+                    <p>Data Início: @Model.DataInicio.ToShortDateString()</p>
+                    <p>Data Fim: @Model.DataFim.ToShortDateString()</p>
+                    <p>
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success"
+                                 role="progressbar" style="width: @Model.Progresso%;" aria-valuenow="@Model.Progresso"
+                                 aria-valuemin="0" aria-valuemax="100">
+                                @Model.Progresso%
+                            </div>
+                        </div>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+<section class="content">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between">
+                        <h4>Casais Matriculados</h4>
+                        <a asp-action="Relatorios" asp-route-idTurma="@Model.Id" class="btn btn-info">
+                            <i class="fas fa-search"></i> Ver Relatórios
+                        </a>
+                        <a asp-action="CriarRelatorio" asp-route-idTurma="@Model.Id" class="btn btn-success">
+                            <i class="fas fa-plus"></i> Novo Relatório Semanal
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body table-responsive p-0">
+                    <table class="table table-head-fixed text-nowrap">
+                        <thead>
+                            <tr>
+                                <th>Casal</th>
+                                <th>Última Lição</th>
+                                <th>Presença</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var casal in Model.CasaisMatriculados)
+                            {
+                                <tr>
+                                    <td>@casal.Nome</td>
+                                    <td>@casal.UltimaLicao?.ToShortDateString()</td>
+                                    <td>@casal.Presenca</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+</section>
+
+
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('chartPresenca').getContext('2d');
+        const data = {
+        labels: @Html.Raw(Json.Serialize(Model.CasaisMatriculados.Select(c => c.Nome))),
+        datasets: [{
+        label: 'Presença',
+        data: @Html.Raw(Json.Serialize(Model.CasaisMatriculados.Select(c => c.Presenca == 0 ? 1 : 0))),
+        backgroundColor: 'rgba(54, 162, 235, 0.6)'
+        }]
+        };
+        const chart = new Chart(ctx, {
+        type: 'bar',
+        data: data,
+        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+        });
+    </script>
 }
-
-<h2 class="mb-3">Casais da Turma</h2>
-
-<div class="mb-3">
-    <a asp-action="CriarRelatorio" asp-route-idTurma="@Model.First().IdTurma" class="btn btn-success">
-        + Novo Relatório Semanal
-    </a>
-
-    <a asp-action="Relatorios" asp-route-idTurma="@Model.First().IdTurma" class="btn btn-outline-secondary">
-        Ver Relatórios
-    </a>
-</div>
-
-<table class="table table-bordered table-striped">
-    <thead class="table-light">
-        <tr>
-            <th>Casal</th>
-            <th>Status</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.Casal.NomeConjuge1 e @item.Casal.NomeConjuge2</td>
-                <td>
-                    @(item.Status == EnsinoApp.Models.Enums.StatusMatricula.Ativa ? "Ativo" : "Inativo")
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>

@@ -13,4 +13,5 @@ public interface IInscricaoOnlineService
     int ContarTotal();
     int ContarPendentes();
     List<InscricaoOnlineResumoViewModel> ObterPendentesResumo();
+    Task<IEnumerable<(string MesAno, int Total)>> GetUltimosMesesAsync(int meses);
 }

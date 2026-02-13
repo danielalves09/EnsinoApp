@@ -1,3 +1,4 @@
+@using EnsinoApp.Models.Enums
 @model IEnumerable<EnsinoApp.ViewModels.Turmas.TurmaViewModel>
 @{
     ViewData["Title"] = "Gerenciar Turmas";
@@ -58,7 +59,7 @@
                             </div>
                         </form>
 
-                        <a href="/supervisao/adicionar" class="btn btn-outline-primary btn-sm">Nova Turma <i
+                        <a href="/turma/adicionar" class="btn btn-outline-primary btn-sm">Nova Turma <i
                             class="fas fa-plus"></i></a>
 
                         </div>
@@ -87,7 +88,22 @@
                                     <td>@t.NomeLider</td>
                                     <td>@t.DataInicio.ToShortDateString()</td>
                                     <td>@t.DataFim.ToShortDateString()</td>
-                                    <td>@t.Status</td>
+                                    <td> @if (t.Status == StatusTurma.Acomecar)
+                                    {
+                                        <span class="badge bg-primary">A começar</span>
+                                    }
+                                    else if (t.Status == StatusTurma.EmAndamento)
+                                    {
+                                        <span class="badge bg-primary">Em Andamento</span>
+                                    }
+                                    else if (t.Status == StatusTurma.Concluida)
+                                    {
+                                        <span class="badge bg-success">Concluída</span>
+                                    }
+                                    else if (t.Status == StatusTurma.Cancelada)
+                                    {
+                                        <span class="badge bg-danger">Cancelada</span>
+                                    }</td>
                                     <td>
                                         <a asp-action="Dashboard" asp-route-id="@t.Id" class="btn btn-sm btn-info">Dashboard</a>
                                         <a asp-action="Editar" asp-route-id="@t.Id" class="btn btn-sm btn-warning">Editar</a>

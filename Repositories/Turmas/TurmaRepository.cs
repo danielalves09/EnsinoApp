@@ -30,10 +30,13 @@ public class TurmaRepository : ITurmaRepository
     {
         return _context.Turmas
             .Include(t => t.Curso)
+            .ThenInclude(t => t.Licoes)
             .Include(t => t.Campus)
             .Include(t => t.Lider)
             .Include(t => t.Matriculas)
             .ThenInclude(m => m.Casal)
+            .Include(t => t.Matriculas)
+            .ThenInclude(t => t.Relatorios)
             .FirstOrDefault(t => t.Id == id);
     }
 

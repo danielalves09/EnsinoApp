@@ -1,24 +1,133 @@
-@model IEnumerable<EnsinoApp.ViewModels.Lider.TurmaLiderViewModel>
+@using EnsinoApp.Models.Enums
+@model EnsinoApp.ViewModels.Lider.LiderDashboardViewModel
 
-@{
-    ViewData["Title"] = "Minhas Turmas";
-}
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h3 class="mb-4">Bem Vindo - @Model.NomeLider</h3>
+            </div><!-- /.col -->
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Área do Lider</a></li>
+                    <li class="breadcrumb-item active">Visão geral</li>
+                </ol>
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+</div>
+<div class="container-fluid">  
 
-<h2 class="mb-4">Minhas Turmas</h2>
+     <!-- Info Boxes -->
+                    <div class="row">
+                        <div class="col-md-3 col-sm-6 col-12">
+                            <div class="info-box shadow">
+                                <span class="info-box-icon bg-info"><i class="fas fa-users"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Turmas Ativas</span>
+                                    <span class="info-box-number">@Model.TotalTurmasAtivas</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6 col-12">
+                            <div class="info-box shadow">
+                                <span class="info-box-icon bg-success"><i class="fas fa-check"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Turmas Concluídas</span>
+                                    <span class="info-box-number">@Model.TotalTurmasConcluidas</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6 col-12">
+                            <div class="info-box shadow">
+                                <span class="info-box-icon bg-success"><i class="fas fa-user-graduate"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Casais Ativos</span>
+                                    <span class="info-box-number">@Model.TotalCasaisAtivos</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6 col-12">
+                            <div class="info-box shadow">
+                                <span class="info-box-icon bg-dark"><i class="fas fa-layer-group"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Relatórios</span>
+                                    <span class="info-box-number">@Model.TotalRelatoriosLancados / @(@Model.TotalRelatoriosLancados + @Model.TotalRelatoriosPendentes)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-<div class="row">
-    @foreach (var turma in Model)
-    {
-        <div class="col-md-4">
-            <div class="card mb-3 shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">@turma.Curso</h5>
 
-                    <a asp-action="Turma" asp-route-id="@turma.Id" class="btn btn-primary btn-sm">
-                        Acessar Turma
-                    </a>
-                </div>
+        <!-- Tabela de Turmas -->
+        <div class="card">
+            <div class="card-header">📚 Turmas</div>
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Curso</th>
+                        <th>Campus</th>
+                        <th>Casais</th>
+                        <th>Relatórios</th>
+                        <th>Status Relatorios</th>
+                        <th>Progresso</th>
+                        <th>Status Turma</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var turma in Model.Turmas)
+                    {
+                        <tr>
+                            <td>@turma.NomeCurso</td>
+                            <td>@turma.NomeCampus</td>
+                            <td>@turma.TotalCasais</td>
+                            <td>@turma.TotalRelatoriosLancados / @(turma.TotalRelatoriosLancados +
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        turma.TotalRelatoriosPendentes)</td>
+                                <td>
+                                    @if (turma.TotalRelatoriosPendentes == 0)
+                                    {
+                                        <span class="badge bg-success">Em dia</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning">Pendentes</span>
+                                    }
+                                </td>
+                                <td style="width: 20%;">
+                                    <div class="progress">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: @turma.Progresso%;"
+                                             aria-valuenow="@turma.Progresso" aria-valuemin="0" aria-valuemax="100">
+                                            @turma.Progresso%
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    @if (turma.StatusTurma == StatusTurma.Acomecar)
+                                    {
+                                        <span class="badge bg-primary">A começar</span>
+                                    }
+                                    else if (turma.StatusTurma == StatusTurma.EmAndamento)
+                                    {
+                                        <span class="badge bg-primary">Em Andamento</span>
+                                    }
+                                    else if (turma.StatusTurma == StatusTurma.Concluida)
+                                    {
+                                        <span class="badge bg-success">Concluída</span>
+                                    }
+                                    else if (turma.StatusTurma == StatusTurma.Cancelada)
+                                    {
+                                        <span class="badge bg-danger">Cancelada</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a asp-action="Turma" asp-route-id="@turma.Id" class="btn btn-primary btn-sm">
+                                        Acessar Turma
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
         </div>
-    }
-</div>

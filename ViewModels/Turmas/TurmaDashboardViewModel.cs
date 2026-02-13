@@ -19,5 +19,10 @@ namespace EnsinoApp.ViewModels.Turmas
         public int CasaisPresentes => CasaisMatriculados.Count(c => c.Presenca == StatusPresenca.Presente);
         public int CasaisAusentes => CasaisMatriculados.Count(c => c.Presenca == StatusPresenca.Ausente);
         public decimal PercentualPresenca => CasaisMatriculados.Any() ? (decimal)CasaisPresentes / CasaisMatriculados.Count * 100 : 0;
+
+        public int TotalLicoes { get; set; }
+        public int LicoesConcluidas { get; set; }
+
+        public int Progresso => TotalLicoes == 0 ? 0 : (int)((LicoesConcluidas / (double)TotalLicoes) * 100);
     }
 }

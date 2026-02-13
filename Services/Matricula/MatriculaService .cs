@@ -43,4 +43,9 @@ public class MatriculaService : IMatriculaService
 
         _repository.CreateAsync(matricula);
     }
+
+    public async Task<IEnumerable<(string Curso, int Total)>> GetMatriculasPorCursoAsync()
+    {
+        return await _repository.GetMatriculasPorCursoAsync();
+    }
 }

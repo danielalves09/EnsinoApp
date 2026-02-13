@@ -12,4 +12,5 @@ public interface ICasalService
 
     int ContarTotal();
     List<CasalResumoViewModel> ObterResumoCasais();
+    Task<IEnumerable<(string Campus, int Total)>> GetCasaisPorCampusAsync();
 }

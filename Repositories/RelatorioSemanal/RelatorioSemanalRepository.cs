@@ -16,6 +16,10 @@ public class RelatorioSemanalRepository : IRelatorioSemanalRepository
     {
         return await _context.Turmas
             .Include(t => t.Curso)
+            .ThenInclude(t => t.Licoes)
+            .Include(t => t.Matriculas)
+            .ThenInclude(t => t.Relatorios)
+            .Include(t => t.Campus)
             .Where(t => t.IdLider == idUsuario)
             .ToListAsync();
     }

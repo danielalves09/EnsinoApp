@@ -85,5 +85,10 @@ public class InscricaoOnlineService : IInscricaoOnlineService
         return _repository.ObterPendentesResumo();
     }
 
+    public async Task<IEnumerable<(string MesAno, int Total)>> GetUltimosMesesAsync(int meses)
+    {
+        return await _repository.GetUltimosMesesAsync(meses);
+    }
+
 
 }

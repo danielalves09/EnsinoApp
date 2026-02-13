@@ -13,4 +13,5 @@ public interface ICasalRepository
     Task DeleteAsync(int id);
     int ContarTotal();
     List<Models.Entities.Casal> ObterTodos();
+    Task<IEnumerable<(string Campus, int Total)>> GetCasaisPorCampusAsync();
 }

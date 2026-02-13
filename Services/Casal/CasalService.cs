@@ -43,5 +43,10 @@ public class CasalService : ICasalService
             PossuiMatriculaAtiva = _matriculaRepository.ExisteMatriculaAtivaPorCasal(c.Id)
         }).ToList();
     }
+
+    public async Task<IEnumerable<(string Campus, int Total)>> GetCasaisPorCampusAsync()
+    {
+        return await _casalRepository.GetCasaisPorCampusAsync();
+    }
 }
 

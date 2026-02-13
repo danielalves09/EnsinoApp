@@ -7,30 +7,33 @@ using EnsinoApp.Services.Matricula;
 using EnsinoApp.Services.Turmas;
 using EnsinoApp.ViewModels.Lider;
 using EnsinoApp.ViewModels.Relatorios;
+using EnsinoApp.ViewModels.Turmas;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace EnsinoApp.Controllers;
 
 
-//[Area("Lider")]
-//[Authorize(Roles = "Lider")]
-[Authorize]
+[Authorize(Roles = "Lider")]
+//[Authorize]
 public class LiderController : Controller
 {
     private readonly ILiderService _service;
     private readonly ILicaoService _licaoService;
     private readonly ITurmaService _turmaService;
     private readonly IMatriculaService _matriculaService;
+    private readonly UserManager<Usuario> _userManager;
 
 
-    public LiderController(ILiderService service, ILicaoService licaoService, ITurmaService turmaService, IMatriculaService matriculaService)
+    public LiderController(ILiderService service, ILicaoService licaoService, ITurmaService turmaService, IMatriculaService matriculaService, UserManager<Usuario> userManager)
     {
         _service = service;
         _licaoService = licaoService;
         _turmaService = turmaService;
         _matriculaService = matriculaService;
+        _userManager = userManager;
     }
 
     public async Task<IActionResult> Index()
@@ -44,17 +47,65 @@ public class LiderController : Controller
 
         var turmas = await _service.ObterTurmasAsync(idUsuario);
 
-        return View(turmas.Select(t => new TurmaLiderViewModel
+        var user = await _userManager.GetUserAsync(User);
+
+        var vm = new LiderDashboardViewModel
         {
-            Id = t.Id,
-            Curso = t.Curso.Nome
-        }));
+            NomeLider = user.NomeMarido + " e " + user.NomeEsposa,
+            TotalTurmasAtivas = turmas.Count(t => t.Status == Models.Enums.StatusTurma.Acomecar),
+            TotalTurmasConcluidas = turmas.Count(t => t.Status == Models.Enums.StatusTurma.Concluida),
+            TotalCasaisAtivos = turmas.Sum(t => t.Matriculas.Count(m => m.Status == Models.Enums.StatusMatricula.Ativa)),
+            TotalRelatoriosLancados = turmas.Sum(t => t.Matriculas.Sum(m => m.Relatorios.Count)),
+            TotalRelatoriosPendentes = turmas.Sum(t => t.Matriculas.Count() * t.Curso.Licoes.Count()) - turmas.Sum(t => t.Matriculas.Sum(m => m.Relatorios.Count)),
+            Turmas = turmas.Select(t => new ViewModels.Lider.TurmaResumoViewModel
+            {
+                Id = t.Id,
+                NomeCurso = t.Curso.Nome,
+                NomeCampus = t.Campus.Nome,
+                TotalCasais = t.Matriculas.Count,
+                TotalRelatoriosLancados = t.Matriculas.Sum(m => m.Relatorios.Count),
+                TotalRelatoriosPendentes = t.Matriculas.Count * t.Curso.Licoes.Count() - t.Matriculas.Sum(m => m.Relatorios.Count),
+                TotalLicoes = t.Curso.Licoes.Count(),
+                LicoesConcluidas = t.Matriculas.Sum(m => m.Relatorios.Count),
+                StatusTurma = t.Status,
+                DataInicio = t.DataInicio,
+                DataFim = t.DataFim
+            }).OrderByDescending(t => t.DataInicio).ToList()
+        };
+
+        return View(vm);
     }
+
+
 
     public async Task<IActionResult> Turma(int id)
     {
-        var matriculas = await _service.ObterMatriculasAsync(id);
-        return View(matriculas);
+        //var matriculas = await _service.ObterMatriculasAsync(id);
+        //return View(matriculas);
+
+        var turma = _turmaService.FindById(id);
+        if (turma == null) return NotFound();
+
+        var viewModel = new TurmaDashboardViewModel
+        {
+            Id = turma.Id,
+            NomeCurso = turma.Curso.Nome,
+            NomeCampus = turma.Campus.Nome,
+            NomeLider = $"{turma.Lider.NomeMarido} / {turma.Lider.NomeEsposa}",
+            DataInicio = turma.DataInicio,
+            DataFim = turma.DataFim,
+            TotalLicoes = turma.Curso.Licoes.Count(),
+            LicoesConcluidas = turma.Matriculas.Sum(m => m.Relatorios.Count),
+            Status = turma.Status,
+            CasaisMatriculados = turma.Matriculas.Select(m => new ViewModels.Turmas.CasalMatriculadoViewModel
+            {
+                Nome = $"{m.Casal.NomeConjuge1} / {m.Casal.NomeConjuge2}",
+                Presenca = m.Relatorios.OrderByDescending(r => r.DataRegistro).FirstOrDefault()?.Presenca ?? StatusPresenca.Ausente,
+                UltimaLicao = m.Relatorios.OrderByDescending(r => r.DataRegistro).FirstOrDefault()?.DataLicao
+            }).ToList()
+        };
+
+        return View(viewModel);
     }
 
     public async Task<IActionResult> Relatorios(int idTurma)

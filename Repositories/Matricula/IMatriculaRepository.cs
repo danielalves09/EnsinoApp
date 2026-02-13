@@ -13,5 +13,6 @@ public interface IMatriculaRepository
     bool ExisteMatriculaAtiva(int idCasal, int idTurma);
 
     bool ExisteMatriculaAtivaPorCasal(int idCasal);
+    Task<IEnumerable<(string Curso, int Total)>> GetMatriculasPorCursoAsync();
 
 }

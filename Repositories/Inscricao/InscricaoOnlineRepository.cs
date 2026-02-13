@@ -81,6 +81,27 @@ public class InscricaoOnlineRepository : IInscricaoOnlineRepository
             .ToList();
     }
 
+    public async Task<IEnumerable<(string MesAno, int Total)>> GetUltimosMesesAsync(int meses)
+    {
+        var dataLimite = DateTime.Now.AddMonths(-meses + 1);
+
+
+        var agrupados = await _context.InscricoesOnline
+            .Where(i => i.DataInscricao >= dataLimite)
+            .GroupBy(i => new { i.DataInscricao.Year, i.DataInscricao.Month })
+            .Select(g => new { g.Key.Year, g.Key.Month, Total = g.Count() })
+            .OrderBy(x => x.Year).ThenBy(x => x.Month)
+            .AsNoTracking()
+            .ToListAsync();
+
+        var resultados = agrupados
+            .Select(x => (MesAno: x.Month.ToString("D2") + "/" + x.Year, x.Total))
+            .ToList();
+
+        return resultados;
+    }
+
+
 
 
 }

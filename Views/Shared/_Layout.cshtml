@@ -85,80 +85,62 @@
                                     <nav class="mt-2">
                                         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                                             data-accordion="false">
-                                            <!-- Add icons to the links using the .nav-icon class
-                          with font-awesome or any other icon font library -->
-                                            <a href="/home/" class="nav-link">
-                                                <i class="nav-icon fas fa-home"></i>
-                                                <p>
-                                                    Início
-                                                </p>
-                                            </a>
-                                            <a href="/curso/" class="nav-link">
-                                                <i class="nav-icon fas fa-graduation-cap"></i>
-                                                <p>
-                                                    Cursos
-                                                </p>
-                                            </a>
-                                            <a href="/turma/" class="nav-link">
-                                                <i class="nav-icon fas fa-users"></i>
-                                                <p>
-                                                    Turmas
-                                                </p>
-                                            </a>
-                                            <a href="/matricula/" class="nav-link">
-                                                <i class="fas fa-chalkboard-teacher"></i>
-                                                <p>
-                                                    Matrículas
-                                                </p>
-                                            </a>
-                                            <li class="nav-item">
-                                                <a href="#" class="nav-link">
-                                                    <i class="nav-icon fas fa-sitemap"></i>
+                                            @if (User.IsInRole("Admin") || User.IsInRole("Pastor") || User.IsInRole("Coordenador"))
+                                            {
+                                                <a href="/home/" class="nav-link">
+                                                    <i class="nav-icon fas fa-home"></i>
                                                     <p>
-                                                        Estrutura da Igreja
-                                                        <i class="right fas fa-angle-left"></i>
+                                                        Início
                                                     </p>
                                                 </a>
-                                                <ul class="nav nav-treeview">
-                                                    <li class="nav-item">
-                                                        <a href="/campus" class="nav-link">
-                                                            <i class="fas fa-building nav-icon"></i>
-                                                            <p>Campus</p>
-                                                        </a>
-                                                    </li>
-                                                    <li class="nav-item">
-                                                        <a href="/supervisao" class="nav-link">
-                                                            <i class="fas fa-users nav-icon"></i>
-                                                            <p>Supervisões</p>
-                                                        </a>
-                                                    </li>
-                                                    <li class="nav-item">
-                                                        <a href="/Usuarios" class="nav-link">
-                                                            <i class="fas fa-user nav-icon"></i>
-                                                            <p>Líderes</p>
-                                                        </a>
-                                                    </li>
-
-                                                </ul>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a href="#" class="nav-link">
-                                                    <i class="nav-icon fas fa-laptop-medical"></i>
+                                                <a href="/curso/" class="nav-link">
+                                                    <i class="nav-icon fas fa-graduation-cap"></i>
                                                     <p>
-                                                        Operações
-                                                        <i class="right fas fa-angle-left"></i>
+                                                        Cursos
                                                     </p>
                                                 </a>
-                                                <ul class="nav nav-treeview">
-                                                    <li class="nav-item">
-                                                        <a href="/consultas" class="nav-link">
-                                                            <i class="fas fa-notes-medical nav-icon"></i>
-                                                            <p>-</p>
-                                                        </a>
-                                                    </li>
-                                                </ul>
-                                            </li>
+                                                <a href="/turma/" class="nav-link">
+                                                    <i class="nav-icon fas fa-users"></i>
+                                                    <p>
+                                                        Turmas
+                                                    </p>
+                                                </a>
+                                                <a href="/matricula/" class="nav-link">
+                                                    <i class="fas fa-chalkboard-teacher"></i>
+                                                    <p>
+                                                        Matrículas
+                                                    </p>
+                                                </a>
+                                                <a href="/campus" class="nav-link">
+                                                    <i class="fas fa-building nav-icon"></i>
+                                                    <p>Campus</p>
+                                                </a>
+                                                <a href="/supervisao" class="nav-link">
+                                                    <i class="fas fa-users nav-icon"></i>
+                                                    <p>Supervisões</p>
+                                                </a>
+                                                <a href="/Usuarios" class="nav-link">
+                                                    <i class="fas fa-user nav-icon"></i>
+                                                    <p>Líderes</p>
+                                                </a>
 
+                                            }
+                                            else
+                                                @if (User.IsInRole("Lider"))
+                                                {
+                                                    <a href="/lider/" class="nav-link">
+                                                        <i class="nav-icon fas fa-home"></i>
+                                                        <p>
+                                                            Início
+                                                        </p>
+                                                    </a>
+                                                    <a href="/home/" class="nav-link">
+                                                        <i class="nav-icon fas fa-user"></i>
+                                                        <p>
+                                                            Configurações
+                                                        </p>
+                                                    </a>
+                                                }
                                         </ul>
                                     </nav>
                                     <!-- /.sidebar-menu -->
@@ -193,6 +175,7 @@
                         <!-- AdminLTE App -->
                         <script src="~/js/adminlte.min.js"></script>
                         <script src="~/js/jquery.mask.min.js"></script>
+
 
                         <script type="text/javascript">
                             $(function () {

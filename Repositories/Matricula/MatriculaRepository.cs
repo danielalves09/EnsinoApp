@@ -86,5 +86,17 @@ public class MatriculaRepository : IMatriculaRepository
         );
     }
 
+    public async Task<IEnumerable<(string Curso, int Total)>> GetMatriculasPorCursoAsync()
+    {
+        return await _context.Matriculas
+            .Include(m => m.Turma)
+                .ThenInclude(t => t.Curso)
+            .Where(m => m.Status == StatusMatricula.Ativa)
+            .GroupBy(m => m.Turma.Curso.Nome)
+            .Select(g => new { Curso = g.Key, Total = g.Count() })
+            .AsNoTracking()
+            .ToListAsync()
+            .ContinueWith(t => t.Result.Select(x => (x.Curso, x.Total)));
+    }
 
 }
