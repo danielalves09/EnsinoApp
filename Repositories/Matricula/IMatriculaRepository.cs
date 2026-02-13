@@ -4,6 +4,7 @@ public interface IMatriculaRepository
 {
     Task<List<Models.Entities.Matricula>> FindAllAsync();
     Task<Models.Entities.Matricula?> FindByIdAsync(int id);
+    Task<List<Models.Entities.Matricula>> FindByTurmaAsync(int idTurma);
     Task CreateAsync(Models.Entities.Matricula matricula);
     Task UpdateAsync(Models.Entities.Matricula matricula);
     Task DeleteAsync(int id);
@@ -12,4 +13,5 @@ public interface IMatriculaRepository
     bool ExisteMatriculaAtiva(int idCasal, int idTurma);
 
     bool ExisteMatriculaAtivaPorCasal(int idCasal);
+
 }

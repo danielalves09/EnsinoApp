@@ -20,6 +20,8 @@ using EnsinoApp.Repositories.Casal;
 using EnsinoApp.Services.Casal;
 using EnsinoApp.Repositories.Licao;
 using EnsinoApp.Services.Licao;
+using EnsinoApp.Repositories.RelatorioSemanal;
+using EnsinoApp.Services.Lider;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +39,7 @@ builder.Services.AddScoped<IMatriculaRepository, MatriculaRepository>();
 builder.Services.AddScoped<IInscricaoOnlineRepository, InscricaoOnlineRepository>();
 builder.Services.AddScoped<ICasalRepository, CasalRepository>();
 builder.Services.AddScoped<ILicaoRepository, LicaoRepository>();
+builder.Services.AddScoped<IRelatorioSemanalRepository, RelatorioSemanalRepository>();
 
 
 //Services
@@ -49,6 +52,7 @@ builder.Services.AddScoped<IMatriculaService, MatriculaService>();
 builder.Services.AddScoped<IInscricaoOnlineService, InscricaoOnlineService>();
 builder.Services.AddScoped<ICasalService, CasalService>();
 builder.Services.AddScoped<ILicaoService, LicaoService>();
+builder.Services.AddScoped<ILiderService, LiderService>();
 
 
 builder.Services.AddIdentity<Usuario, IdentityRole<int>>(options =>

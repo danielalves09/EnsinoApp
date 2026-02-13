@@ -1,0 +1,93 @@
+@model EnsinoApp.ViewModels.Relatorios.RelatorioCreateViewModel;
+
+@{
+    ViewData["Title"] = "Criar Relatório";
+}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <a asp-controller="Lider" asp-action="Index" class="btn  btn-xs">
+                    <i class="fas fa-arrow-left"></i> Voltar
+                </a>
+                <h4 class="mb-4">📘 Relatório da Turma</h4>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="content">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-body">
+                    <form asp-action="CriarRelatorio" method="post">
+                        <input type="hidden" asp-for="IdTurma" />
+                        <input type="hidden" asp-for="IdCurso" />
+
+                        <!-- Lição -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Lição</label>
+                                <select asp-for="IdLicao" asp-items="Model.Licoes" class="form-control"></select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Data da Lição</label>
+                                <input asp-for="DataLicao" type="date" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="card-header">👫 Presença dos Casais</div>
+                        <!-- Casais -->
+                        <div class="card-body table-responsive p-0">
+
+
+                            <table class="table table-striped table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Casal</th>
+                                        <th>Presença</th>
+                                        <th>Observações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < Model.Casais.Count; i++)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @Model.Casais[i].NomeCasal
+                                                <input type="hidden" asp-for="Casais[i].IdMatricula" />
+                                            </td>
+                                            <td>
+                                                <select asp-for="Casais[i].Presenca" class="form-control">
+                                                    <option value="Presente">Presente</option>
+                                                    <option value="Ausente">Ausente</option>
+                                                    <option value="Desistente">Desistente</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <div class="form-floating">
+                                                    <textarea asp-for="Casais[i].Observacoes" class="form-control" placeholder="Observações"
+                                                              id="floatingTextarea2" style="height: 100px"></textarea>
+                                                </div>
+                                                <!-- <input asp-for="Casais[i].Observacoes" class="form-control" /> -->
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Voltar
+                            </a>
+                            <button type="submit" class="btn btn-success">Salvar <i class="fas fa-save"></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

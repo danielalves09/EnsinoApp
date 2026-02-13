@@ -49,6 +49,14 @@ public class LicaoRepository : ILicaoRepository
         return await _context.Licoes.FirstOrDefaultAsync(l => l.Id == id);
     }
 
+    public async Task<ICollection<Models.Entities.Licao>> GetByCursoAsync(int cursoId)
+    {
+        return await _context.Licoes
+               .Where(l => l.IdCurso == cursoId)
+               .OrderBy(l => l.NumeroSemana)
+               .ToListAsync();
+    }
+
     public async Task<Models.Entities.Licao> UpdateAsync(Models.Entities.Licao licao)
     {
         _context.Licoes.Update(licao);

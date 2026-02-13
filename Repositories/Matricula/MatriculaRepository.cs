@@ -35,6 +35,14 @@ public class MatriculaRepository : IMatriculaRepository
             .FirstOrDefaultAsync(m => m.Id == id);
     }
 
+    public async Task<List<Models.Entities.Matricula>> FindByTurmaAsync(int idTurma)
+    {
+        return await _context.Matriculas
+            .Include(m => m.Casal)
+            .Include(m => m.Turma)
+            .Where(m => m.IdTurma == idTurma)
+            .ToListAsync();
+    }
     public async Task CreateAsync(Models.Entities.Matricula matricula)
     {
         _context.Matriculas.Add(matricula);

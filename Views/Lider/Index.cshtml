@@ -1,0 +1,24 @@
+@model IEnumerable<EnsinoApp.ViewModels.Lider.TurmaLiderViewModel>
+
+@{
+    ViewData["Title"] = "Minhas Turmas";
+}
+
+<h2 class="mb-4">Minhas Turmas</h2>
+
+<div class="row">
+    @foreach (var turma in Model)
+    {
+        <div class="col-md-4">
+            <div class="card mb-3 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">@turma.Curso</h5>
+
+                    <a asp-action="Turma" asp-route-id="@turma.Id" class="btn btn-primary btn-sm">
+                        Acessar Turma
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

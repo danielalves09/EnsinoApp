@@ -14,6 +14,12 @@ public class MatriculaService : IMatriculaService
 
     public Task<List<Models.Entities.Matricula>> FindAllAsync() => _repository.FindAllAsync();
     public Task<Models.Entities.Matricula?> FindByIdAsync(int id) => _repository.FindByIdAsync(id);
+
+    public async Task<List<Models.Entities.Matricula>> FindByTurmaAsync(int idTurma)
+    {
+        return await _repository.FindByTurmaAsync(idTurma);
+    }
+
     public Task CreateAsync(Models.Entities.Matricula matricula) => _repository.CreateAsync(matricula);
     public Task UpdateAsync(Models.Entities.Matricula matricula) => _repository.UpdateAsync(matricula);
     public Task DeleteAsync(int id) => _repository.DeleteAsync(id);

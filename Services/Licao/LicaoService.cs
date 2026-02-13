@@ -27,5 +27,9 @@ public class LicaoService : ILicaoService
     public Task DeleteAsync(int id) =>
         _repository.DeleteAsync(id);
 
+    public Task<ICollection<Models.Entities.Licao>> GetByCursoAsync(int cursoId)
+    {
+        return _repository.GetByCursoAsync(cursoId);
 
+    }
 }
