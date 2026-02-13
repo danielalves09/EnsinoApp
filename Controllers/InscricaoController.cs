@@ -3,11 +3,13 @@ using EnsinoApp.Services.Campus;
 using EnsinoApp.Services.Cursos;
 using EnsinoApp.Services.Inscricao;
 using EnsinoApp.ViewModels.Inscricao;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace EnsinoApp.Controllers;
 
+[AllowAnonymous]
 public class InscricaoController : Controller
 {
     private readonly IInscricaoOnlineService _service;

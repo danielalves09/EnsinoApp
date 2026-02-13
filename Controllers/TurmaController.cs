@@ -4,11 +4,13 @@ using EnsinoApp.Services.Campus;
 using EnsinoApp.Services.Cursos;
 using EnsinoApp.Services.Turmas;
 using EnsinoApp.ViewModels.Turmas;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace EnsinoApp.Controllers;
 
+[Authorize(Roles = "Admin,Pastor,Coordenador")]
 public class TurmaController : Controller
 {
     private readonly ITurmaService _turmaService;

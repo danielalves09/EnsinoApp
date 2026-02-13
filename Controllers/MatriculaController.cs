@@ -5,11 +5,13 @@ using EnsinoApp.Services.Inscricao;
 using EnsinoApp.Services.Matricula;
 using EnsinoApp.Services.Turmas;
 using EnsinoApp.ViewModels.Matricula;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace EnsinoApp.Controllers;
 
+[Authorize(Roles = "Admin,Pastor,Coordenador")]
 public class MatriculaController : Controller
 {
     private readonly ICasalService _casalService;

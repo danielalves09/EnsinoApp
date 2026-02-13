@@ -5,9 +5,11 @@ using EnsinoApp.ViewModels.Cursos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using EnsinoApp.Models.Enums;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EnsinoApp.Controllers;
 
+[Authorize(Roles = "Admin,Pastor,Coordenador")]
 public class CursoController : Controller
 {
     private readonly ICursoService _cursoService;

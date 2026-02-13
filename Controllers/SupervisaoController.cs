@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EnsinoApp.Controllers;
 
-[Authorize]
+[Authorize(Roles = "Admin,Pastor,Coordenador")]
 public class SupervisaoController : Controller
 {
     private readonly ISupervisaoService _supervisaoService;

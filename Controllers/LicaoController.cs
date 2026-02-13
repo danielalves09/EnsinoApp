@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace EnsinoApp.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin,Pastor,Coordenador")]
     public class LicaoController : Controller
     {
         private readonly ILicaoService _service;

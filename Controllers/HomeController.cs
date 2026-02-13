@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EnsinoApp.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin,Pastor,Coordenador")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
