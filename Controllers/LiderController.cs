@@ -6,6 +6,7 @@ using EnsinoApp.Services.Lider;
 using EnsinoApp.Services.Matricula;
 using EnsinoApp.Services.Turmas;
 using EnsinoApp.ViewModels.Lider;
+using EnsinoApp.ViewModels.Matricula;
 using EnsinoApp.ViewModels.Relatorios;
 using EnsinoApp.ViewModels.Turmas;
 using Microsoft.AspNetCore.Authorization;
@@ -101,7 +102,8 @@ public class LiderController : Controller
             {
                 Nome = $"{m.Casal.NomeConjuge1} / {m.Casal.NomeConjuge2}",
                 Presenca = m.Relatorios.OrderByDescending(r => r.DataRegistro).FirstOrDefault()?.Presenca ?? StatusPresenca.Ausente,
-                UltimaLicao = m.Relatorios.OrderByDescending(r => r.DataRegistro).FirstOrDefault()?.DataLicao
+                UltimaLicao = m.Relatorios.OrderByDescending(r => r.DataRegistro).FirstOrDefault()?.DataLicao,
+                Matricula = m
             }).ToList()
         };
 
@@ -180,5 +182,43 @@ public class LiderController : Controller
 
         return RedirectToAction("Index");
     }
+
+    [HttpGet]
+    public async Task<IActionResult> ConcluirCurso(int idMatricula)
+    {
+        var podeConcluir = await _matriculaService.PodeConcluirCursoAsync(idMatricula);
+
+        if (!podeConcluir)
+        {
+            TempData["Erro"] = "Esta matrícula ainda não concluiu todas as lições.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        var viewModel = new ConcluirCursoViewModel
+        {
+            IdMatricula = idMatricula
+        };
+
+        return View(viewModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ConcluirCursoConfirmado(int idMatricula)
+    {
+        try
+        {
+            await _matriculaService.ConcluirCursoAsync(idMatricula);
+            TempData["Sucesso"] = "Curso concluído com sucesso!";
+        }
+        catch (Exception ex)
+        {
+            TempData["Erro"] = ex.Message;
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
+
 
 }

@@ -1,0 +1,39 @@
+@model EnsinoApp.ViewModels.Matricula.ConcluirCursoViewModel
+
+@{
+    ViewData["Title"] = "Concluir Curso";
+}
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-check-circle"></i> Concluir Curso
+            </h5>
+        </div>
+
+        <div class="card-body">
+            <p class="fs-5">
+                Tem certeza que deseja <strong>concluir este curso</strong> para este casal?
+            </p>
+
+            <p class="text-muted">
+                Esta ação marcará a matrícula como <strong>Concluída</strong> e permitirá a emissão do certificado.
+            </p>
+
+            <form asp-action="ConcluirCursoConfirmado" method="post">
+                <input type="hidden" asp-for="IdMatricula" />
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a asp-action="Index" class="btn btn-secondary">
+                        Cancelar
+                    </a>
+
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-graduation-cap"></i> Concluir Curso
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

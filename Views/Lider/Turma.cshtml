@@ -14,7 +14,19 @@
         </div>
     </div>
 </section>
+@if (TempData["Sucesso"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Sucesso"]
+    </div>
+}
 
+@if (TempData["Erro"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Erro"]
+    </div>
+}
 <section class="content">
     <div class="row">
         <div class="col-md-4">
@@ -95,6 +107,7 @@
                                 <th>Casal</th>
                                 <th>Última Lição</th>
                                 <th>Presença</th>
+                                <th>Status Matricula</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -104,6 +117,18 @@
                                     <td>@casal.Nome</td>
                                     <td>@casal.UltimaLicao?.ToShortDateString()</td>
                                     <td>@casal.Presenca</td>
+                                    <td>@if (@casal.Matricula.Status == StatusMatricula.Ativa)
+                                        {
+                                            <a asp-action="ConcluirCurso" asp-route-idMatricula="@casal.Matricula.Id"
+                                                   class="btn btn-sm btn-success">
+                                                <i class="fas fa-check"></i> Concluir
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Concluída</span>
+                                        }
+                                    </td>
                                 </tr>
                             }
                         </tbody>
