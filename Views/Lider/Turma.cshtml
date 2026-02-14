@@ -83,6 +83,7 @@
             </div>
         </div>
 
+
     </div>
 </section>
 <section class="content">
@@ -91,13 +92,33 @@
             <div class="card">
                 <div class="card-header">
                     <div class="d-flex justify-content-between">
-                        <h4>Casais Matriculados</h4>
+
+                        <a class="btn btn-primary" href="@Url.Action("GerarCertificados", "Lider")">
+                            <i class="fas fa-award"></i> Gerar Certificados
+                            <span class="badge bg-light text-dark ms-2">
+                                @Model.TotalCertificadosPendentes
+                            </span>
+                        </a>
                         <a asp-action="Relatorios" asp-route-idTurma="@Model.Id" class="btn btn-info">
                             <i class="fas fa-search"></i> Ver Relatórios
                         </a>
                         <a asp-action="CriarRelatorio" asp-route-idTurma="@Model.Id" class="btn btn-success">
                             <i class="fas fa-plus"></i> Novo Relatório Semanal
                         </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</Section>
+<section class="content">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between">
+                        <h4>Casais Matriculados</h4>
+
                     </div>
                 </div>
                 <div class="card-body table-responsive p-0">
@@ -108,6 +129,7 @@
                                 <th>Última Lição</th>
                                 <th>Presença</th>
                                 <th>Status Matricula</th>
+                                <th>Certificado</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -126,8 +148,14 @@
                                         }
                                         else
                                         {
-                                            <span class="badge bg-secondary">Concluída</span>
+                                            <span class="badge bg-success">Concluída</span>
                                         }
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-outline-primary btn-sm"
+                                               href="@Url.Action("BaixarCertificado", "Lider", new { idMatricula = @casal.Matricula.Id })">
+                                            Baixar Certificado
+                                        </a>
                                     </td>
                                 </tr>
                             }

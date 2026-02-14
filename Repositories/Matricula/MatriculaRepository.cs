@@ -127,4 +127,27 @@ public class MatriculaRepository : IMatriculaRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task<List<Models.Entities.Matricula>> GetConcluidasSemCertificadoAsync()
+    {
+        return await _context.Matriculas
+                        .Where(m =>
+                                m.Status == StatusMatricula.Concluída &&
+                                !m.CertificadoEmitido)
+                        .Include(m => m.Casal)
+                        .Include(m => m.Turma)
+                            .ThenInclude(t => t.Curso)
+                        .Include(m => m.Turma)
+                            .ThenInclude(t => t.Lider)
+                        .Include(m => m.Turma)
+                            .ThenInclude(t => t.Campus)
+                        .ToListAsync();
+    }
+    public async Task<int> CountConcluidasSemCertificadoAsync()
+    {
+        return await _context.Matriculas
+            .Where(m => m.Status == StatusMatricula.Concluída && !m.CertificadoEmitido)
+            .CountAsync();
+    }
+
+
 }

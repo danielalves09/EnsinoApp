@@ -11,6 +11,7 @@ namespace EnsinoApp.ViewModels.Turmas
         public DateTime DataInicio { get; set; }
         public DateTime DataFim { get; set; }
         public StatusTurma Status { get; set; }
+        public int TotalCertificadosPendentes { get; set; }
 
         public List<CasalMatriculadoViewModel> CasaisMatriculados { get; set; } = new List<CasalMatriculadoViewModel>();
 

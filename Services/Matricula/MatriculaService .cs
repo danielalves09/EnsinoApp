@@ -68,4 +68,14 @@ public class MatriculaService : IMatriculaService
 
         await _repository.AtualizarConclusaoAsync(idMatricula);
     }
+
+    public Task<List<Models.Entities.Matricula>> GetConcluidasSemCertificadoAsync()
+    {
+        return _repository.GetConcluidasSemCertificadoAsync();
+    }
+
+    public async Task<int> CountMatriculasConcluidasSemCertificadoAsync()
+    {
+        return await _repository.CountConcluidasSemCertificadoAsync();
+    }
 }

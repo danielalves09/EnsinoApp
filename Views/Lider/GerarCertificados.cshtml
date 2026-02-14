@@ -1,0 +1,33 @@
+@{
+    ViewData["Title"] = "Gerar Certificados";
+}
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-certificate"></i> Gerar Certificados
+            </h5>
+        </div>
+
+        <div class="card-body">
+            <p class="fs-5">
+                Existem <strong>@ViewBag.Total</strong> matrículas concluídas
+                aguardando emissão de certificado.
+            </p>
+
+            <p class="text-muted">
+                Esta ação irá gerar os certificados em PDF para todos os casais.
+            </p>
+
+            <form asp-action="GerarCertificadosConfirmado" method="post">
+                <div class="d-flex justify-content-end gap-2">
+                    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-file-pdf"></i> Gerar Agora
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -14,4 +14,8 @@ public interface IMatriculaService
     Task<IEnumerable<(string Curso, int Total)>> GetMatriculasPorCursoAsync();
     Task<bool> PodeConcluirCursoAsync(int idMatricula);
     Task ConcluirCursoAsync(int idMatricula);
+
+    Task<List<Models.Entities.Matricula>> GetConcluidasSemCertificadoAsync();
+
+    Task<int> CountMatriculasConcluidasSemCertificadoAsync();
 }

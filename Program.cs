@@ -22,6 +22,8 @@ using EnsinoApp.Repositories.Licao;
 using EnsinoApp.Services.Licao;
 using EnsinoApp.Repositories.RelatorioSemanal;
 using EnsinoApp.Services.Lider;
+using EnsinoApp.Services.Certificado;
+using QuestPDF.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,6 +55,9 @@ builder.Services.AddScoped<IInscricaoOnlineService, InscricaoOnlineService>();
 builder.Services.AddScoped<ICasalService, CasalService>();
 builder.Services.AddScoped<ILicaoService, LicaoService>();
 builder.Services.AddScoped<ILiderService, LiderService>();
+builder.Services.AddScoped<ICertificadoService, CertificadoService>();
+builder.Services.AddScoped<IPdfService, PdfService>();
+
 
 
 builder.Services.AddIdentity<Usuario, IdentityRole<int>>(options =>
@@ -72,7 +77,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/Auth/Login";
 });
 
-
+QuestPDF.Settings.License = LicenseType.Community;
 var app = builder.Build();
 
 

@@ -18,5 +18,8 @@ public interface IMatriculaRepository
     Task<int> GetTotalRelatoriosAsync(int idMatricula);
     Task<int> GetTotalLicoesDoCursoAsync(int idMatricula);
     Task AtualizarConclusaoAsync(int idMatricula);
+    Task<List<Models.Entities.Matricula>> GetConcluidasSemCertificadoAsync();
+
+    Task<int> CountConcluidasSemCertificadoAsync();
 
 }
