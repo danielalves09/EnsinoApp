@@ -99,4 +99,32 @@ public class MatriculaRepository : IMatriculaRepository
             .ContinueWith(t => t.Result.Select(x => (x.Curso, x.Total)));
     }
 
+    public async Task<int> GetTotalRelatoriosAsync(int idMatricula)
+    {
+        return await _context.Relatorios
+            .Where(r => r.IdMatricula == idMatricula)
+            .CountAsync();
+    }
+    public async Task<int> GetTotalLicoesDoCursoAsync(int idMatricula)
+    {
+        return await _context.Matriculas
+            .Where(m => m.Id == idMatricula)
+            .Select(m => m.Turma.Curso.Licoes.Count)
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task AtualizarConclusaoAsync(int idMatricula)
+    {
+        var matricula = await _context.Matriculas.FindAsync(idMatricula);
+
+        if (matricula == null)
+            throw new Exception("Matrícula não encontrada.");
+
+        matricula.Status = StatusMatricula.Concluída;
+        matricula.DataConclusao = DateTime.Now;
+
+        _context.Matriculas.Update(matricula);
+        await _context.SaveChangesAsync();
+    }
+
 }

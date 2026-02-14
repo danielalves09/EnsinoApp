@@ -12,4 +12,6 @@ public interface IMatriculaService
     int ContarAtivas();
     void MatricularCasal(int idCasal, int idTurma);
     Task<IEnumerable<(string Curso, int Total)>> GetMatriculasPorCursoAsync();
+    Task<bool> PodeConcluirCursoAsync(int idMatricula);
+    Task ConcluirCursoAsync(int idMatricula);
 }

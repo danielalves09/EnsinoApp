@@ -15,4 +15,8 @@ public interface IMatriculaRepository
     bool ExisteMatriculaAtivaPorCasal(int idCasal);
     Task<IEnumerable<(string Curso, int Total)>> GetMatriculasPorCursoAsync();
 
+    Task<int> GetTotalRelatoriosAsync(int idMatricula);
+    Task<int> GetTotalLicoesDoCursoAsync(int idMatricula);
+    Task AtualizarConclusaoAsync(int idMatricula);
+
 }

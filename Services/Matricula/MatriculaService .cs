@@ -48,4 +48,24 @@ public class MatriculaService : IMatriculaService
     {
         return await _repository.GetMatriculasPorCursoAsync();
     }
+
+    public async Task<bool> PodeConcluirCursoAsync(int idMatricula)
+    {
+        var totalRelatorios = await _repository.GetTotalRelatoriosAsync(idMatricula);
+        var totalLicoes = await _repository.GetTotalLicoesDoCursoAsync(idMatricula);
+
+        if (totalLicoes == 0)
+            return false;
+
+        return totalRelatorios >= totalLicoes;
+    }
+    public async Task ConcluirCursoAsync(int idMatricula)
+    {
+        var podeConcluir = await PodeConcluirCursoAsync(idMatricula);
+
+        if (!podeConcluir)
+            throw new Exception("Matrícula ainda não atende os critérios para conclusão.");
+
+        await _repository.AtualizarConclusaoAsync(idMatricula);
+    }
 }
