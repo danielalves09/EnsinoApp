@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using System.Security.Claims;
+using EnsinoApp.Data.Configurations;
 using EnsinoApp.Models.Entities;
 using EnsinoApp.Models.Enums;
 using EnsinoApp.Services.Certificado;
@@ -16,6 +17,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Options;
 
 namespace EnsinoApp.Controllers;
 
@@ -31,9 +33,10 @@ public class LiderController : Controller
     private readonly ICertificadoService _certificadoService;
     private readonly UserManager<Usuario> _userManager;
     private readonly IWebHostEnvironment _env;
+    private readonly AppSettings _appSettings;
 
 
-    public LiderController(ILiderService service, ILicaoService licaoService, ITurmaService turmaService, IMatriculaService matriculaService, UserManager<Usuario> userManager, ICertificadoService certificadoService, IWebHostEnvironment env)
+    public LiderController(ILiderService service, ILicaoService licaoService, ITurmaService turmaService, IMatriculaService matriculaService, UserManager<Usuario> userManager, ICertificadoService certificadoService, IWebHostEnvironment env, IOptions<AppSettings> options)
     {
         _service = service;
         _licaoService = licaoService;
@@ -42,6 +45,7 @@ public class LiderController : Controller
         _userManager = userManager;
         _certificadoService = certificadoService;
         _env = env;
+        _appSettings = options.Value;
     }
 
     public async Task<IActionResult> Index()
@@ -235,9 +239,14 @@ public class LiderController : Controller
 
         if (!matriculas.Any())
         {
-            TempData["Mensagem"] = "Não há certificados pendentes para gerar.";
+            TempData["ToastrInfo"] = "Não há certificados pendentes para gerar.";
             return RedirectToAction("Index");
         }
+
+
+        var certificadosFolder = Path.Combine(_env.WebRootPath, _appSettings.CertificadosFolder);
+        if (!Directory.Exists(certificadosFolder))
+            Directory.CreateDirectory(certificadosFolder);
 
         var memoryStream = new MemoryStream();
 
@@ -251,30 +260,40 @@ public class LiderController : Controller
                     NomeCasal = _certificadoService.GerarNomeCasal(mat.Casal.NomeConjuge1, mat.Casal.NomeConjuge2),
                     NomeCurso = mat.Turma.Curso.Nome,
                     DataConclusao = mat.DataConclusao ?? DateTime.Now,
-                    NomeLider = mat.Turma.Lider.NomeMarido,
+                    NomeLider = _certificadoService.GerarNomeLideres(mat.Turma.Lider.NomeMarido, mat.Turma.Lider.NomeEsposa),
                     NomeCampus = mat.Turma.Campus.Nome,
                     LogoUrl = Path.Combine(_env.WebRootPath, "images", "logovideira3.png"),
                     FundoUrl = Path.Combine(_env.WebRootPath, "images", "bordaCertificado4.png").Replace("\\", "/"),
-                    CodigoValidacao = codValidacao
+                    CodigoValidacao = codValidacao,
+                    QRCodeBase64 = _certificadoService.GerarQRCode(codValidacao)
                 };
 
+                // Gera o PDF
                 var pdfBytes = await _certificadoService.GerarCertificadoPdfAsync(model);
                 if (pdfBytes == null || pdfBytes.Length == 0)
                     continue;
 
+                //Salva o arquivo no servidor
+                var arquivoCaminho = Path.Combine(certificadosFolder, $"Certificado_{mat.IdCasal}.pdf");
+                await System.IO.File.WriteAllBytesAsync(arquivoCaminho, pdfBytes);
+
+                //Adiciona ao ZIP para download
                 var entry = zip.CreateEntry($"Certificado_{mat.IdCasal}.pdf");
                 using var entryStream = entry.Open();
                 await entryStream.WriteAsync(pdfBytes, 0, pdfBytes.Length);
 
-                //mat.CertificadoEmitido = true;
+                mat.CertificadoEmitido = true;
                 mat.CodigoValidacao = codValidacao;
+                mat.CaminhoCertificado = $"/{_appSettings.CertificadosFolder}/Certificado_{mat.IdCasal}.pdf";
                 await _matriculaService.UpdateAsync(mat);
             }
         }
 
         memoryStream.Position = 0;
 
+        TempData["ToastrSuccess"] = $"Certificados gerados: {matriculas.Count}";
         return File(memoryStream, "application/zip", "Certificados.zip");
+
     }
 
 
@@ -289,36 +308,17 @@ public class LiderController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> BaixarCertificado(int idMatricula)
+    public async Task<IActionResult> VerCertificado(int idMatricula)
     {
         var matricula = await _matriculaService.FindByIdAsync(idMatricula);
 
-        if (matricula == null || matricula.Status != StatusMatricula.Concluída || !matricula.CertificadoEmitido)
-            return NotFound();
+        if (matricula == null || !matricula.CertificadoEmitido)
+            return NotFound("Certificado não encontrado.");
 
-        return File($"/certificados/Certificado_{matricula.Casal.Id}.pdf", "application/pdf", $"Certificado_{matricula.Casal.Id}.pdf");
-    }
+        if (string.IsNullOrEmpty(matricula.CaminhoCertificado))
+            return BadRequest("Certificado ainda não foi gerado.");
 
-    [HttpGet]
-    public IActionResult Validar() => View();
-
-    [HttpPost]
-    public async Task<IActionResult> Validar(string codigo)
-    {
-        if (string.IsNullOrWhiteSpace(codigo))
-        {
-            ViewBag.Mensagem = "Informe um código válido.";
-            return View();
-        }
-
-        var matricula = await _matriculaService.GetByCodigoValidacaoAsync(codigo);
-        if (matricula == null)
-        {
-            ViewBag.Mensagem = "Certificado não encontrado ou inválido.";
-            return View();
-        }
-
-        return View("ResultadoValidacao", matricula);
+        return Redirect(matricula.CaminhoCertificado);
     }
 
 

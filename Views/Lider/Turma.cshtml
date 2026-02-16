@@ -1,6 +1,8 @@
 @using EnsinoApp.Models.Enums
 @model EnsinoApp.ViewModels.Turmas.TurmaDashboardViewModel;
-
+@{
+    ViewData["Title"] = "Área do líder";
+}
 <section class="content-header">
     <a asp-action="Index" class="btn  btn-xs">
         <i class="fas fa-arrow-left"></i> Voltar
@@ -152,9 +154,10 @@
                                         }
                                     </td>
                                     <td>
-                                        <a class="btn btn-outline-primary btn-sm"
-                                               href="@Url.Action("BaixarCertificado", "Lider", new { idMatricula = @casal.Matricula.Id })">
-                                            Baixar Certificado
+                                        <a asp-action="VerCertificado" asp-controller="Lider"
+                                               asp-route-idMatricula="@casal.Matricula.Id" target="_blank"
+                                               class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-file-pdf"></i> Ver Certificado
                                         </a>
                                     </td>
                                 </tr>

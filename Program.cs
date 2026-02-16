@@ -25,13 +25,14 @@ using EnsinoApp.Services.Lider;
 using EnsinoApp.Services.Certificado;
 using DinkToPdf.Contracts;
 using DinkToPdf;
+using EnsinoApp.Data.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<EnsinoAppContext>();
-
+builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 //Repositories
 builder.Services.AddScoped<ICampusRepository, CampusRepository>();
 builder.Services.AddScoped<ISupervisaoRepository, SupervisaoRepository>();
