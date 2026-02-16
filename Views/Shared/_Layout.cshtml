@@ -196,30 +196,19 @@
 
                     @if (TempData["ToastrSuccess"] != null)
                     {
-                        <text>
-                            toastr.success("@TempData["ToastrSuccess"]");
-                        </text>
+                        <text>toastr.success("@TempData["ToastrSuccess"]");</text>
                     }
-
                     @if (TempData["ToastrError"] != null)
                     {
-                        <text>
-                            toastr.error("@TempData["ToastrError"]");
-                        </text>
+                        <text>toastr.error("@TempData["ToastrError"]");</text>
                     }
-
                     @if (TempData["ToastrWarning"] != null)
                     {
-                        <text>
-                            toastr.warning("@TempData["ToastrWarning"]");
-                        </text>
+                        <text>toastr.warning("@TempData["ToastrWarning"]");</text>
                     }
-
                     @if (TempData["ToastrInfo"] != null)
                     {
-                        <text>
-                            toastr.info("@TempData["ToastrInfo"]");
-                        </text>
+                        <text>toastr.info("@TempData["ToastrInfo"]");</text>
                     }
                 </script>
 

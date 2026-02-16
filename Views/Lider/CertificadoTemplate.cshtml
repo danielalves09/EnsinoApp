@@ -8,118 +8,118 @@
 <head>
     <meta charset="UTF-8">
     <style>
-                                            /* Fonte cursiva local */
-                                            @@font-face {
-                                                font-family: 'Great Vibes';
-                                                src: url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
-                                            }
+                                                            /* Fonte cursiva local */
+                                                            @@font-face {
+                                                                font-family: 'Great Vibes';
+                                                                src: url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+                                                            }
 
-                                            html,
-                                            body {
-                                                width: 100%;
-                                                height: 100%;
-                                                margin: 0;
-                                                padding: 0;
-                                                font-family: Arial, sans-serif;
-                                            }
+                                                            html,
+                                                            body {
+                                                                width: 100%;
+                                                                height: 100%;
+                                                                margin: 0;
+                                                                padding: 0;
+                                                                font-family: Arial, sans-serif;
+                                                            }
 
-                                            body {
-                                                font-family: Arial, sans-serif;
-                                                /* fundo ocupa toda a página sem repetir */
-                                                background-image: url("@Model.FundoUrl");
-                                                background-size: 100% 100%;
-                                                background-position: center;
-                                                background-repeat: no-repeat;
-                                                /* evita repetição */
-                                                position: relative;
-                                            }
+                                                            body {
+                                                                font-family: Arial, sans-serif;
+                                                                /* fundo ocupa toda a página sem repetir */
+                                                                background-image: url("@Model.FundoUrl");
+                                                                background-size: 100% 100%;
+                                                                background-position: center;
+                                                                background-repeat: no-repeat;
+                                                                /* evita repetição */
+                                                                position: relative;
+                                                            }
 
-                                            .certificado {
-                                                width: 100%;
-                                                height: 100%;
-                                                padding: 50px 60px;
-                                                box-sizing: border-box;
-                                                display: flex;
-                                                flex-direction: column;
-                                                justify-content: flex-start;
-                                                align-items: center;
-                                                text-align: center;
-                                            }
+                                                            .certificado {
+                                                                width: 100%;
+                                                                height: 100%;
+                                                                padding: 50px 60px;
+                                                                box-sizing: border-box;
+                                                                display: flex;
+                                                                flex-direction: column;
+                                                                justify-content: flex-start;
+                                                                align-items: center;
+                                                                text-align: center;
+                                                            }
 
-                                            .logo {
-                                                width: 150px;
-                                                margin: 20px auto 20px auto;
-                                            }
+                                                            .logo {
+                                                                width: 150px;
+                                                                margin: 20px auto 20px auto;
+                                                            }
 
-                                            .titulo {
-                                                font-size: 36px;
-                                                color: #2C3E50;
-                                                font-weight: bold;
-                                                margin-top: 20px;
-                                            }
+                                                            .titulo {
+                                                                font-size: 36px;
+                                                                color: #2C3E50;
+                                                                font-weight: bold;
+                                                                margin-top: 20px;
+                                                            }
 
-                                            .subtitulo {
-                                                font-size: 18px;
-                                                margin-top: 70px;
-                                            }
+                                                            .subtitulo {
+                                                                font-size: 18px;
+                                                                margin-top: 70px;
+                                                            }
 
-                                            .subtitulotexto {
-                                                font-size: 18px;
-                                                margin-top: 40px;
-                                            }
+                                                            .subtitulotexto {
+                                                                font-size: 18px;
+                                                                margin-top: 40px;
+                                                            }
 
-                                            .nome-casal {
-                                                font-size: 32px;
-                                                font-family: 'Great Vibes', cursive;
-                                                color: #000;
-                                                margin: 10px 0;
-                                            }
+                                                            .nome-casal {
+                                                                font-size: 32px;
+                                                                font-family: 'Great Vibes', cursive;
+                                                                color: #000;
+                                                                margin: 10px 0;
+                                                            }
 
-                                            .curso {
-                                                font-size: 24px;
-                                                color: #27AE60;
-                                                font-weight: bold;
-                                                margin-top: 20px;
-                                                margin-bottom: 10px;
-                                            }
+                                                            .curso {
+                                                                font-size: 24px;
+                                                                color: #27AE60;
+                                                                font-weight: bold;
+                                                                margin-top: 20px;
+                                                                margin-bottom: 10px;
+                                                            }
 
-                                            .data {
-                                                font-size: 16px;
-                                                margin-bottom: 40px;
-                                            }
+                                                            .data {
+                                                                font-size: 16px;
+                                                                margin-bottom: 40px;
+                                                            }
 
-                                            .assinaturas {
-                                                width: 100%;
-                                                display: table;
-                                                margin-top: 50px;
-                                            }
+                                                            .assinaturas {
+                                                                width: 100%;
+                                                                display: table;
+                                                                margin-top: 50px;
+                                                            }
 
-                                            .assinatura {
-                                                display: table-cell;
-                                                text-align: center;
-                                                vertical-align: top;
-                                            }
+                                                            .assinatura {
+                                                                display: table-cell;
+                                                                text-align: center;
+                                                                vertical-align: top;
+                                                            }
 
-                                            .linha-assinatura {
-                                                border-top: 1px solid #000;
-                                                width: 200px;
-                                                margin: 0 auto 5px auto;
-                                            }
+                                                            .linha-assinatura {
+                                                                border-top: 1px solid #000;
+                                                                width: 200px;
+                                                                margin: 0 auto 5px auto;
+                                                            }
 
-                                            .assinatura-nome {
-                                                font-weight: bold;
-                                                margin-top: 2px;
-                                            }
+                                                            .assinatura-nome {
+                                                                font-weight: bold;
+                                                                margin-top: 2px;
+                                                            }
 
-                                            .footer {
-                                                top: 140px;
-                                                bottom: 10px;
-                                                width: 100%;
-                                                text-align: center;
-                                                font-size: 14px;
-                                                position: relative;
+                                                            .footer {
+                                                                top: 140px;
+                                                                bottom: 10px;
+                                                                width: 100%;
+                                                                text-align: center;
+                                                                font-size: 14px;
+                                                                position: relative;
 
-                                            }
+                                                            }
     </style>
 </head>
 
@@ -129,7 +129,7 @@
         @* <div class="titulo"></div> *@
         <div class="subtitulo">Certificamos que o casal</div>
         <div class="nome-casal">@Model.NomeCasal</div>
-        <div class="subtitulotexto">concluíram com êxito o curso de</div>
+        <div class="subtitulotexto">concluiu com êxito o curso de</div>
         <div class="curso">@Model.NomeCurso</div>
         <div class="data">Concluído em: @Model.DataConclusao.ToString("dd/MM/yyyy")</div>
 

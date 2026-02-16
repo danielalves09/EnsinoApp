@@ -7,6 +7,7 @@ using EnsinoApp.Services.Certificado;
 using EnsinoApp.Services.Licao;
 using EnsinoApp.Services.Lider;
 using EnsinoApp.Services.Matricula;
+using EnsinoApp.Services.Notifications;
 using EnsinoApp.Services.Turmas;
 using EnsinoApp.ViewModels.Certificado;
 using EnsinoApp.ViewModels.Lider;
@@ -34,9 +35,10 @@ public class LiderController : Controller
     private readonly UserManager<Usuario> _userManager;
     private readonly IWebHostEnvironment _env;
     private readonly AppSettings _appSettings;
+    private readonly INotificationService _notification;
 
 
-    public LiderController(ILiderService service, ILicaoService licaoService, ITurmaService turmaService, IMatriculaService matriculaService, UserManager<Usuario> userManager, ICertificadoService certificadoService, IWebHostEnvironment env, IOptions<AppSettings> options)
+    public LiderController(ILiderService service, ILicaoService licaoService, ITurmaService turmaService, IMatriculaService matriculaService, UserManager<Usuario> userManager, ICertificadoService certificadoService, IWebHostEnvironment env, IOptions<AppSettings> options, INotificationService notification)
     {
         _service = service;
         _licaoService = licaoService;
@@ -46,6 +48,7 @@ public class LiderController : Controller
         _certificadoService = certificadoService;
         _env = env;
         _appSettings = options.Value;
+        _notification = notification;
     }
 
     public async Task<IActionResult> Index()
@@ -239,7 +242,7 @@ public class LiderController : Controller
 
         if (!matriculas.Any())
         {
-            TempData["ToastrInfo"] = "Não há certificados pendentes para gerar.";
+            _notification.Info("Não há certificados pendentes para gerar.");
             return RedirectToAction("Index");
         }
 
@@ -291,7 +294,7 @@ public class LiderController : Controller
 
         memoryStream.Position = 0;
 
-        TempData["ToastrSuccess"] = $"Certificados gerados: {matriculas.Count}";
+        _notification.Success($"Certificados gerados: {matriculas.Count}");
         return File(memoryStream, "application/zip", "Certificados.zip");
 
     }
@@ -308,15 +311,21 @@ public class LiderController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> VerCertificado(int idMatricula)
+    public async Task<IActionResult> VerCertificado(int idMatricula, int turmaId)
     {
         var matricula = await _matriculaService.FindByIdAsync(idMatricula);
 
         if (matricula == null || !matricula.CertificadoEmitido)
-            return NotFound("Certificado não encontrado.");
+        {
+            _notification.Info("Certificado não encontrado.");
+            return RedirectToAction(nameof(Turma), turmaId);
+        }
 
         if (string.IsNullOrEmpty(matricula.CaminhoCertificado))
-            return BadRequest("Certificado ainda não foi gerado.");
+        {
+            _notification.Warning("O certificado ainda não foi gerado.");
+            return RedirectToAction(nameof(Turma), turmaId);
+        }
 
         return Redirect(matricula.CaminhoCertificado);
     }

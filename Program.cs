@@ -26,6 +26,7 @@ using EnsinoApp.Services.Certificado;
 using DinkToPdf.Contracts;
 using DinkToPdf;
 using EnsinoApp.Data.Configurations;
+using EnsinoApp.Services.Notifications;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +34,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<EnsinoAppContext>();
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+
+
 //Repositories
 builder.Services.AddScoped<ICampusRepository, CampusRepository>();
 builder.Services.AddScoped<ISupervisaoRepository, SupervisaoRepository>();

@@ -154,11 +154,19 @@
                                         }
                                     </td>
                                     <td>
-                                        <a asp-action="VerCertificado" asp-controller="Lider"
-                                               asp-route-idMatricula="@casal.Matricula.Id" target="_blank"
-                                               class="btn btn-sm btn-outline-primary">
-                                            <i class="fas fa-file-pdf"></i> Ver Certificado
-                                        </a>
+                                        @if (@casal.Matricula.CertificadoEmitido)
+                                        {
+                                            <a asp-action="VerCertificado" asp-controller="Lider"
+                                                   asp-route-idMatricula="@casal.Matricula.Id"
+                                                   asp-route-turmaId=@casal.Matricula.IdTurma target="_blank"
+                                                   class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-file-pdf"></i> Ver Certificado
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-info">Não Gerado</span>
+                                        }
                                     </td>
                                 </tr>
                             }
