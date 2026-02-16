@@ -1,3 +1,4 @@
+@using EnsinoApp.Models.Enums
 @model EnsinoApp.ViewModels.Turmas.TurmaDashboardViewModel;
 
 <section class="content-header">
@@ -36,9 +37,36 @@
             <div class="card card-outline card-warning mb-3">
                 <div class="card-header">Status da Turma</div>
                 <div class="card-body">
-                    <p>@Model.Status</p>
-                    <p>Data Início: @Model.DataInicio.ToShortDateString()</p>
-                    <p>Data Fim: @Model.DataFim.ToShortDateString()</p>
+                    <p>
+                        @if (@Model.Status == StatusTurma.Acomecar)
+                        {
+                            <span class="badge bg-primary">A começar</span>
+                        }
+                        else if (@Model.Status == StatusTurma.EmAndamento)
+                        {
+                            <span class="badge bg-primary">Em Andamento</span>
+                        }
+                        else if (@Model.Status == StatusTurma.Concluida)
+                        {
+                            <span class="badge bg-success">Concluída</span>
+                        }
+                        else if (@Model.Status == StatusTurma.Cancelada)
+                        {
+                            <span class="badge bg-danger">Cancelada</span>
+                        }
+
+                    </p>
+                    <p class="mb-1"><strong>Data Início:</strong> @Model.DataInicio.ToShortDateString()</p>
+                    <p class="mb-3"><strong>Data Fim:</strong> @Model.DataFim.ToShortDateString()</p>
+                    <p>
+                        <div class="progress" style="height: 25px; border-radius: 12px; overflow: hidden;">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success"
+                                 role="progressbar" style="width: @Model.Progresso%;" aria-valuenow="@Model.Progresso"
+                                 aria-valuemin="0" aria-valuemax="100">
+                                @Model.Progresso%
+                            </div>
+                        </div>
+                    </p>
                 </div>
             </div>
         </div>

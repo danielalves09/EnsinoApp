@@ -16,19 +16,6 @@
         </div>
     </div>
 </section>
-@if (TempData["Sucesso"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["Sucesso"]
-    </div>
-}
-
-@if (TempData["Erro"] != null)
-{
-    <div class="alert alert-danger">
-        @TempData["Erro"]
-    </div>
-}
 <section class="content">
     <div class="row">
         <div class="col-md-4">
@@ -70,10 +57,10 @@
                         }
 
                     </p>
-                    <p>Data Início: @Model.DataInicio.ToShortDateString()</p>
-                    <p>Data Fim: @Model.DataFim.ToShortDateString()</p>
+                    <p class="mb-1"><strong>Data Início:</strong> @Model.DataInicio.ToShortDateString()</p>
+                    <p class="mb-3"><strong>Data Fim:</strong> @Model.DataFim.ToShortDateString()</p>
                     <p>
-                        <div class="progress">
+                        <div class="progress" style="height: 25px; border-radius: 12px; overflow: hidden;">
                             <div class="progress-bar progress-bar-striped progress-bar-animated bg-success"
                                  role="progressbar" style="width: @Model.Progresso%;" aria-valuenow="@Model.Progresso"
                                  aria-valuemin="0" aria-valuemax="100">

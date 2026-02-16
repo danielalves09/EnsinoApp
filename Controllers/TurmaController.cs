@@ -76,6 +76,8 @@ public class TurmaController : Controller
             NomeLider = $"{turma.Lider.NomeMarido} / {turma.Lider.NomeEsposa}",
             DataInicio = turma.DataInicio,
             DataFim = turma.DataFim,
+            TotalLicoes = turma.Curso.Licoes.Count(),
+            LicoesConcluidas = turma.Matriculas.Sum(m => m.Relatorios.Count),
             Status = turma.Status,
             CasaisMatriculados = turma.Matriculas.Select(m => new CasalMatriculadoViewModel
             {
