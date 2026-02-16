@@ -1,3 +1,4 @@
+using System.IO.Compression;
 using System.Security.Claims;
 using EnsinoApp.Models.Entities;
 using EnsinoApp.Models.Enums;
@@ -6,6 +7,7 @@ using EnsinoApp.Services.Licao;
 using EnsinoApp.Services.Lider;
 using EnsinoApp.Services.Matricula;
 using EnsinoApp.Services.Turmas;
+using EnsinoApp.ViewModels.Certificado;
 using EnsinoApp.ViewModels.Lider;
 using EnsinoApp.ViewModels.Matricula;
 using EnsinoApp.ViewModels.Relatorios;
@@ -28,9 +30,10 @@ public class LiderController : Controller
     private readonly IMatriculaService _matriculaService;
     private readonly ICertificadoService _certificadoService;
     private readonly UserManager<Usuario> _userManager;
+    private readonly IWebHostEnvironment _env;
 
 
-    public LiderController(ILiderService service, ILicaoService licaoService, ITurmaService turmaService, IMatriculaService matriculaService, UserManager<Usuario> userManager, ICertificadoService certificadoService)
+    public LiderController(ILiderService service, ILicaoService licaoService, ITurmaService turmaService, IMatriculaService matriculaService, UserManager<Usuario> userManager, ICertificadoService certificadoService, IWebHostEnvironment env)
     {
         _service = service;
         _licaoService = licaoService;
@@ -38,6 +41,7 @@ public class LiderController : Controller
         _matriculaService = matriculaService;
         _userManager = userManager;
         _certificadoService = certificadoService;
+        _env = env;
     }
 
     public async Task<IActionResult> Index()
@@ -227,34 +231,49 @@ public class LiderController : Controller
     [HttpGet]
     public async Task<IActionResult> GerarCertificados()
     {
-        var matriculasPendentes = await _matriculaService.GetConcluidasSemCertificadoAsync();
+        var matriculas = await _matriculaService.GetConcluidasSemCertificadoAsync();
 
-        if (!matriculasPendentes.Any())
+        if (!matriculas.Any())
         {
             TempData["Mensagem"] = "Não há certificados pendentes para gerar.";
             return RedirectToAction("Index");
         }
 
-        var caminhosCertificados = await _certificadoService.GerarCertificadosAsync();
+        var memoryStream = new MemoryStream();
 
-        // Compacta todos os PDFs em um arquivo ZIP para download
-        using var memoryStream = new MemoryStream();
-        using (var zip = new System.IO.Compression.ZipArchive(memoryStream, System.IO.Compression.ZipArchiveMode.Create, true))
+        using (var zip = new System.IO.Compression.ZipArchive(memoryStream, ZipArchiveMode.Create, true))
         {
-            foreach (var caminho in caminhosCertificados)
+            foreach (var mat in matriculas)
             {
-                var bytes = await System.IO.File.ReadAllBytesAsync(caminho);
-                var nomeArquivo = Path.GetFileName(caminho);
-                var entry = zip.CreateEntry(nomeArquivo, System.IO.Compression.CompressionLevel.Optimal);
+                var model = new CertificadoViewModel
+                {
+                    NomeCasal = _certificadoService.GerarNomeCasal(mat.Casal.NomeConjuge1, mat.Casal.NomeConjuge2),
+                    NomeCurso = mat.Turma.Curso.Nome,
+                    DataConclusao = mat.DataConclusao ?? DateTime.Now,
+                    NomeLider = mat.Turma.Lider.NomeMarido,
+                    NomeCampus = mat.Turma.Campus.Nome,
+                    LogoUrl = Path.Combine(_env.WebRootPath, "images", "logovideira3.png"),
+                    FundoUrl = Path.Combine(_env.WebRootPath, "images", "bordaCertificado.png").Replace("\\", "/")
+                };
 
+                var pdfBytes = await _certificadoService.GerarCertificadoPdfAsync(model);
+                if (pdfBytes == null || pdfBytes.Length == 0)
+                    continue;
+
+                var entry = zip.CreateEntry($"Certificado_{mat.IdCasal}.pdf");
                 using var entryStream = entry.Open();
-                await entryStream.WriteAsync(bytes, 0, bytes.Length);
+                await entryStream.WriteAsync(pdfBytes, 0, pdfBytes.Length);
+
+                //mat.CertificadoEmitido = true;
+                //await _matriculaService.UpdateAsync(mat);
             }
         }
 
         memoryStream.Position = 0;
-        return File(memoryStream.ToArray(), "application/zip", "Certificados.zip");
+
+        return File(memoryStream, "application/zip", "Certificados.zip");
     }
+
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -271,12 +290,10 @@ public class LiderController : Controller
     {
         var matricula = await _matriculaService.FindByIdAsync(idMatricula);
 
-        if (matricula == null || matricula.Status != StatusMatricula.Concluída)
+        if (matricula == null || matricula.Status != StatusMatricula.Concluída || !matricula.CertificadoEmitido)
             return NotFound();
 
-        var pdfBytes = await _certificadoService.GerarPdfCertificadoAsync(matricula);
-
-        return File(pdfBytes, "application/pdf", $"Certificado_{matricula.Casal.Id}.pdf");
+        return File($"/certificados/Certificado_{matricula.Casal.Id}.pdf", "application/pdf", $"Certificado_{matricula.Casal.Id}.pdf");
     }
 
 

@@ -1,7 +1,11 @@
+using EnsinoApp.ViewModels.Certificado;
+
 namespace EnsinoApp.Services.Certificado;
 
 public interface ICertificadoService
 {
     Task<List<string>> GerarCertificadosAsync();
-    Task<byte[]> GerarPdfCertificadoAsync(Models.Entities.Matricula matricula);
+    Task<byte[]> GerarCertificadoPdfAsync(CertificadoViewModel model);
+
+    string GerarNomeCasal(string nome1, string nome2);
 }

@@ -7,7 +7,7 @@ namespace EnsinoApp.ViewModels.Certificado
         public DateTime DataConclusao { get; set; }
         public string NomeLider { get; set; } = null!;
         public string NomeCampus { get; set; } = null!;
-        public string LogoUrl { get; set; } = "/images/logo.png";
-        public string FundoUrl { get; set; } = "/images/fundo-textura.jpg"; // fundo decorativo
+        public string LogoUrl { get; set; } = String.Empty;
+        public string FundoUrl { get; set; } = String.Empty;
     }
 }
