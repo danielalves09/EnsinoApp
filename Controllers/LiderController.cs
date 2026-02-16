@@ -245,6 +245,7 @@ public class LiderController : Controller
         {
             foreach (var mat in matriculas)
             {
+                string codValidacao = _certificadoService.GerarCodigoValidacao();
                 var model = new CertificadoViewModel
                 {
                     NomeCasal = _certificadoService.GerarNomeCasal(mat.Casal.NomeConjuge1, mat.Casal.NomeConjuge2),
@@ -253,7 +254,8 @@ public class LiderController : Controller
                     NomeLider = mat.Turma.Lider.NomeMarido,
                     NomeCampus = mat.Turma.Campus.Nome,
                     LogoUrl = Path.Combine(_env.WebRootPath, "images", "logovideira3.png"),
-                    FundoUrl = Path.Combine(_env.WebRootPath, "images", "bordaCertificado.png").Replace("\\", "/")
+                    FundoUrl = Path.Combine(_env.WebRootPath, "images", "bordaCertificado4.png").Replace("\\", "/"),
+                    CodigoValidacao = codValidacao
                 };
 
                 var pdfBytes = await _certificadoService.GerarCertificadoPdfAsync(model);
@@ -265,7 +267,8 @@ public class LiderController : Controller
                 await entryStream.WriteAsync(pdfBytes, 0, pdfBytes.Length);
 
                 //mat.CertificadoEmitido = true;
-                //await _matriculaService.UpdateAsync(mat);
+                mat.CodigoValidacao = codValidacao;
+                await _matriculaService.UpdateAsync(mat);
             }
         }
 
@@ -294,6 +297,28 @@ public class LiderController : Controller
             return NotFound();
 
         return File($"/certificados/Certificado_{matricula.Casal.Id}.pdf", "application/pdf", $"Certificado_{matricula.Casal.Id}.pdf");
+    }
+
+    [HttpGet]
+    public IActionResult Validar() => View();
+
+    [HttpPost]
+    public async Task<IActionResult> Validar(string codigo)
+    {
+        if (string.IsNullOrWhiteSpace(codigo))
+        {
+            ViewBag.Mensagem = "Informe um código válido.";
+            return View();
+        }
+
+        var matricula = await _matriculaService.GetByCodigoValidacaoAsync(codigo);
+        if (matricula == null)
+        {
+            ViewBag.Mensagem = "Certificado não encontrado ou inválido.";
+            return View();
+        }
+
+        return View("ResultadoValidacao", matricula);
     }
 
 

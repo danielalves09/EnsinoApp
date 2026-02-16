@@ -149,5 +149,21 @@ public class MatriculaRepository : IMatriculaRepository
             .CountAsync();
     }
 
+    public async Task<Models.Entities.Matricula> GetByCodigoValidacaoAsync(string codigo)
+    {
+        if (string.IsNullOrWhiteSpace(codigo))
+            return null;
+
+        return await _context.Matriculas
+            .Include(m => m.Casal)
+            .Include(m => m.Turma)
+                .ThenInclude(t => t.Curso)
+            .Include(m => m.Turma)
+                .ThenInclude(t => t.Lider)
+            .Include(m => m.Turma)
+                .ThenInclude(t => t.Campus)
+            .FirstOrDefaultAsync(m => m.CodigoValidacao == codigo);
+    }
+
 
 }

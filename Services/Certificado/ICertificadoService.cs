@@ -8,4 +8,6 @@ public interface ICertificadoService
     Task<byte[]> GerarCertificadoPdfAsync(CertificadoViewModel model);
 
     string GerarNomeCasal(string nome1, string nome2);
+
+    string GerarCodigoValidacao();
 }

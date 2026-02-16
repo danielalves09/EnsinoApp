@@ -9,5 +9,6 @@ namespace EnsinoApp.ViewModels.Certificado
         public string NomeCampus { get; set; } = null!;
         public string LogoUrl { get; set; } = String.Empty;
         public string FundoUrl { get; set; } = String.Empty;
+        public string? CodigoValidacao { get; set; }
     }
 }

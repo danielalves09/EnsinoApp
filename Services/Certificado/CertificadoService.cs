@@ -82,4 +82,11 @@ public class CertificadoService : ICertificadoService
     {
         throw new NotImplementedException();
     }
+
+    public string GerarCodigoValidacao()
+    {
+        var codigoValidacao = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 10).ToUpper();
+        return codigoValidacao;
+
+    }
 }

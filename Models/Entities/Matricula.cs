@@ -14,6 +14,7 @@ public class Matricula
     public DateTime? DataConclusao { get; set; }
     public bool CertificadoEmitido { get; set; }
     public string? CaminhoCertificado { get; set; }
+    public string? CodigoValidacao { get; set; }
 
     public string? NomeGC { get; set; } // GC naquele curso
     public StatusMatricula Status { get; set; } = StatusMatricula.Ativa;

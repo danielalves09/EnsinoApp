@@ -78,4 +78,17 @@ public class MatriculaService : IMatriculaService
     {
         return await _repository.CountConcluidasSemCertificadoAsync();
     }
+
+    public async Task<Models.Entities.Matricula> GetByCodigoValidacaoAsync(string codigo)
+    {
+        if (string.IsNullOrWhiteSpace(codigo))
+            return null;
+
+        var matricula = await _repository.GetByCodigoValidacaoAsync(codigo);
+
+        if (matricula == null)
+            throw new KeyNotFoundException("Código de validação não encontrado.");
+
+        return matricula;
+    }
 }

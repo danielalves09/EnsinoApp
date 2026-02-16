@@ -21,5 +21,6 @@ public interface IMatriculaRepository
     Task<List<Models.Entities.Matricula>> GetConcluidasSemCertificadoAsync();
 
     Task<int> CountConcluidasSemCertificadoAsync();
+    Task<Models.Entities.Matricula> GetByCodigoValidacaoAsync(string codigo);
 
 }
