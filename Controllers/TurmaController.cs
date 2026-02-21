@@ -77,12 +77,14 @@ public class TurmaController : Controller
             DataInicio = turma.DataInicio,
             DataFim = turma.DataFim,
             TotalLicoes = turma.Curso.Licoes.Count(),
-            LicoesConcluidas = turma.Matriculas.Sum(m => m.Relatorios.Count),
+            LicoesConcluidas = turma.Matriculas.Sum(m => m.Relatorios.Count) / (turma.Matriculas.Count == 0 ? 1 : turma.Matriculas.Count),
             Status = turma.Status,
             CasaisMatriculados = turma.Matriculas.Select(m => new CasalMatriculadoViewModel
             {
                 Nome = $"{m.Casal.NomeConjuge1} / {m.Casal.NomeConjuge2}",
                 Presenca = m.Relatorios.OrderByDescending(r => r.DataRegistro).FirstOrDefault()?.Presenca ?? StatusPresenca.Ausente,
+                QtdPresencas = m.Relatorios.Count(r => r.Presenca == StatusPresenca.Presente),
+                QtdFaltas = m.Relatorios.Count(r => r.Presenca == StatusPresenca.Ausente),
                 UltimaLicao = m.Relatorios.OrderByDescending(r => r.DataRegistro).FirstOrDefault()?.DataLicao
             }).ToList()
         };

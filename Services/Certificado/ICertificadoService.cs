@@ -10,6 +10,7 @@ public interface ICertificadoService
     string GerarNomeCasal(string nome1, string nome2);
 
     string GerarCodigoValidacao();
+    //string GerarQRCode(string codigoValidacao);
     string GerarQRCode(string codigoValidacao);
     string GerarNomeLideres(string nome1, string nome2);
 }

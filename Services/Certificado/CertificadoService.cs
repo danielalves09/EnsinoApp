@@ -62,7 +62,12 @@ public class CertificadoService : ICertificadoService
             Objects = {
                 new ObjectSettings() {
                     HtmlContent = html,
-                    WebSettings = { DefaultEncoding = "utf-8" }
+                    WebSettings = {
+                        LoadImages = true,
+                        EnableJavascript = true,
+                        EnableIntelligentShrinking = true,
+                        DefaultEncoding = "utf-8"
+                        }
                 }
             }
         };
@@ -111,7 +116,7 @@ public class CertificadoService : ICertificadoService
 
     }
 
-    public string GerarQRCode(string codigoValidacao)
+    /* public string GerarQRCode(string codigoValidacao)
     {
         var urlValidacao = $"{_appSettings.CertificadoBaseUrl}{codigoValidacao}";
 
@@ -124,5 +129,17 @@ public class CertificadoService : ICertificadoService
         bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
         var base64 = Convert.ToBase64String(ms.ToArray());
         return $"data:image/png;base64,{base64}";
+    } */
+
+    public string GerarQRCode(string codigoValidacao)
+    {
+        var urlValidacao = $"{_appSettings.CertificadoBaseUrl}{codigoValidacao}";
+        using var generator = new QRCodeGenerator();
+        using var data = generator.CreateQrCode(urlValidacao, QRCodeGenerator.ECCLevel.Q);
+
+        var qrCode = new PngByteQRCode(data);
+        var bytes = qrCode.GetGraphic(10);
+
+        return $"data:image/png;base64,{Convert.ToBase64String(bytes)}";
     }
 }

@@ -361,3 +361,13 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Ignore production-specific app settings file
+appsettings.Production.json
+appsettings.json
+
+dataprotection-keys/
+docker-compose.yml
+DockerFile
+logs/
+Certificados/

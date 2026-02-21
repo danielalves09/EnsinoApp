@@ -70,8 +70,8 @@ public class LiderController : Controller
             TotalTurmasAtivas = turmas.Count(t => t.Status == Models.Enums.StatusTurma.Acomecar),
             TotalTurmasConcluidas = turmas.Count(t => t.Status == Models.Enums.StatusTurma.Concluida),
             TotalCasaisAtivos = turmas.Sum(t => t.Matriculas.Count(m => m.Status == Models.Enums.StatusMatricula.Ativa)),
-            TotalRelatoriosLancados = turmas.Sum(t => t.Matriculas.Sum(m => m.Relatorios.Count)),
-            TotalRelatoriosPendentes = turmas.Sum(t => t.Matriculas.Count() * t.Curso.Licoes.Count()) - turmas.Sum(t => t.Matriculas.Sum(m => m.Relatorios.Count)),
+            TotalRelatoriosLancados = turmas.Sum(t => t.Matriculas.Sum(m => m.Relatorios.Count) / (t.Matriculas.Count == 0 ? 1 : t.Matriculas.Count)),
+            TotalRelatoriosPendentes = turmas.Sum(t => t.Curso.Licoes.Count()) - turmas.Sum(t => t.Matriculas.Sum(m => m.Relatorios.Count) / (t.Matriculas.Count == 0 ? 1 : t.Matriculas.Count)),
             Turmas = turmas.Select(t => new ViewModels.Lider.TurmaResumoViewModel
             {
                 Id = t.Id,
@@ -79,9 +79,9 @@ public class LiderController : Controller
                 NomeCampus = t.Campus.Nome,
                 TotalCasais = t.Matriculas.Count,
                 TotalRelatoriosLancados = t.Matriculas.Sum(m => m.Relatorios.Count),
-                TotalRelatoriosPendentes = t.Matriculas.Count * t.Curso.Licoes.Count() - t.Matriculas.Sum(m => m.Relatorios.Count),
+                TotalRelatoriosPendentes = t.Curso.Licoes.Count() - t.Matriculas.Sum(m => m.Relatorios.Count),
                 TotalLicoes = t.Curso.Licoes.Count(),
-                LicoesConcluidas = t.Matriculas.Sum(m => m.Relatorios.Count),
+                LicoesConcluidas = turmas.Sum(t => t.Matriculas.Sum(m => m.Relatorios.Count) / (t.Matriculas.Count == 0 ? 1 : t.Matriculas.Count)),
                 StatusTurma = t.Status,
                 DataInicio = t.DataInicio,
                 DataFim = t.DataFim
@@ -110,12 +110,14 @@ public class LiderController : Controller
             DataInicio = turma.DataInicio,
             DataFim = turma.DataFim,
             TotalLicoes = turma.Curso.Licoes.Count(),
-            LicoesConcluidas = turma.Matriculas.Sum(m => m.Relatorios.Count),
+            LicoesConcluidas = turma.Matriculas.Sum(m => m.Relatorios.Count) / (turma.Matriculas.Count == 0 ? 1 : turma.Matriculas.Count),
             Status = turma.Status,
             CasaisMatriculados = turma.Matriculas.Select(m => new ViewModels.Turmas.CasalMatriculadoViewModel
             {
                 Nome = $"{m.Casal.NomeConjuge1} / {m.Casal.NomeConjuge2}",
                 Presenca = m.Relatorios.OrderByDescending(r => r.DataRegistro).FirstOrDefault()?.Presenca ?? StatusPresenca.Ausente,
+                QtdPresencas = m.Relatorios.Count(r => r.Presenca == StatusPresenca.Presente),
+                QtdFaltas = m.Relatorios.Count(r => r.Presenca == StatusPresenca.Ausente),
                 UltimaLicao = m.Relatorios.OrderByDescending(r => r.DataRegistro).FirstOrDefault()?.DataLicao,
                 Matricula = m
             }).ToList()
@@ -267,10 +269,13 @@ public class LiderController : Controller
                     NomeCampus = mat.Turma.Campus.Nome,
                     LogoUrl = Path.Combine(_env.WebRootPath, "images", "logovideira3.png"),
                     FundoUrl = Path.Combine(_env.WebRootPath, "images", "bordaCertificado4.png").Replace("\\", "/"),
+                    FontWoff2Url = Path.Combine(_env.WebRootPath, "fonts", "greatvibes-regular.woff2").Replace("\\", "/"),
+                    FontWoffUrl = Path.Combine(_env.WebRootPath, "fonts", "greatvibes-regular.woff").Replace("\\", "/"),
+                    FontTtfUrl = Path.Combine(_env.WebRootPath, "fonts", "greatvibes-regular.ttf").Replace("\\", "/"),
                     CodigoValidacao = codValidacao,
                     QRCodeBase64 = _certificadoService.GerarQRCode(codValidacao)
                 };
-
+                Console.WriteLine(model.FundoUrl);
                 // Gera o PDF
                 var pdfBytes = await _certificadoService.GerarCertificadoPdfAsync(model);
                 if (pdfBytes == null || pdfBytes.Length == 0)

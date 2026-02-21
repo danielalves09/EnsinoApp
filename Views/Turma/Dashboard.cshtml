@@ -102,8 +102,12 @@
         labels: @Html.Raw(Json.Serialize(Model.CasaisMatriculados.Select(c => c.Nome))),
         datasets: [{
         label: 'Presença',
-        data: @Html.Raw(Json.Serialize(Model.CasaisMatriculados.Select(c => c.Presenca == 0 ? 1 : 0))),
+        data: @Html.Raw(Json.Serialize(Model.CasaisMatriculados.Select(c => c.QtdPresencas))),
         backgroundColor: 'rgba(54, 162, 235, 0.6)'
+        }, {
+        label: 'Falta',
+        data: @Html.Raw(Json.Serialize(Model.CasaisMatriculados.Select(c => c.QtdFaltas))),
+        backgroundColor: 'rgba(255, 0, 0, 0.8)'
         }]
         };
         const chart = new Chart(ctx, {
