@@ -71,7 +71,7 @@
                             <p>@ViewBag.Mensagem</p>
                         }
 
-                        <form method="post">
+                        <form asp-action="Verificar" method="post">
                             <input type="text" class="form-control" name="codigo"
                                    placeholder="Digite o código do certificado" required />
                             <div class="d-grid mt-4">

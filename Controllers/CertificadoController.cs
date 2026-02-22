@@ -14,19 +14,15 @@ public class CertificadoController : Controller
         _matriculaService = matriculaService;
     }
 
-    [HttpGet]
-    public IActionResult Validar() => View();
-
-    [HttpPost]
-    public async Task<IActionResult> Validar(string codigo)
+    [HttpGet("Certificado/Validar/{codigo?}")]
+    public async Task<IActionResult> Validar(string? codigo)
     {
+
         if (string.IsNullOrWhiteSpace(codigo))
-        {
-            ViewBag.Mensagem = "Informe um código válido.";
             return View();
-        }
 
         var matricula = await _matriculaService.GetByCodigoValidacaoAsync(codigo);
+
         if (matricula == null)
         {
             ViewBag.Mensagem = "Certificado não encontrado ou inválido.";
@@ -34,6 +30,14 @@ public class CertificadoController : Controller
         }
 
         return View("ResultadoValidacao", matricula);
+
+
+    }
+
+    [HttpPost]
+    public IActionResult Verificar(string codigo)
+    {
+        return RedirectToAction(nameof(Validar), new { codigo });
     }
 
 
