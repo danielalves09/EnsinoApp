@@ -17,6 +17,7 @@ namespace EnsinoApp.Models.Entities
         // Dados adicionais
         public bool Ativo { get; set; }
         public DateTime DataCriacao { get; set; }
+        public string? FotoPerfil { get; set; }
 
 
         // Relacionamentos

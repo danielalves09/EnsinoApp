@@ -1,5 +1,6 @@
 using EnsinoApp.Models.Entities;
 using EnsinoApp.Services.Campus;
+using EnsinoApp.Services.Notifications;
 using EnsinoApp.Services.Usuarios;
 using EnsinoApp.ViewModels.Usuario;
 using Microsoft.AspNetCore.Authorization;
@@ -16,13 +17,17 @@ public class UsuariosController : Controller
 
     private readonly UserManager<Usuario> _userManager;
     private readonly RoleManager<IdentityRole<int>> _roleManager;
+    private readonly IWebHostEnvironment _env;
+    private readonly INotificationService _notification;
     private const int TAMANHO_PAGINA = 10;
 
-    public UsuariosController(UserManager<Usuario> userManager, RoleManager<IdentityRole<int>> roleManager, IUsuariosService usuarioService)
+    public UsuariosController(UserManager<Usuario> userManager, RoleManager<IdentityRole<int>> roleManager, IUsuariosService usuarioService, IWebHostEnvironment env, INotificationService notification)
     {
         _userManager = userManager;
         _roleManager = roleManager;
         _usuarioService = usuarioService;
+        _env = env;
+        _notification = notification;
     }
 
     public IActionResult Index(string filtro)
@@ -115,6 +120,56 @@ public class UsuariosController : Controller
             .ToList();
 
         return Json(usuarios);
+    }
+
+    public async Task<IActionResult> Perfil()
+    {
+        var user = await _userManager.GetUserAsync(User);
+
+        var model = new UsuarioPerfilViewModel
+        {
+            Nome = user.NomeMarido,
+            Email = user.Email,
+            FotoPerfilUrl = user.FotoPerfil
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> AlterarFoto(UsuarioPerfilViewModel model)
+    {
+        if (model.Foto == null || model.Foto.Length == 0)
+        {
+            _notification.Warning("Selecione uma imagem válida.");
+            return RedirectToAction(nameof(Perfil));
+        }
+
+        var user = await _userManager.GetUserAsync(User);
+
+        var pasta = Path.Combine(_env.WebRootPath, "uploads", "perfis");
+        if (!Directory.Exists(pasta))
+            Directory.CreateDirectory(pasta);
+
+        var extensao = Path.GetExtension(model.Foto.FileName);
+
+        // fallback de segurança
+        if (string.IsNullOrEmpty(extensao))
+            extensao = ".png";
+
+        var nomeArquivo = $"usuario_{user.Id}{extensao}";
+        var caminhoFisico = Path.Combine(pasta, nomeArquivo);
+
+        using (var stream = new FileStream(caminhoFisico, FileMode.Create))
+        {
+            await model.Foto.CopyToAsync(stream);
+        }
+
+        user.FotoPerfil = $"/uploads/perfis/{nomeArquivo}";
+        await _userManager.UpdateAsync(user);
+
+        _notification.Success("Foto atualizada com sucesso.");
+        return RedirectToAction(nameof(Perfil));
     }
 
 }

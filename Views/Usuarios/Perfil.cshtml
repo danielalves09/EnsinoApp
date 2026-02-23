@@ -1,0 +1,209 @@
+@model EnsinoApp.ViewModels.Usuario.UsuarioPerfilViewModel;
+@{
+    ViewData["Title"] = "Meu Perfil";
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Meus Dados</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="row">
+
+        <!-- COLUNA ESQUERDA -->
+        <div class="col-md-3">
+
+            <!-- Profile Image -->
+            <div class="card card-primary card-outline">
+                <div class="card-body box-profile text-center">
+
+                    <img id="fotoPerfil" class="profile-user-img img-fluid img-circle"
+                         src="@(Model.FotoPerfilUrl ?? "../images/avatar-default.jpg")" alt="Foto do usuário">
+
+                    <h3 class="profile-username text-center">@Model.Nome</h3>
+                    <p class="text-muted">@Model.Email</p>
+
+                    <button class="btn btn-primary btn-block" data-toggle="modal" data-target="#modalFoto"
+                            id="btnAlterarFoto">
+                        <i class="fas fa-camera"></i> Alterar foto
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- COLUNA DIREITA -->
+        <div class="col-md-9">
+
+            <div class="card">
+                <div class="card-header p-2">
+                    <ul class="nav nav-pills">
+
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="tab" href="#dados">
+                                <i class="fas fa-user"></i> Dados Pessoais
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#senha">
+                                <i class="fas fa-key"></i> Alterar Senha
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+
+                <div class="card-body">
+                    <div class="tab-content">
+
+                        <!-- ABA DADOS -->
+                        <div class="active tab-pane" id="dados">
+                            <form asp-action="AtualizarPerfil" method="post">
+
+                                <div class="form-group">
+                                    <label>Nome</label>
+                                    <input asp-for="Nome" class="form-control" />
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <input asp-for="Email" class="form-control" />
+                                </div>
+
+                                <button class="btn btn-success">
+                                    <i class="fas fa-save"></i> Salvar Alterações
+                                </button>
+
+                            </form>
+                        </div>
+
+                        <!-- ABA SENHA -->
+                        <div class="tab-pane" id="senha">
+                            <form asp-action="AlterarSenha" method="post">
+
+                                <div class="form-group">
+                                    <label>Senha Atual</label>
+                                    <input asp-for="SenhaAtual" type="password" class="form-control" />
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Nova Senha</label>
+                                    <input asp-for="NovaSenha" type="password" class="form-control" />
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Confirmar Nova Senha</label>
+                                    <input asp-for="ConfirmarSenha" type="password" class="form-control" />
+                                </div>
+
+                                <button class="btn btn-warning">
+                                    <i class="fas fa-key"></i> Alterar Senha
+                                </button>
+
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalFoto">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Alterar foto de perfil</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+
+                    <input type="file" id="inputImagem" class="form-control mb-3" accept="image/*" />
+
+                    <div>
+                        <img id="previewImagem" style="max-width: 100%; display: none;" />
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button id="btnSalvarFoto" class="btn btn-primary">
+                        <i class="fas fa-check"></i> Salvar Foto
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
+@section Scripts {
+    <script>
+                                                                                let cropper;
+
+                                                                                const inputImagem = document.getElementById('inputImagem');
+                                                                                const previewImagem = document.getElementById('previewImagem');
+                                                                                const btnSalvar = document.getElementById('btnSalvarFoto');
+
+                                                                                inputImagem.addEventListener('change', function (e) {
+
+                                                                                    const file = e.target.files[0];
+                                                                                    if (!file) return;
+
+                                                                                    const reader = new FileReader();
+                                                                                    reader.onload = function (event) {
+
+                                                                                        previewImagem.src = event.target.result;
+                                                                                        previewImagem.style.display = 'block';
+
+                                                                                        if (cropper) cropper.destroy();
+
+                                                                                        cropper = new Cropper(previewImagem, {
+                                                                                            aspectRatio: 1,
+                                                                                            viewMode: 1,
+                                                                                            autoCropArea: 1,
+                                                                                            responsive: true,
+                                                                                            background: false
+                                                                                        });
+                                                                                    };
+                                                                                    reader.readAsDataURL(file);
+                                                                                });
+
+                                                                                btnSalvar.addEventListener('click', function () {
+
+                                                                                    if (!cropper) return;
+
+                                                                                    cropper.getCroppedCanvas({
+                                                                                        width: 300,
+                                                                                        height: 300
+                                                                                    }).toBlob(blob => {
+
+                                                                                        const formData = new FormData();
+                                                                                        formData.append('Foto', blob, blob.name);
+
+                                                                                        fetch('/Usuarios/AlterarFoto', {
+                                                                                            method: 'POST',
+                                                                                            body: formData
+                                                                                        })
+                                                                                        .then(r => {
+                                                                                            if (r.ok) location.reload();
+                                                                                            else alert('Erro ao salvar a foto');
+                                                                                        });
+                                                                                    });
+                                                                                });
+    </script>
+}

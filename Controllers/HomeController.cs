@@ -53,10 +53,12 @@ namespace EnsinoApp.Controllers
                     //Opção para exibir o nome do casal futuramente
                     //nomeUsuario = user.NomeMarido + (string.IsNullOrEmpty(user.NomeEsposa) ? "" : " & " + user.NomeEsposa);
                     nomeUsuario = user.NomeMarido;
+                    ViewBag.FotoPerfil = user.FotoPerfil;
                 }
             }
 
             ViewBag.NomeUsuario = nomeUsuario;
+
 
             var vm = new DashboardViewModel();
 
