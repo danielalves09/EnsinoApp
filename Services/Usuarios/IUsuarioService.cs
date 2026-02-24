@@ -9,5 +9,6 @@ public interface IUsuariosService
     IEnumerable<Usuario> FindAll();
     IEnumerable<Usuario> FindByCampus(int idCampus);
     IEnumerable<Usuario> findBySupervisao(int idSupervisao);
+    public string GetNomeReduzido(string nome1, string nome2);
 
 }

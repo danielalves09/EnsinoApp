@@ -9,27 +9,28 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EnsinoApp.Controllers;
 
-[Authorize(Roles = "Admin,Pastor,Coordenador")]
 public class UsuariosController : Controller
 {
 
     private readonly IUsuariosService _usuarioService;
-
     private readonly UserManager<Usuario> _userManager;
+    private readonly SignInManager<Usuario> _signInManager;
     private readonly RoleManager<IdentityRole<int>> _roleManager;
     private readonly IWebHostEnvironment _env;
     private readonly INotificationService _notification;
     private const int TAMANHO_PAGINA = 10;
 
-    public UsuariosController(UserManager<Usuario> userManager, RoleManager<IdentityRole<int>> roleManager, IUsuariosService usuarioService, IWebHostEnvironment env, INotificationService notification)
+    public UsuariosController(UserManager<Usuario> userManager, RoleManager<IdentityRole<int>> roleManager, IUsuariosService usuarioService, IWebHostEnvironment env, INotificationService notification, SignInManager<Usuario> signInManager)
     {
         _userManager = userManager;
         _roleManager = roleManager;
         _usuarioService = usuarioService;
         _env = env;
         _notification = notification;
+        _signInManager = signInManager;
     }
 
+    [Authorize(Roles = "Admin,Pastor,Coordenador,Supervisor")]
     public IActionResult Index(string filtro)
     {
         var usuarios = _usuarioService.FindAll();
@@ -59,12 +60,14 @@ public class UsuariosController : Controller
         return View(model);
     }
 
+    [Authorize(Roles = "Admin,Pastor,Coordenador,Supervisor")]
     public IActionResult Adicionar()
     {
         return View(new AdicionarUsuarioViewModel());
 
     }
 
+    [Authorize(Roles = "Admin,Pastor,Coordenador,Supervisor")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Adicionar(AdicionarUsuarioViewModel model)
@@ -122,20 +125,25 @@ public class UsuariosController : Controller
         return Json(usuarios);
     }
 
+    [Authorize(Roles = "Admin,Pastor,Coordenador,Supervisor, Lider")]
     public async Task<IActionResult> Perfil()
     {
         var user = await _userManager.GetUserAsync(User);
-
+        var usuario = user != null ? _usuarioService.FindById(user.Id) : null;
         var model = new UsuarioPerfilViewModel
         {
-            Nome = user.NomeMarido,
+            Nome = user!.NomeMarido,
             Email = user.Email,
-            FotoPerfilUrl = user.FotoPerfil
+            FotoPerfilUrl = user.FotoPerfil,
+            Role = (await _userManager.GetRolesAsync(user)).FirstOrDefault() ?? "Não definida",
+            Campus = usuario!.Campus.Nome,
+            Supervisao = usuario.Supervisao?.Nome
         };
 
         return View(model);
     }
 
+    [Authorize(Roles = "Admin,Pastor,Coordenador,Supervisor, Lider")]
     [HttpPost]
     public async Task<IActionResult> AlterarFoto(UsuarioPerfilViewModel model)
     {
@@ -169,6 +177,58 @@ public class UsuariosController : Controller
         await _userManager.UpdateAsync(user);
 
         _notification.Success("Foto atualizada com sucesso.");
+        return RedirectToAction(nameof(Perfil));
+    }
+
+    [Authorize(Roles = "Admin,Pastor,Coordenador,Supervisor, Lider")]
+    [HttpPost]
+    public async Task<IActionResult> AlterarSenha(UsuarioPerfilViewModel model)
+    {
+
+        var user = await _userManager.GetUserAsync(User);
+
+        var result = await _userManager.ChangePasswordAsync(
+            user,
+            model.SenhaAtual,
+            model.NovaSenha
+        );
+
+        if (!result.Succeeded)
+        {
+            foreach (var error in result.Errors)
+                ModelState.AddModelError("", error.Description);
+
+            return View(model);
+        }
+
+        await _signInManager.RefreshSignInAsync(user);
+        _notification.Success("Senha alterada com sucesso.");
+
+        return RedirectToAction(nameof(Perfil));
+    }
+
+    [Authorize(Roles = "Admin,Pastor,Coordenador,Supervisor, Lider")]
+    [HttpPost]
+    public async Task<IActionResult> AtualizarDados(UsuarioPerfilViewModel model)
+    {
+
+        var user = await _userManager.GetUserAsync(User);
+
+        user.NomeMarido = model.Nome;
+        user.Email = model.Email;
+        user.UserName = model.Email;
+
+        var result = await _userManager.UpdateAsync(user);
+
+        if (!result.Succeeded)
+        {
+            _notification.Error("Erro ao atualizar dados.");
+            return View(model);
+        }
+
+        await _signInManager.RefreshSignInAsync(user);
+        _notification.Success("Dados atualizados com sucesso.");
+
         return RedirectToAction(nameof(Perfil));
     }
 

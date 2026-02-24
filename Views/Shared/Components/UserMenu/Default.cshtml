@@ -1,0 +1,18 @@
+<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+    <img src="@Model.FotoUrl" class="user-image img-circle elevation-2" alt="User Image">
+    <span class="d-none d-md-inline">Meus Dados</span>
+</a>
+<ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+    <li class="user-header bg-primary">
+        <img src="@Model.FotoUrl" class="img-circle elevation-2" alt="User Image">
+        <p>
+            @Model.Nome
+        </p>
+    </li>
+    <li class="user-footer">
+        <a href="/Usuarios/Perfil" class="btn btn-default btn-flat">Perfil</a>
+        <a class="btn btn-default btn-flat float-right" href="/Auth/Logout">
+            <i class="fas fa-sign-out-alt"></i> Sair
+        </a>
+    </li>
+</ul>

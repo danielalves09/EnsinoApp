@@ -34,40 +34,9 @@
             <!-- Right navbar links -->
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item dropdown user-menu">
-                    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
-                        <img src="@(ViewBag.FotoPerfil ?? "/images/avatar-default.png")"
-                             class="user-image img-circle elevation-2" alt="User Image">
-                        <span class="d-none d-md-inline">@ViewBag.NomeUsuario</span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                        <!-- User image -->
-                        <li class="user-header bg-primary">
-                            <img src="@(ViewBag.FotoPerfil ?? "/images/avatar-default.png")"
-                                 class="img-circle elevation-2" alt="User Image">
-
-                            <p>
-                                @ViewBag.NomeUsuario
-                                <small>- -</small>
-                            </p>
-                        </li>
-                        <!-- Menu Body -->
-
-                        <!-- Menu Footer-->
-                        <li class="user-footer">
-                            <a href="/usuarios/perfil" class="btn btn-default btn-flat">Perfil</a>
-
-                            <a class="btn btn-default btn-flat float-right" role="button" asp-controller="Auth"
-                                   asp-action="Logout">
-                                <i class="fas fa-sign-out-alt"></i> Sair
-                            </a>
-                        </li>
-                    </ul>
+                    @await Component.InvokeAsync("UserMenu")
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" role="button" asp-controller="Auth" asp-action="Logout">
-                        <i class="fas fa-sign-out-alt"></i>
-                    </a>
-                </li>
+
             </ul>
         </nav>
         <!-- /.navbar -->

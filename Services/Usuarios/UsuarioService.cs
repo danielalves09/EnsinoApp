@@ -33,4 +33,19 @@ public class UsuariosService : IUsuariosService
     {
         throw new NotImplementedException();
     }
+
+    public string GetNomeReduzido(string nome1, string nome2)
+    {
+
+        return $"{GetPrimeiroNome(nome1)} e {GetPrimeiroNome(nome2)}";
+    }
+
+    private string GetPrimeiroNome(string nomeCompleto)
+    {
+        if (string.IsNullOrEmpty(nomeCompleto)) return string.Empty;
+        var partes = nomeCompleto.Split(' ');
+        if (partes.Length >= 2)
+            return $"{partes[0]}"; // Primeiro nome
+        return partes[0];
+    }
 }
