@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using EnsinoApp.Models.Enums;
 using Microsoft.AspNetCore.Authorization;
+using EnsinoApp.Services.Util;
 
 namespace EnsinoApp.Controllers;
 
@@ -15,11 +16,14 @@ public class CursoController : Controller
     private readonly ICursoService _cursoService;
     private readonly ICampusService _campusService;
 
+    private readonly IUtilService _utilService;
+
     private const int TAMANHO_PAGINA = 10;
-    public CursoController(ICursoService cursoService, ICampusService campusService)
+    public CursoController(ICursoService cursoService, ICampusService campusService, IUtilService utilService)
     {
         _cursoService = cursoService;
         _campusService = campusService;
+        _utilService = utilService;
     }
 
     public IActionResult Index(string filtro, int pagina = 1)
@@ -125,7 +129,7 @@ public class CursoController : Controller
         var turmas = curso.Turmas.Select(t => new CursoDashboardViewModel.TurmaInfo
         {
             Id = t.Id,
-            NomeLider = t.Lider.NomeMarido + " e " + t.Lider.NomeEsposa,
+            NomeLider = _utilService.GetNomeSobrenome(t.Lider.NomeMarido, t.Lider.NomeEsposa),
             imgLider = t.Lider.FotoPerfil,
             DataInicio = t.DataInicio,
             DataFim = t.DataFim,

@@ -46,7 +46,7 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
-//builder.Host.UseSerilog();
+builder.Host.UseSerilog();
 
 // ================= CARREGAR DLLS NATIVAS DINKTOPDF ==================
 // Define o caminho das DLLs dependendo do SO
@@ -67,16 +67,16 @@ var wkhtmlPath = Path.Combine(
 
 // Carrega DLL nativa
 var context = new CustomAssemblyLoadContext();
-//context.LoadUnmanagedLibrary(nativeLibPath);
+context.LoadUnmanagedLibrary(nativeLibPath);
 
 
 // ==================== DATA PROTECTION - IIS =====================
-// var keysFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "EnsinoApp", "Keys");
-// Directory.CreateDirectory(keysFolder);
+  var keysFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "EnsinoApp", "Keys");
+  Directory.CreateDirectory(keysFolder);
 
-// builder.Services.AddDataProtection()
-//     .PersistKeysToFileSystem(new DirectoryInfo(keysFolder))
-//     .SetApplicationName("EnsinoApp");
+  builder.Services.AddDataProtection()
+     .PersistKeysToFileSystem(new DirectoryInfo(keysFolder))
+     .SetApplicationName("EnsinoApp");
 
 
 // =================== SERVIÇOS E DEPENDÊNCIAS =====================
