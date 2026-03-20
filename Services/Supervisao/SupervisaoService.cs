@@ -13,6 +13,11 @@ public class SupervisaoService : ISupervisaoService
         _supervisaoRepository = supervisaoRepository;
     }
 
+    public Task<int> ContarTotal()
+    {
+        return _supervisaoRepository.ContarTotal();
+    }
+
     public Models.Entities.Supervisao Create(Models.Entities.Supervisao model)
     {
         var supervisaoCreated = _supervisaoRepository.Create(model);

@@ -66,7 +66,7 @@ public class LiderController : Controller
 
         var vm = new LiderDashboardViewModel
         {
-            NomeLider = user.NomeMarido + " e " + user.NomeEsposa,
+            NomeLider = _turmaService.GerarNomeLideres(user.NomeMarido, user.NomeEsposa),
             TotalTurmasAtivas = turmas.Count(t => t.Status == Models.Enums.StatusTurma.Acomecar),
             TotalTurmasConcluidas = turmas.Count(t => t.Status == Models.Enums.StatusTurma.Concluida),
             TotalCasaisAtivos = turmas.Sum(t => t.Matriculas.Count(m => m.Status == Models.Enums.StatusMatricula.Ativa)),
@@ -115,6 +115,7 @@ public class LiderController : Controller
             CasaisMatriculados = turma.Matriculas.Select(m => new ViewModels.Turmas.CasalMatriculadoViewModel
             {
                 Nome = $"{m.Casal.NomeConjuge1} / {m.Casal.NomeConjuge2}",
+                PrimeiroNome = $"{m.Casal.NomeConjuge1.Split(' ')[0]} e {m.Casal.NomeConjuge2.Split(' ')[0]}",
                 Presenca = m.Relatorios.OrderByDescending(r => r.DataRegistro).FirstOrDefault()?.Presenca ?? StatusPresenca.Ausente,
                 QtdPresencas = m.Relatorios.Count(r => r.Presenca == StatusPresenca.Presente),
                 QtdFaltas = m.Relatorios.Count(r => r.Presenca == StatusPresenca.Ausente),
@@ -131,7 +132,15 @@ public class LiderController : Controller
     public async Task<IActionResult> Relatorios(int idTurma)
     {
         var relatorios = await _service.ObterRelatoriosAsync(idTurma);
-        return View(relatorios);
+        if (relatorios.Count > 0)
+        {
+            return View(relatorios);
+        }
+        else
+        {
+            _notification.Info("Nenhum relatório encontrado para esta turma.");
+            return RedirectToAction(nameof(Turma), new { id = idTurma });
+        }
     }
 
     public async Task<IActionResult> CriarRelatorio(int idTurma)

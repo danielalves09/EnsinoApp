@@ -13,6 +13,11 @@ public class SupervisaoRepository : ISupervisaoRepository
         _context = context;
     }
 
+    public Task<int> ContarTotal()
+    {
+        return _context.Supervisoes.CountAsync();
+    }
+
     public Models.Entities.Supervisao Create(Models.Entities.Supervisao model)
     {
         _context.Supervisoes.Add(model);

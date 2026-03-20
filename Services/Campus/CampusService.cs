@@ -12,6 +12,11 @@ public class CampusService : ICampusService
         _campusRepository = campusRepository;
     }
 
+    public Task<int> ContarTotal()
+    {
+        return _campusRepository.ContarTotal();
+    }
+
     public Models.Entities.Campus Create(Models.Entities.Campus model)
     {
         var campusCreate = _campusRepository.Create(model);

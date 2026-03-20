@@ -1,5 +1,6 @@
 ﻿@model EnsinoApp.ViewModels.Home.DashboardViewModel
 @using System.Text.Json
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
 @{
     ViewData["Title"] = "Home";
 }
@@ -29,7 +30,7 @@
             <div class="col-lg-3 col-6">
                 <div class="small-box card-outline card-info shadow">
                     <div class="inner">
-                        <h3>3</h3>
+                        <h3>@ViewBag.QtdCampus</h3>
                         <p>Campus</p>
                     </div>
                     <div class="icon"><i class="fas fa-building nav-icon"></i></div>
@@ -40,7 +41,7 @@
                 <div class="col-lg-3 col-6">
                     <div class="small-box card-outline card-success shadow">
                         <div class="inner">
-                            <h3>25</h3>
+                            <h3>@ViewBag.QtdSupervisoes</h3>
                             <p>Supervisões</p>
                         </div>
                         <div class="icon"><i class="fas fa-users nav-icon"></i></div>
@@ -51,7 +52,7 @@
                     <div class="col-lg-3 col-6">
                         <div class="small-box card-outline card-warning shadow">
                             <div class="inner">
-                                <h3>20</h3>
+                                <h3>@ViewBag.QtdLideres</h3>
                                 <p>Líderes de curso</p>
                             </div>
                             <div class="icon"><i class="fas fa-user nav-icon"></i></div>
@@ -62,7 +63,7 @@
                         <div class="col-lg-3 col-6">
                             <div class="small-box card-outline card-danger shadow">
                                 <div class="inner">
-                                    <h3>65</h3>
+                                    <h3>@ViewBag.QtdCasaisMatriculados</h3>
                                     <p>Casais Matriculados</p>
                                 </div>
                                 <div class="icon"><i class="fas fa-graduation-cap nav-icon"></i></div>

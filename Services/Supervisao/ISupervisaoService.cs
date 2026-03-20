@@ -10,5 +10,6 @@ public interface ISupervisaoService
     Models.Entities.Supervisao? FindById(int id);
     Models.Entities.Supervisao Update(Models.Entities.Supervisao model);
     void Delete(int id);
+    Task<int> ContarTotal();
 
 }

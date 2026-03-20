@@ -1,36 +1,38 @@
-using EnsinoApp.Data;
-using EnsinoApp.Repositories.Campus;
-using EnsinoApp.Repositories.Supervisao;
-using EnsinoApp.Repositories.Usuarios;
-using EnsinoApp.Repositories.Cursos;
-using EnsinoApp.Repositories.Turmas;
-using EnsinoApp.Repositories.Matricula;
-using EnsinoApp.Repositories.Inscricao;
-using EnsinoApp.Repositories.Casal;
-using EnsinoApp.Repositories.Licao;
-using EnsinoApp.Repositories.RelatorioSemanal;
-using EnsinoApp.Services.Campus;
-using EnsinoApp.Services.Supervisao;
-using EnsinoApp.Services.Usuarios;
-using EnsinoApp.Services.Cursos;
-using EnsinoApp.Services.Turmas;
-using EnsinoApp.Services.Matricula;
-using EnsinoApp.Services.Inscricao;
-using EnsinoApp.Services.Casal;
-using EnsinoApp.Services.Licao;
-using EnsinoApp.Services.Lider;
-using EnsinoApp.Services.Certificado;
-using EnsinoApp.Services.Notifications;
-using EnsinoApp.Middlewares;
-using EnsinoApp.Data.Configurations;
-using EnsinoApp.Models.Entities;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using DinkToPdf;
 using DinkToPdf.Contracts;
+using EnsinoApp.Config;
+using EnsinoApp.Data;
+using EnsinoApp.Data.Configurations;
+using EnsinoApp.Middlewares;
+using EnsinoApp.Models.Entities;
+using EnsinoApp.Repositories.Campus;
+using EnsinoApp.Repositories.Casal;
+using EnsinoApp.Repositories.Cursos;
+using EnsinoApp.Repositories.Inscricao;
+using EnsinoApp.Repositories.Licao;
+using EnsinoApp.Repositories.Matricula;
+using EnsinoApp.Repositories.RelatorioSemanal;
+using EnsinoApp.Repositories.Supervisao;
+using EnsinoApp.Repositories.Turmas;
+using EnsinoApp.Repositories.Usuarios;
+using EnsinoApp.Services.Campus;
+using EnsinoApp.Services.Casal;
+using EnsinoApp.Services.Certificado;
+using EnsinoApp.Services.Cursos;
+using EnsinoApp.Services.Inscricao;
+using EnsinoApp.Services.Licao;
+using EnsinoApp.Services.Lider;
+using EnsinoApp.Services.Matricula;
+using EnsinoApp.Services.Notifications;
+using EnsinoApp.Services.Supervisao;
+using EnsinoApp.Services.Turmas;
+using EnsinoApp.Services.Usuarios;
+using EnsinoApp.Services.Util;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System.Runtime.InteropServices;
-using EnsinoApp.Config;
 
 // ======== CONFIGURA SERILOG =========
 Log.Logger = new LoggerConfiguration()
@@ -44,7 +46,7 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Host.UseSerilog();
+//builder.Host.UseSerilog();
 
 // ================= CARREGAR DLLS NATIVAS DINKTOPDF ==================
 // Define o caminho das DLLs dependendo do SO
@@ -57,10 +59,25 @@ else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
     nativeLibPath = Path.Combine(AppContext.BaseDirectory, "libwkhtmltox.dylib");
 else
     throw new PlatformNotSupportedException("Sistema operacional não suportado para DinkToPdf");
+/* 
+var wkhtmlPath = Path.Combine(
+    builder.Environment.ContentRootPath,
+    "libwkhtmltox.dll"
+); */
 
 // Carrega DLL nativa
 var context = new CustomAssemblyLoadContext();
-context.LoadUnmanagedLibrary(nativeLibPath);
+//context.LoadUnmanagedLibrary(nativeLibPath);
+
+
+// ==================== DATA PROTECTION - IIS =====================
+// var keysFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "EnsinoApp", "Keys");
+// Directory.CreateDirectory(keysFolder);
+
+// builder.Services.AddDataProtection()
+//     .PersistKeysToFileSystem(new DirectoryInfo(keysFolder))
+//     .SetApplicationName("EnsinoApp");
+
 
 // =================== SERVIÇOS E DEPENDÊNCIAS =====================
 builder.Services.AddControllersWithViews();
@@ -95,6 +112,7 @@ builder.Services.AddScoped<ILiderService, LiderService>();
 builder.Services.AddScoped<ICertificadoService, CertificadoService>();
 builder.Services.AddScoped<IPdfService, PdfService>();
 builder.Services.AddScoped<IRazorViewToStringRenderer, RazorViewToStringRenderer>();
+builder.Services.AddScoped<IUtilService, UtilService>();
 
 // Identity
 builder.Services.AddIdentity<Usuario, IdentityRole<int>>(options =>

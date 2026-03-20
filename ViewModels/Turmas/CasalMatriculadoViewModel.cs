@@ -5,6 +5,7 @@ namespace EnsinoApp.ViewModels.Turmas
     public class CasalMatriculadoViewModel
     {
         public string Nome { get; set; } = null!;
+        public string PrimeiroNome { get; set; } = null!;
         public StatusPresenca Presenca { get; set; }
         public int QtdPresencas { get; set; }
         public int QtdFaltas { get; set; }

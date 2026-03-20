@@ -65,56 +65,67 @@
                         </div>
                     </div>
                     <!-- /.card-header -->
-
-
-                    <table class="table table-striped mt-3">
-                        <thead>
-                            <tr>
-                                <th>Curso</th>
-                                <th>Campus</th>
-                                <th>Líderes</th>
-                                <th>Data Início</th>
-                                <th>Data Fim</th>
-                                <th>Status</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var t in Model)
-                            {
-                                <tr>
-                                    <td>@t.NomeCurso</td>
-                                    <td>@t.NomeCampus</td>
-                                    <td>@t.NomeLider</td>
-                                    <td>@t.DataInicio.ToShortDateString()</td>
-                                    <td>@t.DataFim.ToShortDateString()</td>
-                                    <td> @if (t.Status == StatusTurma.Acomecar)
-                                    {
-                                        <span class="badge bg-primary">A começar</span>
-                                    }
-                                    else if (t.Status == StatusTurma.EmAndamento)
-                                    {
-                                        <span class="badge bg-primary">Em Andamento</span>
-                                    }
-                                    else if (t.Status == StatusTurma.Concluida)
-                                    {
-                                        <span class="badge bg-success">Concluída</span>
-                                    }
-                                    else if (t.Status == StatusTurma.Cancelada)
-                                    {
-                                        <span class="badge bg-danger">Cancelada</span>
-                                    }</td>
-                                    <td>
-                                        <a asp-action="Dashboard" asp-route-id="@t.Id" class="btn btn-sm btn-info">Dashboard</a>
-                                        <a asp-action="Editar" asp-route-id="@t.Id" class="btn btn-sm btn-warning">Editar</a>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
                 </div>
                 <!-- /.card -->
             </div>
         </div>
-    </section>
-    <!-- /.content -->
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body table-responsive p-0">
+                        <table class="table table-striped mt-3">
+                            <thead>
+                                <tr>
+                                    <th>Curso</th>
+                                    <th>Campus</th>
+                                    <th>Líderes</th>
+                                    <th>Data Início</th>
+                                    <th>Data Fim</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var t in Model)
+                                {
+                                    <tr>
+                                        <td>@t.NomeCurso</td>
+                                        <td>@t.NomeCampus</td>
+                                        <td>@t.NomeLider</td>
+                                        <td>@t.DataInicio.ToShortDateString()</td>
+                                        <td>@t.DataFim.ToShortDateString()</td>
+                                        <td> @if (t.Status == StatusTurma.Acomecar)
+                                            {
+                                                <span class="badge bg-primary">A começar</span>
+                                            }
+                                    else if (t.Status == StatusTurma.EmAndamento)
+                                            {
+                                                <span class="badge bg-primary">Em Andamento</span>
+                                            }
+                                            else if (t.Status == StatusTurma.Concluida)
+                                            {
+                                                <span class="badge bg-success">Concluída</span>
+                                            }
+                                            else if (t.Status == StatusTurma.Cancelada)
+                                            {
+                                                <span class="badge bg-danger">Cancelada</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <a asp-action="Dashboard" asp-route-id="@t.Id" class="btn btn-sm btn-info"><i
+                                                class="fa fa-search"></i></a>
+                                                <a asp-action="Editar" asp-route-id="@t.Id" class="btn btn-sm btn-primary"><i
+                                                    class="fa fa-edit"></i></a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+            <!-- /.content -->

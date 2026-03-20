@@ -15,4 +15,6 @@ public interface ITurmaService
     List<TurmaResumoViewModel> ObterResumoTurmasAtivas();
 
     Task<IEnumerable<TurmaSelectListViewModel>> FindAllAtivasAsync(int idCurso);
+    string GerarNomeLideres(string nome1, string nome2);
+
 }

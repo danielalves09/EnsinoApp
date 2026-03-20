@@ -8,7 +8,7 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1>@Model.NomeCurso - Dashboard</h1>
+                <h1>Curso - @Model.NomeCurso</h1>
                 <small>Campus: @Model.NomeCampus | Líderes: @Model.NomeLider</small>
             </div>
         </div>
@@ -72,48 +72,70 @@
         </div>
     </div>
 
-    <h4>Casais Matriculados</h4>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Casal</th>
-                <th>Última Lição</th>
-                <th>Presença</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var casal in Model.CasaisMatriculados)
-            {
-                <tr>
-                    <td>@casal.Nome</td>
-                    <td>@casal.UltimaLicao?.ToShortDateString()</td>
-                    <td>@casal.Presenca</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</section>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between">
 
-@section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        const ctx = document.getElementById('chartPresenca').getContext('2d');
-        const data = {
-        labels: @Html.Raw(Json.Serialize(Model.CasaisMatriculados.Select(c => c.Nome))),
-        datasets: [{
-        label: 'Presença',
-        data: @Html.Raw(Json.Serialize(Model.CasaisMatriculados.Select(c => c.QtdPresencas))),
-        backgroundColor: 'rgba(54, 162, 235, 0.6)'
-        }, {
-        label: 'Falta',
-        data: @Html.Raw(Json.Serialize(Model.CasaisMatriculados.Select(c => c.QtdFaltas))),
-        backgroundColor: 'rgba(255, 0, 0, 0.8)'
-        }]
-        };
-        const chart = new Chart(ctx, {
-        type: 'bar',
-        data: data,
-        options: { responsive: true, scales: { y: { beginAtZero: true } } }
-        });
-    </script>
-}
+                        <h4>Casais Matriculados</h4>
+                        <a asp-action="Relatorios" asp-route-idTurma="@Model.Id" class="btn btn-info">
+                            <i class="fas fa-search"></i> Ver Relatórios</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body table-responsive p-0">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Casal</th>
+                                    <th>Última Lição</th>
+                                    <th>Presença</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var casal in Model.CasaisMatriculados)
+                                {
+                                    <tr>
+                                        <td>@casal.Nome</td>
+                                        <td>@casal.UltimaLicao?.ToShortDateString()</td>
+                                        <td>@casal.Presenca</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    @section Scripts {
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            const ctx = document.getElementById('chartPresenca').getContext('2d');
+            const data = {
+            labels: @Html.Raw(Json.Serialize(Model.CasaisMatriculados.Select(c => c.PrimeiroNome))),
+            datasets: [{
+            label: 'Presença',
+            data: @Html.Raw(Json.Serialize(Model.CasaisMatriculados.Select(c => c.QtdPresencas))),
+            backgroundColor: 'rgba(54, 162, 235, 0.6)'
+            }, {
+            label: 'Falta',
+            data: @Html.Raw(Json.Serialize(Model.CasaisMatriculados.Select(c => c.QtdFaltas))),
+            backgroundColor: 'rgba(255, 0, 0, 0.8)'
+            }]
+            };
+            const chart = new Chart(ctx, {
+            type: 'bar',
+            data: data,
+            options: { responsive: true, scales: { y: { beginAtZero: true } } }
+            });
+        </script>
+    }

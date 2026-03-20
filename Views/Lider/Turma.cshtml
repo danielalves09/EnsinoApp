@@ -10,7 +10,7 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1>@Model.NomeCurso - Dashboard</h1>
+                <h1>Curso - @Model.NomeCurso</h1>
                 <small>Campus: @Model.NomeCampus | Líderes: @Model.NomeLider</small>
             </div>
         </div>
@@ -123,7 +123,7 @@
                         </thead>
                         <tbody>
                             @foreach (EnsinoApp.ViewModels.Turmas.CasalMatriculadoViewModel casal in
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    Model.CasaisMatriculados)
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    Model.CasaisMatriculados)
                             {
                                 <tr>
                                     <td>@casal.Nome</td>
@@ -174,7 +174,7 @@
     <script>
         const ctx = document.getElementById('chartPresenca').getContext('2d');
         const data = {
-        labels: @Html.Raw(Json.Serialize(Model.CasaisMatriculados.Select(c => c.Nome))),
+        labels: @Html.Raw(Json.Serialize(Model.CasaisMatriculados.Select(c => c.PrimeiroNome))),
         datasets: [{
         label: 'Presença',
         data: @Html.Raw(Json.Serialize(Model.CasaisMatriculados.Select(c => c.QtdPresencas))),

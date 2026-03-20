@@ -7,4 +7,5 @@ namespace EnsinoApp.Repositories.Campus;
 public interface ICampusRepository : ICrudRepository<Models.Entities.Campus>
 {
     ICollection<Models.Entities.Campus> FindAll(string filtro);
+    Task<int> ContarTotal();
 }

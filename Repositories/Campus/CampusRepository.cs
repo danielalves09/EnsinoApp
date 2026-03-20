@@ -14,6 +14,11 @@ public class CampusRepository : ICampusRepository
         _context = context;
     }
 
+    public Task<int> ContarTotal()
+    {
+        return _context.Campuses.CountAsync();
+    }
+
     public Models.Entities.Campus Create(Models.Entities.Campus model)
     {
         _context.Campuses.Add(model);

@@ -44,6 +44,12 @@ public class TurmaService : ITurmaService
             Descricao = $"{t.Curso.Nome} (Líderes: {GetPrimeiroNome(t.Lider.NomeMarido)} e {GetPrimeiroNome(t.Lider.NomeEsposa)})"
         });
     }
+
+    public string GerarNomeLideres(string nome1, string nome2)
+    {
+
+        return $"{GetPrimeiroNome(nome1)} e {GetPrimeiroNome(nome2)}";
+    }
     private string GetPrimeiroNome(string nomeCompleto)
     {
         if (string.IsNullOrEmpty(nomeCompleto)) return string.Empty;

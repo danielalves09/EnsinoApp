@@ -6,6 +6,7 @@ using EnsinoApp.Services.Casal;
 using EnsinoApp.Services.Cursos;
 using EnsinoApp.Services.Inscricao;
 using EnsinoApp.Services.Matricula;
+using EnsinoApp.Services.Supervisao;
 using EnsinoApp.Services.Turmas;
 using EnsinoApp.ViewModels.Home;
 using Microsoft.AspNetCore.Authorization;
@@ -27,7 +28,10 @@ namespace EnsinoApp.Controllers
         private readonly ICursoService _cursoService;
         private readonly ICampusService _campusService;
 
-        public HomeController(ILogger<HomeController> logger, UserManager<Usuario> userManager, ICasalService casalService, IInscricaoOnlineService inscricaoService, IMatriculaService matriculaService, ITurmaService turmaService, ICursoService cursoService, ICampusService campusService)
+        private readonly ISupervisaoService _supervisaoService;
+
+
+        public HomeController(ILogger<HomeController> logger, UserManager<Usuario> userManager, ICasalService casalService, IInscricaoOnlineService inscricaoService, IMatriculaService matriculaService, ITurmaService turmaService, ICursoService cursoService, ICampusService campusService, ISupervisaoService supervisaoService)
         {
             _logger = logger;
             _userManager = userManager;
@@ -37,6 +41,7 @@ namespace EnsinoApp.Controllers
             _turmaService = turmaService;
             _cursoService = cursoService;
             _campusService = campusService;
+            _supervisaoService = supervisaoService;
         }
 
         public async Task<IActionResult> Index()
@@ -54,6 +59,12 @@ namespace EnsinoApp.Controllers
                     //nomeUsuario = user.NomeMarido + (string.IsNullOrEmpty(user.NomeEsposa) ? "" : " & " + user.NomeEsposa);
                     nomeUsuario = user.NomeMarido;
                     ViewBag.FotoPerfil = user.FotoPerfil;
+                    ViewBag.QtdCampus = await _campusService.ContarTotal();
+                    ViewBag.QtdSupervisoes = await _supervisaoService.ContarTotal();
+                    var lideres = await _userManager.GetUsersInRoleAsync("Lider");
+                    ViewBag.QtdLideres = lideres.Count();
+                    ViewBag.QtdCasaisMatriculados = _matriculaService.ContarAtivas();
+                    //ViewBag.QtdCasa
                 }
             }
 

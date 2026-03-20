@@ -2,7 +2,10 @@ using EnsinoApp.Models.Entities;
 using EnsinoApp.Models.Enums;
 using EnsinoApp.Services.Campus;
 using EnsinoApp.Services.Cursos;
+using EnsinoApp.Services.Lider;
+using EnsinoApp.Services.Notifications;
 using EnsinoApp.Services.Turmas;
+using EnsinoApp.Services.Util;
 using EnsinoApp.ViewModels.Turmas;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,11 +20,20 @@ public class TurmaController : Controller
     private readonly ICursoService _cursoService;
     private readonly ICampusService _campusService;
 
-    public TurmaController(ITurmaService turmaService, ICursoService cursoService, ICampusService campusService)
+    private readonly ILiderService _liderService;
+
+    private readonly IUtilService _utilService;
+
+    private readonly INotificationService _notification;
+
+    public TurmaController(ITurmaService turmaService, ICursoService cursoService, ICampusService campusService, ILiderService liderService, INotificationService notification, IUtilService utilService)
     {
         _turmaService = turmaService;
         _cursoService = cursoService;
         _campusService = campusService;
+        _liderService = liderService;
+        _notification = notification;
+        _utilService = utilService;
     }
 
     /*public IActionResult Index()
@@ -46,7 +58,7 @@ public class TurmaController : Controller
             Id = t.Id,
             NomeCurso = t.Curso.Nome,
             NomeCampus = t.Campus.Nome,
-            NomeLider = $"{t.Lider.NomeMarido} / {t.Lider.NomeEsposa}",
+            NomeLider = _utilService.GetNomeSobrenome(t.Lider.NomeMarido, t.Lider.NomeEsposa),
             DataInicio = t.DataInicio,
             DataFim = t.DataFim,
             Status = t.Status
@@ -82,6 +94,7 @@ public class TurmaController : Controller
             CasaisMatriculados = turma.Matriculas.Select(m => new CasalMatriculadoViewModel
             {
                 Nome = $"{m.Casal.NomeConjuge1} / {m.Casal.NomeConjuge2}",
+                PrimeiroNome = $"{m.Casal.NomeConjuge1.Split(' ')[0]} e {m.Casal.NomeConjuge2.Split(' ')[0]}",
                 Presenca = m.Relatorios.OrderByDescending(r => r.DataRegistro).FirstOrDefault()?.Presenca ?? StatusPresenca.Ausente,
                 QtdPresencas = m.Relatorios.Count(r => r.Presenca == StatusPresenca.Presente),
                 QtdFaltas = m.Relatorios.Count(r => r.Presenca == StatusPresenca.Ausente),
@@ -122,5 +135,19 @@ public class TurmaController : Controller
 
         _turmaService.Create(turma);
         return RedirectToAction(nameof(Index));
+    }
+
+    public async Task<IActionResult> Relatorios(int idTurma)
+    {
+        var relatorios = await _liderService.ObterRelatoriosAsync(idTurma);
+        if (relatorios.Count > 0)
+        {
+            return View(relatorios);
+        }
+        else
+        {
+            _notification.Info("Nenhum relatório encontrado para esta turma.");
+            return RedirectToAction(nameof(Turma), new { id = idTurma });
+        }
     }
 }

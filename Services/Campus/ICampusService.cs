@@ -11,4 +11,6 @@ public interface ICampusService
     Models.Entities.Campus Update(Models.Entities.Campus model);
     void Delete(int id);
 
+    Task<int> ContarTotal();
+
 }
