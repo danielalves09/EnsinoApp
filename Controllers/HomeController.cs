@@ -64,7 +64,6 @@ namespace EnsinoApp.Controllers
                     var lideres = await _userManager.GetUsersInRoleAsync("Lider");
                     ViewBag.QtdLideres = lideres.Count();
                     ViewBag.QtdCasaisMatriculados = _matriculaService.ContarAtivas();
-                    //ViewBag.QtdCasa
                 }
             }
 

@@ -27,6 +27,7 @@ namespace EnsinoApp.ViewModels.Cursos
         {
             public int Id { get; set; }
             public string NomeLider { get; set; } = null!;
+            public string imgLider { get; set; } = null!;
             public DateTime DataInicio { get; set; }
             public DateTime DataFim { get; set; }
             public StatusTurma Status { get; set; }

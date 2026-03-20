@@ -126,6 +126,7 @@ public class CursoController : Controller
         {
             Id = t.Id,
             NomeLider = t.Lider.NomeMarido + " e " + t.Lider.NomeEsposa,
+            imgLider = t.Lider.FotoPerfil,
             DataInicio = t.DataInicio,
             DataFim = t.DataFim,
             Status = t.Status,

@@ -80,15 +80,23 @@
     <div class="row">
         @foreach (var turma in Model.Turmas)
         {
-            var cardColor = turma.Status == StatusTurma.Acomecar ? "bg-warning" :
-                            turma.Status == StatusTurma.EmAndamento ? "bg-primary" : "bg-success";
+            var cardColor = turma.Status == StatusTurma.Acomecar ? "card-warning" :
+                            turma.Status == StatusTurma.EmAndamento ? "card-primary" : "card-success";
 
+            var colorBadge = turma.Status == StatusTurma.Acomecar ? "bg-warning" :
+                            turma.Status == StatusTurma.EmAndamento ? "bg-primary" : "bg-success";                
             <div class="col-md-6 mb-4">
-                <div class="card shadow @cardColor text-white">
-                    <div class="card-header">
-                        <h5>Turma #@turma.Id - Líderes: @turma.NomeLider</h5>
-                        <small>@turma.DataInicio.ToString("dd/MM/yyyy") - @turma.DataFim.ToString("dd/MM/yyyy")</small>
-                        <span class="badge float-end">@turma.Status</span>
+               <div class="card shadow card-outline @cardColor">
+                    <div class="card-header d-flex align-items-center gap-3">
+                        <div class="widget-user-image flex-shrink-0 mr-3">
+                            <img class="user-image img-circle elevation-2" src="@(turma.imgLider ?? "/images/avatar-default.jpg")"
+                                 alt="User Avatar" style="width: 60px; height: 60px; object-fit: cover;">
+                        </div>
+                        <div class="flex-grow-1 ">
+                            <h5 class="mb-1">Turma #@turma.Id - Líderes: @turma.NomeLider</h5>
+                            <small>@turma.DataInicio.ToString("dd/MM/yyyy") - @turma.DataFim.ToString("dd/MM/yyyy")</small>
+                        </div>
+                        <span class="badge @colorBadge align-self-start">@turma.Status</span>
                     </div>
                     <div class="card-body bg-white text-dark">
                         <h6>Casais Matriculados:</h6>
@@ -114,40 +122,6 @@
                                 }
                             </tbody>
                         </table>
-
-                        <!-- Gráfico de presença -->
-                        @*  <div class="row " style="margin:20px 0;height: 200px; width: 200px;">
-                            <canvas id="@turma.Id"></canvas>
-                        </div>
-                        <script>
-
-                            document.addEventListener("DOMContentLoaded", function () {
-                            console.log('Entrou no script');
-                            const ctx = document.getElementById('@turma.Id').getContext('2d');
-                            new Chart(ctx, {
-                            type: 'pie',
-                            data: {
-                            labels: ['Presente', 'Ausente', 'Desistente'],
-                            datasets: [{
-                            data: [
-                            @turma.Casais.Count(c => c.StatusPresenca == EnsinoApp.Models.Enums.StatusPresenca.Presente),
-                            @turma.Casais.Count(c => c.StatusPresenca == EnsinoApp.Models.Enums.StatusPresenca.Ausente),
-                            @turma.Casais.Count(c => c.StatusPresenca == EnsinoApp.Models.Enums.StatusPresenca.Desistente)
-                            ],
-                            backgroundColor: ['#198754', '#dc3545', '#6c757d']
-                            }]
-                            },
-                            options: {
-                            responsive: true,
-                            plugins: {
-                            legend: {
-                            position: 'bottom'
-                            }
-                            }
-                            }
-                            });
-                            });
-                        </script> *@
                     </div>
                 </div>
             </div>
