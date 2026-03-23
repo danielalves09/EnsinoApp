@@ -1,141 +1,169 @@
 @using EnsinoApp.Models.Enums
-@model EnsinoApp.ViewModels.Turmas.TurmaDashboardViewModel;
+@model EnsinoApp.ViewModels.Turmas.TurmaDashboardViewModel
+@{ ViewData["Title"] = "Dashboard da Turma"; }
 
-<section class="content-header">
-    <a asp-action="Index" class="btn  btn-xs">
-        <i class="fas fa-arrow-left"></i> Voltar
-    </a>
+<section class="content-header" style="padding-bottom:0">
     <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6">
-                <h1>Curso - @Model.NomeCurso</h1>
-                <small>Campus: @Model.NomeCampus | Líderes: @Model.NomeLider</small>
+        <a asp-action="Index" class="ea-btn-back"><i class="fas fa-arrow-left"></i> Voltar para Turmas</a>
+        <div class="ea-welcome">
+            <div class="ea-welcome-text">
+                <h1><i class="fas fa-graduation-cap" style="margin-right:8px;opacity:.85"></i>@Model.NomeCurso</h1>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px">
+                    <span style="display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.15);border-radius:20px;padding:3px 10px;font-size:.75rem;color:rgba(255,255,255,.9);font-weight:600">
+                        <i class="fas fa-map-marker-alt"></i>@Model.NomeCampus
+                    </span>
+                    <span style="display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.15);border-radius:20px;padding:3px 10px;font-size:.75rem;color:rgba(255,255,255,.9);font-weight:600">
+                        <i class="fas fa-user-tie"></i>@Model.NomeLider
+                    </span>
+                </div>
             </div>
+            <div class="ea-welcome-icon"><i class="fas fa-users"></i></div>
         </div>
     </div>
 </section>
 
 <section class="content">
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card card-outline card-primary mb-3">
-                <div class="card-header">Casais Matriculados</div>
-                <div class="card-body">
-                    <h3 class="card-title">@Model.CasaisMatriculados.Count</h3>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card card-outline card-success mb-3">
-                <div class="card-header">Progresso de Presença</div>
-                <div class="card-body">
-                    <canvas id="chartPresenca"></canvas>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card card-outline card-warning mb-3">
-                <div class="card-header">Status da Turma</div>
-                <div class="card-body">
-                    <p>
-                        @if (@Model.Status == StatusTurma.Acomecar)
-                        {
-                            <span class="badge bg-primary">A começar</span>
-                        }
-                        else if (@Model.Status == StatusTurma.EmAndamento)
-                        {
-                            <span class="badge bg-primary">Em Andamento</span>
-                        }
-                        else if (@Model.Status == StatusTurma.Concluida)
-                        {
-                            <span class="badge bg-success">Concluída</span>
-                        }
-                        else if (@Model.Status == StatusTurma.Cancelada)
-                        {
-                            <span class="badge bg-danger">Cancelada</span>
-                        }
+    <div class="container-fluid">
 
-                    </p>
-                    <p class="mb-1"><strong>Data Início:</strong> @Model.DataInicio.ToShortDateString()</p>
-                    <p class="mb-3"><strong>Data Fim:</strong> @Model.DataFim.ToShortDateString()</p>
-                    <p>
-                        <div class="progress" style="height: 25px; border-radius: 12px; overflow: hidden;">
-                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success"
-                                 role="progressbar" style="width: @Model.Progresso%;" aria-valuenow="@Model.Progresso"
-                                 aria-valuemin="0" aria-valuemax="100">
-                                @Model.Progresso%
-                            </div>
-                        </div>
-                    </p>
+        <!-- Summary cards -->
+        <div style="display:grid;grid-template-columns:1fr 2fr 1fr;gap:14px;margin-bottom:20px">
+
+            <!-- Casais -->
+            <div class="ea-form-card ea-fade ea-fade-1">
+                <div class="ea-form-card-header">
+                    <div class="ea-form-header-icon" style="background:var(--primary-light);color:var(--primary)"><i class="fas fa-users"></i></div>
+                    <h3 class="ea-form-card-title">Casais Matriculados</h3>
+                </div>
+                <div class="ea-form-card-body" style="display:flex;align-items:center;gap:14px">
+                    <span style="font-family:var(--font);font-size:2.8rem;font-weight:900;color:var(--gray-800);line-height:1;letter-spacing:-1px">@Model.CasaisMatriculados.Count</span>
+                    <span style="font-size:.78rem;color:var(--gray-400);font-weight:600">casais<br>matriculados</span>
                 </div>
             </div>
+
+            <!-- Gráfico -->
+            <div class="ea-chart-card ea-fade ea-fade-2">
+                <div class="ea-chart-header">
+                    <div class="ea-chart-header-icon" style="background:var(--success-light);color:var(--success)"><i class="fas fa-chart-bar"></i></div>
+                    <h3 class="ea-chart-title">Progresso de Presença</h3>
+                </div>
+                <div class="ea-chart-body" style="padding:12px 14px"><canvas id="chartPresenca" style="max-height:160px"></canvas></div>
+            </div>
+
+            <!-- Status -->
+            <div class="ea-form-card ea-fade ea-fade-3">
+                <div class="ea-form-card-header">
+                    <div class="ea-form-header-icon" style="background:var(--warning-light);color:var(--warning)"><i class="fas fa-info-circle"></i></div>
+                    <h3 class="ea-form-card-title">Status da Turma</h3>
+                </div>
+                <div class="ea-form-card-body" style="display:flex;flex-direction:column;gap:10px">
+                    @{
+                        string sb = "acomecar", sl = "A começar";
+                        if (Model.Status == StatusTurma.EmAndamento)  { sb = "emandamento"; sl = "Em andamento"; }
+                        else if (Model.Status == StatusTurma.Concluida) { sb = "concluida";   sl = "Concluída"; }
+                        else if (Model.Status == StatusTurma.Cancelada) { sb = "cancelada";   sl = "Cancelada"; }
+                    }
+                    <span class="ea-badge @sb">@sl</span>
+                    <div>
+                        <p style="font-size:.78rem;color:var(--gray-500);margin:0 0 3px"><strong>Início:</strong> @Model.DataInicio.ToShortDateString()</p>
+                        <p style="font-size:.78rem;color:var(--gray-500);margin:0"><strong>Fim:</strong> @Model.DataFim.ToShortDateString()</p>
+                    </div>
+                    <div>
+                        <div class="ea-progress-track">
+                            <div class="ea-progress-fill @(Model.Progresso >= 100 ? "complete" : "")" style="width:@(Math.Min(Model.Progresso,100))%"></div>
+                        </div>
+                        <div class="ea-progress-label" style="text-align:right;margin-top:3px">@Model.Progresso% concluído</div>
+                    </div>
+                </div>
+            </div>
+
         </div>
+
+        <!-- Tabela casais -->
+        <div class="ea-table-card ea-fade">
+            <div class="ea-table-card-header">
+                <div class="ea-table-header-icon"><i class="fas fa-heart"></i></div>
+                <h3 class="ea-table-card-title">Casais Matriculados</h3>
+                <a asp-action="Relatorios" asp-route-idTurma="@Model.Id"
+                   style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;background:var(--info-light);color:var(--info);border:1px solid #a5f3fc;border-radius:var(--radius-sm);padding:6px 12px;font-size:.78rem;font-weight:700;text-decoration:none;transition:background .18s"
+                   onmouseover="this.style.background='#cffafe'" onmouseout="this.style.background='var(--info-light)'">
+                    <i class="fas fa-search"></i> Ver Relatórios
+                </a>
+            </div>
+            <div style="overflow-x:auto">
+                <table class="ea-table">
+                    <thead>
+                        <tr>
+                            <th>Casal</th>
+                            <th>Última Lição</th>
+                            <th>Presença</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var casal in Model.CasaisMatriculados)
+                        {
+                            <tr>
+                                <td style="font-weight:700;color:var(--gray-800)">
+                                    <i class="fas fa-heart" style="color:#fca5a5;margin-right:6px;font-size:.7rem"></i>@casal.Nome
+                                </td>
+                                <td>
+                                    @if (casal.UltimaLicao.HasValue)
+                                    { <span class="ea-date-pill"><i class="fas fa-calendar-alt"></i>@casal.UltimaLicao.Value.ToShortDateString()</span> }
+                                    else { <span style="color:var(--gray-300)">—</span> }
+                                </td>
+                                <td>
+                                    <span style="display:inline-flex;align-items:center;gap:5px;font-size:.75rem;font-weight:700;background:var(--gray-100);border:1px solid var(--gray-200);border-radius:var(--radius-sm);padding:3px 9px;color:var(--gray-600)">
+                                        <i class="fas fa-calendar-check" style="color:var(--success);font-size:.65rem"></i>@casal.Presenca
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
+</section>
 
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <div class="d-flex justify-content-between">
-
-                        <h4>Casais Matriculados</h4>
-                        <a asp-action="Relatorios" asp-route-idTurma="@Model.Id" class="btn btn-info">
-                            <i class="fas fa-search"></i> Ver Relatórios</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body table-responsive p-0">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Casal</th>
-                                    <th>Última Lição</th>
-                                    <th>Presença</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var casal in Model.CasaisMatriculados)
-                                {
-                                    <tr>
-                                        <td>@casal.Nome</td>
-                                        <td>@casal.UltimaLicao?.ToShortDateString()</td>
-                                        <td>@casal.Presenca</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </section>
-
-    @section Scripts {
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script>
-            const ctx = document.getElementById('chartPresenca').getContext('2d');
-            const data = {
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    Chart.defaults.font.family = "'Nunito','Segoe UI',sans-serif";
+    Chart.defaults.font.size = 11;
+    Chart.defaults.color = '#64748b';
+    new Chart(document.getElementById('chartPresenca'), {
+        type: 'bar',
+        data: {
             labels: @Html.Raw(Json.Serialize(Model.CasaisMatriculados.Select(c => c.PrimeiroNome))),
-            datasets: [{
-            label: 'Presença',
-            data: @Html.Raw(Json.Serialize(Model.CasaisMatriculados.Select(c => c.QtdPresencas))),
-            backgroundColor: 'rgba(54, 162, 235, 0.6)'
-            }, {
-            label: 'Falta',
-            data: @Html.Raw(Json.Serialize(Model.CasaisMatriculados.Select(c => c.QtdFaltas))),
-            backgroundColor: 'rgba(255, 0, 0, 0.8)'
-            }]
-            };
-            const chart = new Chart(ctx, {
-            type: 'bar',
-            data: data,
-            options: { responsive: true, scales: { y: { beginAtZero: true } } }
-            });
-        </script>
-    }
+            datasets: [
+                {
+                    label: 'Presenças',
+                    data: @Html.Raw(Json.Serialize(Model.CasaisMatriculados.Select(c => c.QtdPresencas))),
+                    backgroundColor: 'rgba(22,163,74,0.15)',
+                    borderColor: '#16a34a',
+                    borderWidth: 2,
+                    borderRadius: 5,
+                    borderSkipped: false
+                },
+                {
+                    label: 'Faltas',
+                    data: @Html.Raw(Json.Serialize(Model.CasaisMatriculados.Select(c => c.QtdFaltas))),
+                    backgroundColor: 'rgba(220,38,38,0.1)',
+                    borderColor: '#dc2626',
+                    borderWidth: 2,
+                    borderRadius: 5,
+                    borderSkipped: false
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { position: 'bottom', labels: { padding: 12, boxWidth: 10, borderRadius: 4 } } },
+            scales: {
+                y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { precision: 0 } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+</script>
+}

@@ -1,52 +1,96 @@
+@using EnsinoApp.Models.Enums
 @model IEnumerable<EnsinoApp.Models.Entities.RelatorioSemanal>
-
 @{
     ViewData["Title"] = "Relatórios";
+    var idTurma = Model.FirstOrDefault()?.Matricula?.IdTurma;
 }
 
-<section class="content-header">
-    <a asp-action="Dashboard" asp-route-id="@Model.First().Matricula.IdTurma" class="btn  btn-xs">
-        <i class="fas fa-arrow-left"></i> Voltar
-    </a>
+<section class="content-header" style="padding-bottom:0">
     <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6">
-                <h1>Historico de Relatórios</h1>
-            </div>
+        @if (idTurma.HasValue)
+        {
+            <a asp-action="Dashboard" asp-route-id="@idTurma" class="ea-btn-back">
+                <i class="fas fa-arrow-left"></i> Voltar para a Turma
+            </a>
+        }
+        <div class="ea-page-title">
+            <h1><i class="fas fa-file-alt" style="color:var(--primary);margin-right:8px"></i>Histórico de Relatórios</h1>
+            <p>Registro de presenças e lições por semana</p>
         </div>
     </div>
 </section>
 
-<div class="container-fluid">
-    <div class="card">
-        <div class="card-header">📚 Relatório das Lições</div>
-        <div class="card-body table-responsive p-0">
-            <table class="table table-striped table-bordered">
-                <thead class="table-light">
-                    <tr>
-                        <th>Data</th>
-                        <th>Lição</th>
-                        <th>Casal</th>
-                        <th>Presença</th>
-                        <th>Observações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var r in Model)
-                    {
-                        <tr>
-                            <td>@r.DataRegistro.ToString("dd/MM/yyyy")</td>
-                            <td>@r.Licao.Titulo</td>
-                            <td>@r.Matricula.Casal.NomeConjuge1 e @r.Matricula.Casal.NomeConjuge2</td>
-                            <td>@r.Presenca</td>
-                            <td>@r.Observacoes</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+<section class="content">
+    <div class="container-fluid">
+
+        <div class="ea-table-card ea-fade">
+            <div class="ea-table-card-header">
+                <div class="ea-table-header-icon"><i class="fas fa-book-open"></i></div>
+                <h3 class="ea-table-card-title">Relatório das Lições</h3>
+                @if (Model.Any()) { <span class="ea-count-badge">@Model.Count() registros</span> }
+            </div>
+
+            <div style="overflow-x:auto">
+                @if (Model.Any())
+                {
+                    <table class="ea-table">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Lição</th>
+                                <th>Casal</th>
+                                <th>Presença</th>
+                                <th>Observações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var r in Model)
+                            {
+                                string pb = "ativo", pi = "fas fa-check";
+                                if (r.Presenca== StatusPresenca.Ausente)      { pb = "cancelada"; pi = "fas fa-times"; }
+                                else if (r.Presenca == StatusPresenca.Desistente) { pb = "pendente";  pi = "fas fa-exclamation"; }
+
+                                <tr>
+                                    <td>
+                                        <span class="ea-date-pill">
+                                            <i class="fas fa-calendar-alt"></i>
+                                            @r.DataRegistro.ToString("dd/MM/yyyy")
+                                        </span>
+                                    </td>
+                                    <td style="font-weight:700;color:var(--gray-800);max-width:200px;white-space:normal;line-height:1.3">
+                                        @r.Licao.Titulo
+                                    </td>
+                                    <td style="white-space:nowrap;font-weight:600;color:var(--gray-700)">
+                                        <i class="fas fa-heart" style="color:#fca5a5;font-size:.7rem;margin-right:5px"></i>
+                                        @r.Matricula.Casal.NomeConjuge1 &amp; @r.Matricula.Casal.NomeConjuge2
+                                    </td>
+                                    <td>
+                                        <span class="ea-badge @pb">
+                                            <i class="@pi" style="font-size:.6rem"></i>
+                                            @r.Presenca
+                                        </span>
+                                    </td>
+                                    <td style="max-width:260px;font-size:.78rem;color:var(--gray-500);white-space:normal;line-height:1.5">
+                                        @if (!string.IsNullOrWhiteSpace(r.Observacoes))
+                                        { @r.Observacoes }
+                                        else
+                                        { <span style="color:var(--gray-300);font-style:italic;font-size:.75rem">Sem observações</span> }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <div class="ea-empty" style="border:none;border-radius:0">
+                        <i class="fas fa-file-alt"></i>
+                        <h3>Nenhum relatório encontrado</h3>
+                        <p>Os relatórios aparecerão aqui após serem criados.</p>
+                    </div>
+                }
+            </div>
         </div>
+
     </div>
-    <a asp-action="Turma" asp-route-id="@Model.First().Matricula.IdTurma" class="btn btn-secondary">
-        Voltar para Turma
-    </a>
-</div>
+</section>
