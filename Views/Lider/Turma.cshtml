@@ -1,194 +1,832 @@
 @using EnsinoApp.Models.Enums
-@model EnsinoApp.ViewModels.Turmas.TurmaDashboardViewModel;
+@model EnsinoApp.ViewModels.Turmas.TurmaDashboardViewModel
 @{
-    ViewData["Title"] = "Área do líder";
+    ViewData["Title"] = "Gerenciar Turma";
 }
-<section class="content-header">
-    <a asp-action="Index" class="btn  btn-xs">
-        <i class="fas fa-arrow-left"></i> Voltar
-    </a>
+
+<style>
+    :root {
+        --primary: #2563eb;
+        --primary-light: #eff6ff;
+        --primary-mid: #bfdbfe;
+        --success: #16a34a;
+        --success-light: #f0fdf4;
+        --danger: #dc2626;
+        --danger-light: #fef2f2;
+        --warning: #d97706;
+        --warning-light: #fffbeb;
+        --purple: #7c3aed;
+        --purple-light: #f5f3ff;
+        --info: #0891b2;
+        --info-light: #ecfeff;
+        --gray-50: #f8fafc;
+        --gray-100: #f1f5f9;
+        --gray-200: #e2e8f0;
+        --gray-300: #cbd5e1;
+        --gray-400: #94a3b8;
+        --gray-500: #64748b;
+        --gray-600: #475569;
+        --gray-700: #334155;
+        --gray-800: #1e293b;
+        --radius-sm: 6px;
+        --radius: 10px;
+        --radius-lg: 14px;
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, .08);
+        --shadow-lg: 0 10px 30px rgba(0, 0, 0, .1);
+        --font: 'Nunito', 'Segoe UI', sans-serif;
+    }
+
+    /* ─── Page header ─────────────────────────────────── */
+    .page-header-wrap {
+        margin-bottom: 22px;
+    }
+
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: .8rem;
+        font-weight: 700;
+        color: var(--gray-500);
+        text-decoration: none !important;
+        background: var(--gray-100);
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-sm);
+        padding: 5px 12px;
+        margin-bottom: 14px;
+        transition: background .18s, color .18s;
+    }
+
+    .btn-back:hover {
+        background: var(--gray-200);
+        color: var(--gray-700);
+    }
+
+    .course-banner {
+        background: linear-gradient(135deg, #1e40af 0%, #2563eb 60%, #3b82f6 100%);
+        border-radius: var(--radius-lg);
+        padding: 22px 28px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 16px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(37, 99, 235, .3);
+    }
+
+    .course-banner::before {
+        content: '';
+        position: absolute;
+        top: -50px;
+        right: -30px;
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, .07);
+        pointer-events: none;
+    }
+
+    .course-banner-text h1 {
+        font-family: var(--font);
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: #fff;
+        margin: 0 0 6px;
+        letter-spacing: -.3px;
+    }
+
+    .course-meta-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .course-meta-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: rgba(255, 255, 255, .15);
+        border-radius: 20px;
+        padding: 3px 10px;
+        font-size: .75rem;
+        color: rgba(255, 255, 255, .9);
+        font-weight: 600;
+        backdrop-filter: blur(4px);
+    }
+
+    .course-banner-icon {
+        width: 52px;
+        height: 52px;
+        background: rgba(255, 255, 255, .15);
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        color: #fff;
+        flex-shrink: 0;
+    }
+
+    /* ─── Summary cards row ───────────────────────────── */
+    .summary-grid {
+        display: grid;
+        grid-template-columns: 1fr 2fr 1fr;
+        gap: 14px;
+        margin-bottom: 20px;
+    }
+
+    .summary-card {
+        background: #fff;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+        animation: fadeUp .35s ease both;
+    }
+
+    .summary-card:nth-child(1) {
+        animation-delay: .04s;
+    }
+
+    .summary-card:nth-child(2) {
+        animation-delay: .08s;
+    }
+
+    .summary-card:nth-child(3) {
+        animation-delay: .12s;
+    }
+
+
+    fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(12px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .summary-card-header {
+        padding: 12px 18px 8px;
+        border-bottom: 1px solid var(--gray-100);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .summary-header-icon {
+        width: 26px;
+        height: 26px;
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .7rem;
+    }
+
+    .summary-card-title {
+        font-size: .78rem;
+        font-weight: 800;
+        color: var(--gray-600);
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: .3px;
+    }
+
+    .summary-card-body {
+        padding: 16px 18px;
+    }
+
+    /* casais count card */
+    .casais-count {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .casais-number {
+        font-family: var(--font);
+        font-size: 2.8rem;
+        font-weight: 900;
+        color: var(--gray-800);
+        line-height: 1;
+        letter-spacing: -1px;
+    }
+
+    .casais-label {
+        font-size: .78rem;
+        color: var(--gray-400);
+        font-weight: 600;
+        margin-top: 4px;
+    }
+
+    /* status card */
+    .status-body {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .status-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+    }
+
+    .status-meta {
+        font-size: .78rem;
+        color: var(--gray-500);
+    }
+
+    .status-meta strong {
+        color: var(--gray-700);
+    }
+
+    .progress-track {
+        height: 8px;
+        background: var(--gray-100);
+        border-radius: 20px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        border-radius: 20px;
+        background: linear-gradient(90deg, var(--primary) 0%, #60a5fa 100%);
+        transition: width .8s ease;
+    }
+
+    .progress-fill.complete {
+        background: linear-gradient(90deg, var(--success) 0%, #4ade80 100%);
+    }
+
+    .progress-pct {
+        font-size: .72rem;
+        font-weight: 700;
+        color: var(--gray-400);
+        text-align: right;
+        margin-top: 3px;
+    }
+
+    /* ─── Badges ──────────────────────────────────────── */
+    .badge-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: .7rem;
+        font-weight: 700;
+        border-radius: 20px;
+        padding: 3px 9px;
+        white-space: nowrap;
+    }
+
+    .badge-pill::before {
+        content: '';
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: currentColor;
+        display: inline-block;
+    }
+
+    .badge-acomecar {
+        background: var(--primary-light);
+        color: var(--primary);
+        border: 1px solid var(--primary-mid);
+    }
+
+    .badge-emandamento {
+        background: var(--purple-light);
+        color: var(--purple);
+        border: 1px solid #ddd6fe;
+    }
+
+    .badge-concluida {
+        background: var(--success-light);
+        color: var(--success);
+        border: 1px solid #bbf7d0;
+    }
+
+    .badge-cancelada {
+        background: var(--danger-light);
+        color: var(--danger);
+        border: 1px solid #fca5a5;
+    }
+
+    .badge-naoemitido {
+        background: var(--gray-100);
+        color: var(--gray-500);
+        border: 1px solid var(--gray-200);
+    }
+
+    /* ─── Actions toolbar ─────────────────────────────── */
+    .actions-bar {
+        background: #fff;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        padding: 14px 18px;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 18px;
+        animation: fadeUp .35s ease .16s both;
+    }
+
+    .action-btn-bar {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border-radius: var(--radius);
+        padding: 9px 16px;
+        font-size: .82rem;
+        font-weight: 700;
+        text-decoration: none !important;
+        transition: background .18s, transform .15s, box-shadow .2s;
+        white-space: nowrap;
+        border: none;
+        cursor: pointer;
+    }
+
+    .action-btn-bar:hover {
+        transform: translateY(-1px);
+    }
+
+    .action-btn-bar.btn-cert {
+        background: var(--primary);
+        color: #fff !important;
+        box-shadow: 0 2px 8px rgba(37, 99, 235, .25);
+    }
+
+    .action-btn-bar.btn-cert:hover {
+        background: #1d4ed8;
+        box-shadow: 0 4px 14px rgba(37, 99, 235, .35);
+    }
+
+    .action-btn-bar.btn-rel {
+        background: var(--info-light);
+        color: var(--info) !important;
+        border: 1px solid #a5f3fc;
+    }
+
+    .action-btn-bar.btn-rel:hover {
+        background: #cffafe;
+    }
+
+    .action-btn-bar.btn-new-rel {
+        background: var(--success-light);
+        color: var(--success) !important;
+        border: 1px solid #bbf7d0;
+    }
+
+    .action-btn-bar.btn-new-rel:hover {
+        background: #dcfce7;
+    }
+
+    .cert-badge {
+        background: rgba(255, 255, 255, .25);
+        color: #fff;
+        font-size: .68rem;
+        font-weight: 800;
+        border-radius: 20px;
+        padding: 1px 7px;
+    }
+
+    /* ─── Table card ──────────────────────────────────── */
+    .table-card {
+        background: #fff;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+        animation: fadeUp .4s ease .2s both;
+        margin-bottom: 24px;
+    }
+
+    .table-card-header {
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--gray-100);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .table-header-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: var(--radius-sm);
+        background: var(--primary-light);
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .75rem;
+    }
+
+    .table-card-title {
+        font-family: var(--font);
+        font-size: .9rem;
+        font-weight: 800;
+        color: var(--gray-700);
+        margin: 0;
+    }
+
+    .casais-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: .82rem;
+    }
+
+    .casais-table thead th {
+        padding: 10px 16px;
+        background: var(--gray-50);
+        color: var(--gray-500);
+        font-size: .7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .4px;
+        border-bottom: 1px solid var(--gray-200);
+        white-space: nowrap;
+    }
+
+    .casais-table tbody tr {
+        border-bottom: 1px solid var(--gray-100);
+        transition: background .15s;
+    }
+
+    .casais-table tbody tr:last-child {
+        border-bottom: none;
+    }
+
+    .casais-table tbody tr:hover {
+        background: var(--gray-50);
+    }
+
+    .casais-table tbody td {
+        padding: 12px 16px;
+        color: var(--gray-700);
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+
+    .td-nome {
+        font-weight: 700;
+        color: var(--gray-800) !important;
+    }
+
+    /* presença pill */
+    .presenca-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: .75rem;
+        font-weight: 700;
+        background: var(--gray-100);
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-sm);
+        padding: 3px 9px;
+        color: var(--gray-600);
+    }
+
+    /* small action buttons */
+    .btn-sm-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        border-radius: var(--radius-sm);
+        padding: 5px 10px;
+        font-size: .74rem;
+        font-weight: 700;
+        text-decoration: none !important;
+        transition: background .18s, transform .15s;
+        white-space: nowrap;
+        border: 1px solid transparent;
+    }
+
+    .btn-sm-action:hover {
+        transform: translateY(-1px);
+    }
+
+    .btn-concluir {
+        background: var(--success-light);
+        color: var(--success) !important;
+        border-color: #bbf7d0;
+    }
+
+    .btn-concluir:hover {
+        background: #dcfce7;
+    }
+
+    .btn-certificado {
+        background: var(--primary-light);
+        color: var(--primary) !important;
+        border-color: var(--primary-mid);
+    }
+
+    .btn-certificado:hover {
+        background: var(--primary-mid);
+    }
+
+    /* ─── Responsive ──────────────────────────────────── */
+    @@media (max-width: 900px) {
+        .summary-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .summary-grid .summary-card:nth-child(2) {
+            grid-column: span 2;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .summary-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .summary-grid .summary-card:nth-child(2) {
+            grid-column: span 1;
+        }
+
+        .course-banner {
+            padding: 16px 18px;
+        }
+
+        .course-banner-text h1 {
+            font-size: 1.15rem;
+        }
+
+        .actions-bar {
+            gap: 8px;
+        }
+
+        .action-btn-bar {
+            flex: 1 1 auto;
+            justify-content: center;
+        }
+
+        .table-card {
+            overflow-x: auto;
+        }
+    }
+</style>
+
+<section class="content-header" style="padding-bottom:0">
     <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6">
-                <h1>Curso - @Model.NomeCurso</h1>
-                <small>Campus: @Model.NomeCampus | Líderes: @Model.NomeLider</small>
+        <div class="page-header-wrap">
+            <a asp-action="Index" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </a>
+
+            <div class="course-banner">
+                <div class="course-banner-text">
+                    <h1><i class="fas fa-graduation-cap" style="margin-right:8px;opacity:.85"></i>@Model.NomeCurso</h1>
+                    <div class="course-meta-pills">
+                        <span class="course-meta-pill"><i class="fas fa-map-marker-alt"></i> @Model.NomeCampus</span>
+                        <span class="course-meta-pill"><i class="fas fa-user-tie"></i> @Model.NomeLider</span>
+                    </div>
+                </div>
+                <div class="course-banner-icon">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
             </div>
         </div>
     </div>
 </section>
+
 <section class="content">
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card card-outline card-primary mb-3">
-                <div class="card-header">Casais Matriculados</div>
-                <div class="card-body">
-                    <h3 class="card-title">@Model.CasaisMatriculados.Count</h3>
+    <div class="container-fluid">
+
+        <!-- Summary cards -->
+        <div class="summary-grid">
+
+            <!-- Casais -->
+            <div class="summary-card">
+                <div class="summary-card-header">
+                    <div class="summary-header-icon" style="background:var(--primary-light);color:var(--primary)">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="summary-card-title">Casais Matriculados</h3>
                 </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card card-outline card-success mb-3">
-                <div class="card-header">Progresso de Presença</div>
-                <div class="card-body">
-                    <canvas id="chartPresenca"></canvas>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card card-outline card-warning mb-3">
-                <div class="card-header">Status da Turma</div>
-                <div class="card-body">
-                    <p>
-                        @if (@Model.Status == StatusTurma.Acomecar)
-                        {
-                            <span class="badge bg-primary">A começar</span>
-                        }
-                        else if (@Model.Status == StatusTurma.EmAndamento)
-                        {
-                            <span class="badge bg-primary">Em Andamento</span>
-                        }
-                        else if (@Model.Status == StatusTurma.Concluida)
-                        {
-                            <span class="badge bg-success">Concluída</span>
-                        }
-                        else if (@Model.Status == StatusTurma.Cancelada)
-                        {
-                            <span class="badge bg-danger">Cancelada</span>
-                        }
-
-                    </p>
-                    <p class="mb-1"><strong>Data Início:</strong> @Model.DataInicio.ToShortDateString()</p>
-                    <p class="mb-3"><strong>Data Fim:</strong> @Model.DataFim.ToShortDateString()</p>
-                    <p>
-                        <div class="progress" style="height: 25px; border-radius: 12px; overflow: hidden;">
-                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success"
-                                 role="progressbar" style="width: @Model.Progresso%;" aria-valuenow="@Model.Progresso"
-                                 aria-valuemin="0" aria-valuemax="100">
-                                @Model.Progresso%
-                            </div>
-                        </div>
-                    </p>
-                </div>
-            </div>
-        </div>
-
-
-    </div>
-</section>
-<section class="content">
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <div class="d-flex justify-content-between">
-
-                        <a class="btn btn-primary" href="@Url.Action("GerarCertificados", "Lider")">
-                            <i class="fas fa-award"></i> Gerar Certificados
-                            <span class="badge bg-light text-dark ms-2">
-                                @Model.TotalCertificadosPendentes
-                            </span>
-                        </a>
-                        <a asp-action="Relatorios" asp-route-idTurma="@Model.Id" class="btn btn-info">
-                            <i class="fas fa-search"></i> Ver Relatórios
-                        </a>
-                        <a asp-action="CriarRelatorio" asp-route-idTurma="@Model.Id" class="btn btn-success">
-                            <i class="fas fa-plus"></i> Novo Relatório Semanal
-                        </a>
+                <div class="summary-card-body">
+                    <div class="casais-count">
+                        <span class="casais-number">@Model.CasaisMatriculados.Count</span>
+                        <span class="casais-label">casais<br>matriculados</span>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-</Section>
-<section class="content">
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <div class="d-flex justify-content-between">
-                        <h4>Casais Matriculados</h4>
 
+            <!-- Gráfico presença -->
+            <div class="summary-card">
+                <div class="summary-card-header">
+                    <div class="summary-header-icon" style="background:var(--success-light);color:var(--success)">
+                        <i class="fas fa-chart-bar"></i>
                     </div>
+                    <h3 class="summary-card-title">Progresso de Presença</h3>
                 </div>
-                <div class="card-body table-responsive p-0">
-                    <table class="table table-head-fixed text-nowrap">
-                        <thead>
-                            <tr>
-                                <th>Casal</th>
-                                <th>Última Lição</th>
-                                <th>Presença</th>
-                                <th>Status Matricula</th>
-                                <th>Certificado</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (EnsinoApp.ViewModels.Turmas.CasalMatriculadoViewModel casal in
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    Model.CasaisMatriculados)
-                            {
-                                <tr>
-                                    <td>@casal.Nome</td>
-                                    <td>@casal.UltimaLicao?.ToShortDateString()</td>
-                                    <td>@casal.Presenca</td>
-                                    <td>@if (@casal.Matricula.Status == StatusMatricula.Ativa)
-                                        {
-                                            <a asp-action="ConcluirCurso" asp-route-idMatricula="@casal.Matricula.Id"
-                                                   class="btn btn-sm btn-success">
-                                                <i class="fas fa-check"></i> Concluir
-                                            </a>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-success">Concluída</span>
-                                        }
-                                    </td>
-                                    <td>
-                                        @if (@casal.Matricula.CertificadoEmitido)
-                                        {
-                                            <a asp-action="VerCertificado" asp-controller="Lider"
-                                                   asp-route-idMatricula="@casal.Matricula.Id"
-                                                   asp-route-turmaId=@casal.Matricula.IdTurma target="_blank"
-                                                   class="btn btn-sm btn-outline-primary">
-                                                <i class="fas fa-file-pdf"></i> Ver Certificado
-                                            </a>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-info">Não Gerado</span>
-                                        }
-                                    </td>
-                                </tr>
+                <div class="summary-card-body" style="padding:12px 14px">
+                    <canvas id="chartPresenca" style="max-height:160px"></canvas>
+                </div>
+            </div>
+
+            <!-- Status -->
+            <div class="summary-card">
+                <div class="summary-card-header">
+                    <div class="summary-header-icon" style="background:var(--warning-light);color:var(--warning)">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <h3 class="summary-card-title">Status da Turma</h3>
+                </div>
+                <div class="summary-card-body">
+                    <div class="status-body">
+                        <div class="status-row">
+                            @{
+                                string badgeClass = "badge-acomecar";
+                                string badgeLabel = "A começar";
+                                if (Model.Status == StatusTurma.EmAndamento)
+                                {
+                                    badgeClass = "badge-emandamento"; badgeLabel
+                                = "Em andamento";
+                                }
+                                else if (Model.Status == StatusTurma.Concluida)
+                                {
+                                    badgeClass = "badge-concluida"; badgeLabel
+                                = "Concluída";
+                                }
+                                else if (Model.Status == StatusTurma.Cancelada)
+                                {
+                                    badgeClass = "badge-cancelada"; badgeLabel
+                                = "Cancelada";
+                                }
                             }
-                        </tbody>
-                    </table>
+                            <span class="badge-pill @badgeClass">@badgeLabel</span>
+                        </div>
+
+                        <div>
+                            <p class="status-meta mb-1"><strong>Início:</strong> @Model.DataInicio.ToShortDateString()
+                            </p>
+                            <p class="status-meta mb-0"><strong>Fim:</strong> @Model.DataFim.ToShortDateString()</p>
+                        </div>
+
+                        <div>
+                            <div class="progress-track">
+                                <div class="progress-fill @(Model.Progresso >= 100 ? "complete" : "")"
+                                     style="width:@(Math.Min(Model.Progresso, 100))%"></div>
+                            </div>
+                            <div class="progress-pct">@Model.Progresso% concluído</div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <!-- /.card -->
+
         </div>
+
+        <!-- Actions toolbar -->
+        <div class="actions-bar">
+            <a class="action-btn-bar btn-cert" href="@Url.Action("GerarCertificados", "Lider")">
+                <i class="fas fa-award"></i>
+                Gerar Certificados
+                @if (Model.TotalCertificadosPendentes > 0)
+                {
+                    <span class="cert-badge">@Model.TotalCertificadosPendentes</span>
+                }
+            </a>
+
+            <a asp-action="Relatorios" asp-route-idTurma="@Model.Id" class="action-btn-bar btn-rel">
+                <i class="fas fa-search"></i> Ver Relatórios
+            </a>
+
+            <a asp-action="CriarRelatorio" asp-route-idTurma="@Model.Id" class="action-btn-bar btn-new-rel">
+                <i class="fas fa-plus"></i> Novo Relatório Semanal
+            </a>
+        </div>
+
+        <!-- Tabela casais -->
+        <div class="table-card">
+            <div class="table-card-header">
+                <div class="table-header-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h3 class="table-card-title">Casais Matriculados</h3>
+            </div>
+
+            <div style="overflow-x:auto">
+                <table class="casais-table">
+                    <thead>
+                        <tr>
+                            <th>Casal</th>
+                            <th>Última Lição</th>
+                            <th>Presença</th>
+                            <th>Status Matrícula</th>
+                            <th>Certificado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var casal in Model.CasaisMatriculados)
+                        {
+                            <tr>
+                                <td class="td-nome">
+                                    <i class="fas fa-heart"
+                                       style="color:#fca5a5;margin-right:6px;font-size:.7rem"></i>@casal.Nome
+                                </td>
+                                <td style="color:var(--gray-500)">
+                                    @(casal.UltimaLicao.HasValue? casal.UltimaLicao.Value.ToShortDateString() : "—")
+                                </td>
+                                <td>
+                                    <span class="presenca-pill">
+                                        <i class="fas fa-calendar-check" style="color:var(--success);font-size:.65rem"></i>
+                                        @casal.Presenca
+                                    </span>
+                                </td>
+                                <td>
+                                    @if (casal.Matricula.Status == StatusMatricula.Ativa)
+                                    {
+                                        <a asp-action="ConcluirCurso" asp-route-idMatricula="@casal.Matricula.Id"
+                                               class="btn-sm-action btn-concluir">
+                                            <i class="fas fa-check"></i> Concluir
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge-pill badge-concluida">Concluída</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (casal.Matricula.CertificadoEmitido)
+                                    {
+                                        <a asp-action="VerCertificado" asp-controller="Lider"
+                                               asp-route-idMatricula="@casal.Matricula.Id"
+                                               asp-route-turmaId="@casal.Matricula.IdTurma" target="_blank"
+                                               class="btn-sm-action btn-certificado">
+                                            <i class="fas fa-file-pdf"></i> Ver Certificado
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge-pill badge-naoemitido">Não gerado</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 </section>
-
-
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const ctx = document.getElementById('chartPresenca').getContext('2d');
-        const data = {
-        labels: @Html.Raw(Json.Serialize(Model.CasaisMatriculados.Select(c => c.PrimeiroNome))),
-        datasets: [{
-        label: 'Presença',
-        data: @Html.Raw(Json.Serialize(Model.CasaisMatriculados.Select(c => c.QtdPresencas))),
-        backgroundColor: 'rgba(54, 162, 235, 0.6)'
-        }, {
-        label: 'Falta',
-        data: @Html.Raw(Json.Serialize(Model.CasaisMatriculados.Select(c => c.QtdFaltas))),
-        backgroundColor: 'rgba(255, 0, 0, 0.8)'
-        }]
-        };
-        const chart = new Chart(ctx, {
+        Chart.defaults.font.family = "'Nunito', 'Segoe UI', sans-serif";
+        Chart.defaults.font.size = 11;
+        Chart.defaults.color = '#64748b';
+
+        new Chart(document.getElementById('chartPresenca'), {
         type: 'bar',
-        data: data,
-        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+        data: {
+        labels: @Html.Raw(Json.Serialize(Model.CasaisMatriculados.Select(c => c.PrimeiroNome))),
+        datasets: [
+        {
+        label: 'Presenças',
+        data: @Html.Raw(Json.Serialize(Model.CasaisMatriculados.Select(c => c.QtdPresencas))),
+        backgroundColor: 'rgba(22,163,74,0.15)',
+        borderColor: '#16a34a',
+        borderWidth: 2,
+        borderRadius: 5,
+        borderSkipped: false,
+        },
+        {
+        label: 'Faltas',
+        data: @Html.Raw(Json.Serialize(Model.CasaisMatriculados.Select(c => c.QtdFaltas))),
+        backgroundColor: 'rgba(220,38,38,0.1)',
+        borderColor: '#dc2626',
+        borderWidth: 2,
+        borderRadius: 5,
+        borderSkipped: false,
+        }
+        ]
+        },
+        options: {
+        responsive: true,
+        plugins: {
+        legend: {
+        position: 'bottom',
+        labels: { padding: 12, boxWidth: 10, borderRadius: 4 }
+        }
+        },
+        scales: {
+        y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { precision: 0 } },
+        x: { grid: { display: false } }
+        }
+        }
         });
     </script>
 }

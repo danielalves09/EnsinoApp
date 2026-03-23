@@ -1,182 +1,318 @@
-@model EnsinoApp.ViewModels.Usuario.UsuarioPerfilViewModel;
+@model EnsinoApp.ViewModels.Usuario.UsuarioPerfilViewModel
 @{
     ViewData["Title"] = "Meu Perfil";
 }
 
-<section class="content-header">
+<style>
+    /* ── Estilos específicos desta página (não genéricos o suficiente para o sistema) ── */
+
+    /* Foto de perfil */
+    .perfil-avatar-wrap {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 12px;
+    }
+
+    .perfil-avatar {
+        width: 96px;
+        height: 96px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--gray-200);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, .1);
+        display: block;
+    }
+
+    .perfil-avatar-btn {
+        position: absolute;
+        bottom: 2px;
+        right: 2px;
+        width: 28px;
+        height: 28px;
+        background: var(--primary);
+        color: #fff;
+        border: 2px solid #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .65rem;
+        cursor: pointer;
+        transition: background .18s;
+    }
+
+    .perfil-avatar-btn:hover {
+        background: var(--primary-dark);
+    }
+
+    /* Sidebar de info */
+    .perfil-sidebar {
+        background: #fff;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+        margin-bottom: 16px;
+    }
+
+    .perfil-sidebar-top {
+        padding: 24px 20px 18px;
+        text-align: center;
+        border-bottom: 1px solid var(--gray-100);
+        background: linear-gradient(135deg, var(--gray-50) 0%, #fff 100%);
+    }
+
+    .perfil-nome {
+        font-family: var(--font);
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--gray-800);
+        margin: 8px 0 2px;
+    }
+
+    .perfil-email {
+        font-size: .78rem;
+        color: var(--gray-400);
+        margin: 0;
+    }
+
+    .perfil-info-list {
+        padding: 14px 20px;
+    }
+
+    .perfil-info-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--gray-100);
+        font-size: .82rem;
+    }
+
+    .perfil-info-item:last-child {
+        border-bottom: none;
+    }
+
+    .perfil-info-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: var(--radius-sm);
+        background: var(--primary-light);
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .7rem;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+
+    .perfil-info-label {
+        font-size: .68rem;
+        font-weight: 700;
+        color: var(--gray-400);
+        text-transform: uppercase;
+        letter-spacing: .3px;
+        margin: 0 0 2px;
+    }
+
+    .perfil-info-value {
+        font-weight: 600;
+        color: var(--gray-700);
+        margin: 0;
+    }
+
+    /* Tabs */
+    .perfil-tabs-card {
+        background: #fff;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+    }
+
+    .perfil-tabs-header {
+        display: flex;
+        border-bottom: 1px solid var(--gray-200);
+        background: var(--gray-50);
+        padding: 0 4px;
+    }
+
+    .perfil-tab-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 13px 18px;
+        font-size: .83rem;
+        font-weight: 700;
+        color: var(--gray-400);
+        text-decoration: none !important;
+        border-bottom: 2px solid transparent;
+        transition: color .18s, border-color .18s;
+        cursor: pointer;
+        background: none;
+        border-top: none;
+        border-left: none;
+        border-right: none;
+        font-family: var(--font);
+    }
+
+    .perfil-tab-btn:hover {
+        color: var(--primary);
+    }
+
+    .perfil-tab-btn.active {
+        color: var(--primary);
+        border-bottom-color: var(--primary);
+    }
+
+    .perfil-tab-body {
+        padding: 24px;
+    }
+
+    .tab-pane {
+        display: none;
+    }
+
+    .tab-pane.active {
+        display: block;
+    }
+
+    /* Botão alterar senha */
+    .ea-btn-action.warning {
+        background: var(--warning-light);
+        color: var(--warning) !important;
+        border: 1.5px solid #fde68a;
+    }
+
+    .ea-btn-action.warning:hover {
+        background: #fef3c7;
+    }
+
+    /* Cropper modal */
+    .cropper-container {
+        max-width: 100%;
+    }
+</style>
+
+<section class="content-header" style="padding-bottom:0">
     <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6">
-                <h1>Meus Dados</h1>
-            </div>
+        <div class="ea-page-title">
+            <h1><i class="fas fa-user-circle" style="color:var(--primary);margin-right:8px"></i>Meu Perfil</h1>
+            <p>Gerencie seus dados pessoais e configurações de acesso</p>
         </div>
     </div>
 </section>
 
 <section class="content">
-    <div class="row">
+    <div class="container-fluid">
+        <div class="row">
 
-        <!-- COLUNA ESQUERDA -->
-        <div class="col-md-3">
+            <!-- ── Coluna esquerda ─────────────────────── -->
+            <div class="col-md-3">
 
-            <!-- Profile Image -->
-            <div class="card card-primary card-outline">
-                <div class="card-body box-profile text-center">
+                <div class="perfil-sidebar ea-fade ea-fade-1">
+                    <div class="perfil-sidebar-top">
+                        <div class="perfil-avatar-wrap">
+                            <img id="fotoPerfil"                   class="perfil-avatar"
+                                 src="@(Model.FotoPerfilUrl ?? "../images/avatar-default.jpg")"              alt="Foto do usuário" />
+                            <button type="button"           class="perfil-avatar-btn"        data-toggle="modal" data-target="#modalFoto"
+                                    title="Alterar foto">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                        </div>
+                        <p class="perfil-nome">@Model.Nome</p>
+                        <p class="perfil-email">@Model.Email</p>
+                    </div>
 
-                    <img id="fotoPerfil" class="profile-user-img img-fluid img-circle"
-                         src="@(Model.FotoPerfilUrl ?? "../images/avatar-default.jpg")" alt="Foto do usuário">
-
-                    <h3 class="profile-username text-center">@Model.Nome</h3>
-                    <p class="text-muted">@Model.Email</p>
-
-                    <button class="btn btn-primary btn-block" data-toggle="modal" data-target="#modalFoto"
-                            id="btnAlterarFoto">
-                        <i class="fas fa-camera"></i> Alterar foto
-                    </button>
+                    <div class="perfil-info-list">
+                        <div class="perfil-info-item">
+                            <div class="perfil-info-icon"><i class="fas fa-shield-alt"></i></div>
+                            <div>
+                                <p class="perfil-info-label">Função</p>
+                                <p class="perfil-info-value">@Model.Role</p>
+                            </div>
+                        </div>
+                        <div class="perfil-info-item">
+                            <div class="perfil-info-icon"><i class="fas fa-building"></i></div>
+                            <div>
+                                <p class="perfil-info-label">Campus</p>
+                                <p class="perfil-info-value">@(Model.Campus ?? "—")</p>
+                            </div>
+                        </div>
+                        <div class="perfil-info-item">
+                            <div class="perfil-info-icon"><i class="fas fa-sitemap"></i></div>
+                            <div>
+                                <p class="perfil-info-label">Supervisão</p>
+                                <p class="perfil-info-value">@(Model.Supervisao ?? "—")</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
             </div>
 
-            <!-- About Me Box -->
-            <div class="card card-primary">
-                <div class="card-header">
-                    <h3 class="card-title">Sobre</h3>
-                </div>
-                <!-- /.card-header -->
-                <div class="card-body">
-                    <strong><i class="fas fa-book mr-1"></i> Tipo</strong>
+            <!-- ── Coluna direita ──────────────────────── -->
+            <div class="col-md-9">
 
-                    <p class="text-muted">
-                        @Model.Role
-                    </p>
+                <div class="perfil-tabs-card ea-fade ea-fade-2">
+                    <div class="perfil-tabs-header">
+                        <button class="perfil-tab-btn active" data-tab="dados">
+                            <i class="fas fa-user"></i> Dados Pessoais
+                        </button>
+                        <button class="perfil-tab-btn" data-tab="senha">
+                            <i class="fas fa-key"></i> Alterar Senha
+                        </button>
+                    </div>
 
-                    <hr>
+                    <div class="perfil-tab-body">
 
-                    <strong><i class="fas fa-map-marker-alt mr-1"></i> Campus</strong>
-
-                    <p class="text-muted">@Model.Campus</p>
-
-                    <hr>
-
-                    <strong><i class="fas fa-pencil-alt mr-1"></i> Supervisão</strong>
-
-                    <p class="text-muted">
-                        @Model.Supervisao
-                    </p>
-
-                    <hr>
-
-                    <strong><i class="far fa-file-alt mr-1"></i> Notas</strong>
-
-                    <p class="text-muted"></p>
-                </div>
-                <!-- /.card-body -->
-            </div>
-
-        </div>
-
-        <!-- COLUNA DIREITA -->
-        <div class="col-md-9">
-
-            <div class="card">
-                <div class="card-header p-2">
-                    <ul class="nav nav-pills">
-
-                        <li class="nav-item">
-                            <a class="nav-link active" data-toggle="tab" href="#dados">
-                                <i class="fas fa-user"></i> Dados Pessoais
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link" data-toggle="tab" href="#senha">
-                                <i class="fas fa-key"></i> Alterar Senha
-                            </a>
-                        </li>
-
-                    </ul>
-                </div>
-
-                <div class="card-body">
-                    <div class="tab-content">
-
-                        <!-- ABA DADOS -->
-                        <div class="active tab-pane" id="dados">
+                        <!-- Aba dados -->
+                        <div class="tab-pane active" id="tab-dados">
                             <form asp-controller="Usuarios" asp-action="AtualizarDados" method="post">
-
-                                <div class="form-group">
-                                    <label>Nome</label>
-                                    <input asp-for="Nome" class="form-control" />
+                                <div class="ea-field-group">
+                                    <label class="ea-field-label">Nome</label>
+                                    <input asp-for="Nome" class="ea-field-control" placeholder="Seu nome completo" />
                                 </div>
-
-                                <div class="form-group">
-                                    <label>Email</label>
-                                    <input asp-for="Email" class="form-control" />
+                                <div class="ea-field-group">
+                                    <label class="ea-field-label">Email</label>
+                                    <input asp-for="Email" class="ea-field-control" placeholder="seu@email.com" />
                                 </div>
-
-                                <button class="btn btn-success">
-                                    <i class="fas fa-save"></i> Salvar Alterações
-                                </button>
-
+                                <div style="display:flex;justify-content:flex-end;margin-top:8px">
+                                    <button type="submit" class="ea-btn-action save">
+                                        <i class="fas fa-save"></i> Salvar Alterações
+                                    </button>
+                                </div>
                             </form>
                         </div>
 
-                        <!-- ABA SENHA -->
-                        <div class="tab-pane" id="senha">
+                        <!-- Aba senha -->
+                        <div class="tab-pane" id="tab-senha">
                             <form asp-controller="Usuarios" asp-action="AlterarSenha" method="post">
-
-                                <div class="form-group">
-                                    <label>Senha Atual</label>
-                                    <input asp-for="SenhaAtual" type="password" class="form-control" />
+                                <div class="ea-field-group">
+                                    <label class="ea-field-label">Senha Atual</label>
+                                    <input asp-for="SenhaAtual" type="password" class="ea-field-control"
+                                           placeholder="••••••••" />
                                 </div>
-
-                                <div class="form-group">
-                                    <label>Nova Senha</label>
-                                    <input asp-for="NovaSenha" type="password" class="form-control" />
+                                <div class="ea-field-group">
+                                    <label class="ea-field-label">Nova Senha</label>
+                                    <input asp-for="NovaSenha" type="password" class="ea-field-control"
+                                           placeholder="••••••••" />
                                 </div>
-
-                                <div class="form-group">
-                                    <label>Confirmar Nova Senha</label>
-                                    <input asp-for="ConfirmarSenha" type="password" class="form-control" />
+                                <div class="ea-field-group">
+                                    <label class="ea-field-label">Confirmar Nova Senha</label>
+                                    <input asp-for="ConfirmarSenha" type="password" class="ea-field-control"
+                                           placeholder="••••••••" />
                                 </div>
-
-                                <button class="btn btn-warning">
-                                    <i class="fas fa-key"></i> Alterar Senha
-                                </button>
-
+                                <div style="display:flex;justify-content:flex-end;margin-top:8px">
+                                    <button type="submit" class="ea-btn-action warning">
+                                        <i class="fas fa-key"></i> Alterar Senha
+                                    </button>
+                                </div>
                             </form>
                         </div>
 
                     </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="modalFoto">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-
-                <div class="modal-header">
-                    <h5 class="modal-title">Alterar foto de perfil</h5>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                </div>
-
-                <div class="modal-body">
-
-                    <input type="file" id="inputImagem" class="form-control mb-3" accept="image/*" />
-
-                    <div>
-                        <img id="previewImagem" style="max-width: 100%; display: none;" />
-                    </div>
-
-                </div>
-
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                    <button id="btnSalvarFoto" class="btn btn-primary">
-                        <i class="fas fa-check"></i> Salvar Foto
-                    </button>
                 </div>
 
             </div>
@@ -184,62 +320,86 @@
     </div>
 </section>
 
-
-
+<!-- ═══ MODAL FOTO ══════════════════════════════════ -->
+<div class="modal fade ea-modal" id="modalFoto" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-camera" style="color:var(--primary);margin-right:6px"></i>Alterar Foto de Perfil
+                </h5>
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="ea-field-group">
+                    <label class="ea-field-label">Selecione uma imagem</label>
+                    <input type="file" id="inputImagem" class="ea-field-control" accept="image/*" />
+                </div>
+                <div
+                    style="margin-top:14px;border-radius:var(--radius);overflow:hidden;background:var(--gray-50);max-height:320px">
+                    <img id="previewImagem" style="max-width:100%;max-height:320px;display:none;object-fit:contain" />
+                </div>
+            </div>
+            <div class="modal-footer"
+                 style="background:var(--gray-50);border-top:1px solid var(--gray-100);padding:12px 20px">
+                <button type="button" class="ea-btn-action cancel" data-dismiss="modal">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+                <button id="btnSalvarFoto" class="ea-btn-action save">
+                    <i class="fas fa-check"></i> Salvar Foto
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     <script>
-                                                                                let cropper;
+            /* ── Tabs ── */
+            document.querySelectorAll('.perfil-tab-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    document.querySelectorAll('.perfil-tab-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+                    this.classList.add('active');
+                    document.getElementById('tab-' + this.dataset.tab).classList.add('active');
+                });
+            });
 
-                                                                                const inputImagem = document.getElementById('inputImagem');
-                                                                                const previewImagem = document.getElementById('previewImagem');
-                                                                                const btnSalvar = document.getElementById('btnSalvarFoto');
+            /* ── Cropper ── */
+            let cropper;
+            const inputImagem = document.getElementById('inputImagem');
+            const previewImagem = document.getElementById('previewImagem');
+            const btnSalvar = document.getElementById('btnSalvarFoto');
 
-                                                                                inputImagem.addEventListener('change', function (e) {
+            inputImagem.addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    previewImagem.src = event.target.result;
+                    previewImagem.style.display = 'block';
+                    if (cropper) cropper.destroy();
+                    cropper = new Cropper(previewImagem, {
+                        aspectRatio: 1,
+                        viewMode: 1,
+                        autoCropArea: 0.8,
+                        responsive: true,
+                        background: false,
+                        minContainerHeight: 260,
+                        maxContainerHeight: 300
+                    });
+                };
+                reader.readAsDataURL(file);
+            });
 
-                                                                                    const file = e.target.files[0];
-                                                                                    if (!file) return;
-
-                                                                                    const reader = new FileReader();
-                                                                                    reader.onload = function (event) {
-
-                                                                                        previewImagem.src = event.target.result;
-                                                                                        previewImagem.style.display = 'block';
-
-                                                                                        if (cropper) cropper.destroy();
-
-                                                                                        cropper = new Cropper(previewImagem, {
-                                                                                            aspectRatio: 1,
-                                                                                            viewMode: 1,
-                                                                                            autoCropArea: 1,
-                                                                                            responsive: true,
-                                                                                            background: false
-                                                                                        });
-                                                                                    };
-                                                                                    reader.readAsDataURL(file);
-                                                                                });
-
-                                                                                btnSalvar.addEventListener('click', function () {
-
-                                                                                    if (!cropper) return;
-
-                                                                                    cropper.getCroppedCanvas({
-                                                                                        width: 300,
-                                                                                        height: 300
-                                                                                    }).toBlob(blob => {
-
-                                                                                        const formData = new FormData();
-                                                                                        formData.append('Foto', blob, blob.name);
-
-                                                                                        fetch('/Usuarios/AlterarFoto', {
-                                                                                            method: 'POST',
-                                                                                            body: formData
-                                                                                        })
-                                                                                            .then(r => {
-                                                                                                if (r.ok) location.reload();
-                                                                                                else alert('Erro ao salvar a foto');
-                                                                                            });
-                                                                                    });
-                                                                                });
+            btnSalvar.addEventListener('click', function () {
+                if (!cropper) return;
+                cropper.getCroppedCanvas({ width: 300, height: 300 }).toBlob(blob => {
+                    const formData = new FormData();
+                    formData.append('Foto', blob, 'foto.jpg');
+                    fetch('/Usuarios/AlterarFoto', { method: 'POST', body: formData })
+                        .then(r => { if (r.ok) location.reload(); else alert('Erro ao salvar a foto'); });
+                });
+            });
     </script>
 }

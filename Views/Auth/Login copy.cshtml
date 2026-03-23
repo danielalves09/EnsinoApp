@@ -1,0 +1,108 @@
+@model LoginViewModel
+@{
+    Layout = "";
+}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EnsinoApp | CCVideira</title>
+
+    <!-- Nunito -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap"
+          rel="stylesheet" />
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
+    <!-- Login v2 CSS -->
+    <link rel="stylesheet" href="~/css/login-v2.css" />
+</head>
+
+<body>
+
+    <!-- Background -->
+    <div class="login-bg" style="background-image:url('@Url.Content("~/images/back.jpg")')"></div>
+
+    <!-- Círculos decorativos flutuantes -->
+    <div class="login-dots">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+    </div>
+
+    <!-- Card central -->
+    <div class="login-page">
+        <div class="login-card">
+
+            <!-- Header -->
+            <div class="card-header-v2">
+                <img src="~/images/logoVideira.png" class="card-logo" alt="Logo CCVideira" />
+                <img src="~/images/logo.png" class="card-app-logo" alt="EnsinoApp" />
+                <p class="card-title">Acesse o sistema com suas credenciais</p>
+            </div>
+
+            <!-- Form -->
+            <div class="card-body-v2">
+                <form asp-action="Login" method="post" novalidate>
+                    <div asp-validation-summary="ModelOnly" class="v2-validation"></div>
+
+                    <!-- Email -->
+                    <div class="v2-field">
+                        <div class="v2-field-wrap">
+                            <input asp-for="Email" class="v2-field-control" placeholder="Email" />
+                            <i class="fas fa-envelope v2-field-icon"></i>
+                        </div>
+                        <span asp-validation-for="Email" class="v2-error"></span>
+                    </div>
+
+                    <!-- Senha -->
+                    <div class="v2-field">
+                        <div class="v2-field-wrap">
+                            <input asp-for="Password" type="password" class="v2-field-control" placeholder="Senha" />
+                            <i class="fas fa-lock v2-field-icon"></i>
+                        </div>
+                        <span asp-validation-for="Password" class="v2-error"></span>
+                    </div>
+
+                    <!-- Lembrar -->
+                    <label class="v2-remember">
+                        <input asp-for="RememberMe" type="checkbox" />
+                        Lembrar minha senha
+                    </label>
+
+                    <!-- Entrar -->
+                    <button type="submit" class="btn-v2-login">
+                        <i class="fas fa-sign-in-alt"></i> Entrar
+                    </button>
+
+                    <!-- Esqueceu -->
+                    <a asp-action="ForgotPassword" class="v2-forgot">
+                        Esqueceu a senha? Clique aqui
+                    </a>
+
+                </form>
+            </div>
+
+            <!-- Footer do card -->
+            <div class="v2-footer">
+                © @DateTime.Now.Year EnsinoApp · Versão 1.0
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Barra de cursos no rodapé -->
+    <div class="v2-courses">
+        <span class="v2-course-label">Cursos</span>
+        <span class="v2-course-pill"><i class="fas fa-ring" style="margin-right:5px"></i>One</span>
+        <span class="v2-course-pill"><i class="fas fa-heart" style="margin-right:5px"></i>Casados Para Sempre</span>
+        <span class="v2-course-pill"><i class="fas fa-child" style="margin-right:5px"></i>Pais Para Toda Vida</span>
+    </div>
+
+    <script src="~/loginResources/jquery.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+</body>
+
+</html>

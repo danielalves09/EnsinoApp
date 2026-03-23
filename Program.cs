@@ -71,12 +71,12 @@ context.LoadUnmanagedLibrary(nativeLibPath);
 
 
 // ==================== DATA PROTECTION - IIS =====================
-  var keysFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "EnsinoApp", "Keys");
-  Directory.CreateDirectory(keysFolder);
+var keysFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "EnsinoApp", "Keys");
+Directory.CreateDirectory(keysFolder);
 
-  builder.Services.AddDataProtection()
-     .PersistKeysToFileSystem(new DirectoryInfo(keysFolder))
-     .SetApplicationName("EnsinoApp");
+builder.Services.AddDataProtection()
+   .PersistKeysToFileSystem(new DirectoryInfo(keysFolder))
+   .SetApplicationName("EnsinoApp");
 
 
 // =================== SERVIÇOS E DEPENDÊNCIAS =====================
@@ -147,10 +147,10 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
+    //app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
@@ -161,9 +161,13 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 
+// app.MapControllerRoute(
+//     name: "default",
+//     pattern: "{controller=Home}/{action=Index}/{id?}")
+
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
+    pattern: "{controller=Landing}/{action=Index}/{id?}")
     .WithStaticAssets();
 
 app.Run();

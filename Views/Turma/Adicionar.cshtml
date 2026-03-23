@@ -1,270 +1,223 @@
 @using EnsinoApp.Models.Enums
-@model EnsinoApp.ViewModels.Turmas.TurmaViewModel;
+@model EnsinoApp.ViewModels.Turmas.TurmaViewModel
 @{
-    ViewData["Title"] = "Cadastrar Nova Turma";
+    ViewData["Title"] = "Cadastrar Turma";
 }
-<section class="content-header">
+
+<section class="content-header" style="padding-bottom:0">
     <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6">
-                <h1>Cadastrar Turma</h1>
-            </div>
+        <a asp-action="Index" class="ea-btn-back"><i class="fas fa-arrow-left"></i> Voltar para Turmas</a>
+        <div class="ea-page-title">
+            <h1><i class="fas fa-users" style="color:var(--primary);margin-right:8px"></i>Cadastrar Turma</h1>
+            <p>Preencha as informações para criar uma nova turma</p>
         </div>
     </div>
 </section>
 
-<section class=content>
-    <div class=row>
-        <div class=col-12>
-            <div class="card shadow">
-                <div class="card-body">
-                    <form asp-action="Adicionar" method="post">
-                        <div asp-validation-summary="All" class="text-danger"></div>
+<section class="content">
+    <div class="container-fluid">
+        <form asp-action="Adicionar" method="post">
+            <div asp-validation-summary="All" class="text-danger" style="font-size:.8rem;margin-bottom:12px"></div>
 
-                        <!-- Campus -->
-                        <div class="mb-3">
-                            <div class="input-group">
-                                <label asp-for="IdCampus" class="form-label">Campus</label>
-                            <div class="input-group">
-                                <input asp-for="NomeCampus" class="form-control" readonly
-                                       placeholder="Selecione um Campus" />
-                                <input type="hidden" asp-for="IdCampus" />
-                                <button type="button" id="BtnBuscarCampus" class="btn btn-outline-primary" data-toggle="modal"
-                                        data-target="#ModalCampus">Buscar</button>
+            <div class="ea-form-card ea-fade ea-fade-1">
+                <div class="ea-form-card-header">
+                    <div class="ea-form-header-icon" style="background:var(--primary-light);color:var(--primary)"><i
+                        class="fas fa-link"></i></div>
+                        <h3 class="ea-form-card-title">Vínculo</h3>
+                    </div>
+                    <div class="ea-form-card-body">
+                        <div class="ea-field-group">
+                            <label class="ea-field-label"><i class="fas fa-map-marker-alt"
+                                                                 style="margin-right:3px"></i>Campus</label>
+                                <div class="ea-input-group">
+                                    <input asp-for="NomeCampus" class="ea-field-control" readonly
+                                           placeholder="Selecione um campus" />
+                                    <input type="hidden" asp-for="IdCampus" />
+                                    <button type="button" class="ea-btn-buscar" data-toggle="modal"
+                                            data-target="#ModalCampus"><i class="fas fa-search"></i> Buscar</button>
+                                </div>
+                                <span asp-validation-for="IdCampus" class="ea-field-error"></span>
                             </div>
+                            <div class="ea-field-group">
+                                <label class="ea-field-label"><i class="fas fa-graduation-cap"
+                                                                     style="margin-right:3px"></i>Curso</label>
+                                    <div class="ea-input-group">
+                                        <input asp-for="NomeCurso" class="ea-field-control" readonly
+                                               placeholder="Selecione um curso" />
+                                        <input type="hidden" asp-for="IdCurso" />
+                                        <button type="button" class="ea-btn-buscar" data-toggle="modal" data-target="#ModalCurso"><i
+                                            class="fas fa-search"></i> Buscar</button>
+                                        </div>
+                                        <span asp-validation-for="IdCurso" class="ea-field-error"></span>
+                                    </div>
+                                    <div class="ea-field-group">
+                                        <label class="ea-field-label"><i class="fas fa-user-tie"
+                                                                             style="margin-right:3px"></i>Líder</label>
+                                            <div class="ea-input-group">
+                                                <input asp-for="NomeLider" class="ea-field-control" readonly
+                                                       placeholder="Selecione o líder da turma" />
+                                                <input type="hidden" asp-for="IdLider" />
+                                                <button type="button" class="ea-btn-buscar" data-toggle="modal"
+                                                        data-target="#modalUsuario"><i class="fas fa-search"></i> Buscar</button>
+                                            </div>
+                                            <span asp-validation-for="IdLider" class="ea-field-error"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="ea-form-card ea-fade ea-fade-2">
+                                    <div class="ea-form-card-header">
+                                        <div class="ea-form-header-icon" style="background:var(--success-light);color:var(--success)"><i
+                                            class="fas fa-calendar-alt"></i></div>
+                                            <h3 class="ea-form-card-title">Período e Status</h3>
+                                        </div>
+                                        <div class="ea-form-card-body">
+                                            <div class="row g-3">
+                                                <div class="col-md-6">
+                                                    <div class="ea-field-group">
+                                                        <label class="ea-field-label">Data Início</label>
+                                                        <input asp-for="DataInicio" class="ea-field-control" />
+                                                        <span asp-validation-for="DataInicio" class="ea-field-error"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="ea-field-group">
+                                                        <label class="ea-field-label">Data Fim</label>
+                                                        <input asp-for="DataFim" class="ea-field-control" />
+                                                        <span asp-validation-for="DataFim" class="ea-field-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="ea-field-group">
+                                                <label class="ea-field-label">Status</label>
+                                                <select asp-for="Status" asp-items="Html.GetEnumSelectList<StatusTurma>()"
+                                                        class="ea-field-control"></select>
+                                                <span asp-validation-for="Status" class="ea-field-error"></span>
+                                            </div>
+                                        </div>
+                                        <div class="ea-form-footer">
+                                            <a asp-action="Index" class="ea-btn-action cancel"><i class="fas fa-times"></i> Cancelar</a>
+                                            <button type="submit" class="ea-btn-action save"><i class="fas fa-save"></i> Salvar Turma</button>
+                                        </div>
+                                    </div>
+
+                                </form>
                             </div>
-                        </div>
+                        </section>
 
-                        <!-- Curso -->
-                         <div class="mb-3">
-                            <div class="input-group">
-                                <label asp-for="IdCurso" class="form-label">Curso</label>
-                            <div class="input-group">
-                                <input asp-for="NomeCurso" class="form-control" readonly
-                                       placeholder="Selecione um Curso" />
-                                <input type="hidden" asp-for="IdCurso" />
-                                <button type="button" id="BtnBuscarCurso" class="btn btn-outline-primary" data-toggle="modal"
-                                        data-target="#ModalCurso">Buscar</button>
+                        <div class="modal fade ea-modal" id="ModalCampus" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title"><i class="fas fa-building"
+                                                                       style="color:var(--primary);margin-right:6px"></i>Buscar Campus</h5><button type="button"
+                                                                                                                        class="close" data-dismiss="modal"><span>&times;</span></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <input type="text" id="TxtFiltroCampus" class="ea-modal-search"
+                                                   placeholder="Digite o nome do campus..." />
+                                            <div style="overflow-y:auto;max-height:300px">
+                                                <table class="ea-modal-table" id="TbCampus">
+                                                    <tbody></tbody>
+                                                </table>
+                                                <div id="DivMensagemCampus" class="ea-modal-empty d-none">Nenhum campus encontrado.</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            </div>
-                        </div>
 
-                        <!-- Líder -->
-                        <div class="mb-3">
-                            <label>Líderes</label>
-                            <div class="input-group">
-                                <input type="hidden" asp-for="IdLider" />
-                                <input asp-for="NomeLider" placeholder="Selecione os líderes da Turma" class="form-control" readonly />
-                                <button type="button" id="btnBuscarUsuario" class="btn btn-outline-primary" data-toggle="modal"
-                                        data-target="#modalUsuario">
-                                    Buscar
-                                </button>
-                            </div>
-                        </div>
+                            <div class="modal fade ea-modal" id="ModalCurso" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title"><i class="fas fa-graduation-cap"
+                                                                           style="color:var(--primary);margin-right:6px"></i>Buscar Curso</h5><button type="button"
+                                                                                                                           class="close" data-dismiss="modal"><span>&times;</span></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <input type="text" id="TxtFiltroCurso" class="ea-modal-search"
+                                                       placeholder="Digite o nome do curso..." />
+                                                <div style="overflow-y:auto;max-height:300px">
+                                                    <table class="ea-modal-table" id="TbCurso">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Nome</th>
+                                                                <th>Campus</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody></tbody>
+                                                    </table>
+                                                    <div id="DivMensagemCurso" class="ea-modal-empty d-none">Nenhum curso encontrado.</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label>Data Início</label>
-                                <input asp-for="DataInicio" class="form-control" />
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label>Data Fim</label>
-                                <input asp-for="DataFim" class="form-control" />
-                            </div>
-                        </div>
+                                <div class="modal fade ea-modal" id="modalUsuario" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title"><i class="fas fa-user-tie"
+                                                                               style="color:var(--primary);margin-right:6px"></i>Buscar Líder</h5><button type="button"
+                                                                                                                               class="close" data-dismiss="modal"><span>&times;</span></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <input type="text" id="TxtFiltroUsuario" class="ea-modal-search"
+                                                           placeholder="Digite o nome do líder..." />
+                                                    <div style="overflow-y:auto;max-height:320px">
+                                                        <table class="ea-modal-table d-none" id="TbUsuario">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Líder</th>
+                                                                    <th>Email</th>
+                                                                    <th>Campus</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody></tbody>
+                                                        </table>
+                                                        <div id="DivMensagemUsuario" class="ea-modal-empty d-none">Nenhum líder encontrado.</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                        <div class="mb-3">
-                            <label>Status</label>
-                            <select asp-for="Status" asp-items="Html.GetEnumSelectList<StatusTurma>()"
-                                    class="form-control"></select>
-                        </div>
-
-                        <div class="d-flex justify-content-between mt-4">
-                            <a asp-action="Index" class="btn btn-secondary">
-                                <i class="fas fa-arrow-left"></i> Voltar
-                            </a>
-                            <button type="submit" class="btn btn-primary">Salvar <i class="fas fa-save"></i></button>
-                        </div>                        
-                    </form>
-
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-
-<!-- ================= MODAL CAMPUS ================= -->
-<div class="modal fade" id="ModalCampus" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Buscar Campus</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <input type="text" id="TxtFiltroCampus" class="form-control mb-2"
-                       placeholder="Digite o nome do campus" />
-                <table class="table table-hover" id="TbCampus">
-                    <tbody></tbody>
-                </table>
-                <div id="DivMensagemCampus" class="d-none">Nenhum campus encontrado.</div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ================= MODAL CURSO ================= -->
-<div class="modal fade" id="ModalCurso" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Buscar Curso</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <input type="text" id="TxtFiltroCurso" class="form-control mb-2"
-                       placeholder="Digite o nome do curso" />
-                <table class="table table-hover" id="TbCurso">
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>Campus</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-                <div id="DivMensagemCurso" class="d-none">Nenhum curso encontrado.</div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal de busca de Líder -->
-<div class="modal fade" id="modalUsuario" tabindex="-1" aria-labelledby="modalUsuarioLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalUsuarioLabel">Buscar Líder</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <input type="text" id="TxtFiltroUsuario" class="form-control" placeholder="Digite nome do líder...">
-                </div>               
-
-                <div id="DivMensagemUsuario" class="alert alert-warning d-none">
-                    Nenhum líder encontrado.
-                </div>
-
-                <table class="table table-hover d-none" id="TbUsuario">
-                    <thead>
-                        <tr>
-                            <th>Líderes</th>
-                            <th>Email</th>
-                            <th>Campus</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Linhas preenchidas via JS -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
-@section Scripts {
-
-    <script>
-                                                                   function buscarCampus() {
-    var filtro = $("#TxtFiltroCampus").val().trim();
-    if(filtro.length === 0) return;
-
-    $.getJSON("/Campus/Buscar?filtro=" + filtro, function(resultado){
-        if(resultado.length > 0) {
-            var linhas = resultado.map(p => "<tr style='cursor:pointer' data-id='" + p.id + "'><td>" + p.nome + "</td></tr>").join("");
-            $("#TbCampus tbody").html(linhas);
-
-            $("#TbCampus tbody tr").click(function(){
-                var id = $(this).attr("data-id");
-                var nome = $(this).children()[0].innerText;
-                $("#IdCampus").val(id);
-                $("#NomeCampus").val(nome);
-                $("#ModalCampus").modal('hide');
-            });
-        } else {
-            $("#TbCampus tbody").html("");
-            $("#DivMensagemCampus").removeClass("d-none");
-        }
-    });
-}
-
-//CURSO
-
- function buscarCurso() {
-    var filtro = $("#TxtFiltroCurso").val().trim();
-    var campusId = $("#IdCampus").val().trim();
-    if(filtro.length === 0) return;
-
-            $.getJSON("/Curso/Buscar?filtro=" + filtro+"&campusId="+campusId, function(resultado){
-        if(resultado.length > 0) {
-            var linhas = resultado.map(p => "<tr style='cursor:pointer' data-id='" + p.id + "'><td>" + p.nome + "</td><td>" + p.nomeCampus + "</td></tr>").join("");
-            $("#TbCurso tbody").html(linhas);
-
-            $("#TbCurso tbody tr").click(function(){
-                var id = $(this).attr("data-id");
-                var nome = $(this).children()[0].innerText;
-                $("#IdCurso").val(id);
-                $("#NomeCurso").val(nome);
-                $("#ModalCurso").modal('hide');
-            });
-        } else {
-            $("#TbCurso tbody").html("");
-            $("#DivMensagemCurso").removeClass("d-none");
-        }
-    });
-}
-
-function buscarUsuario() {
-        var filtro = $("#TxtFiltroUsuario").val().trim();
-        if (filtro.length === 0) return;
-
-        $.getJSON("/usuarios/buscar?filtro=" + encodeURIComponent(filtro), function(resultado) {
-            if (resultado.length > 0) {
-                var linhas = resultado.map(u => `
-                    <tr style="cursor:pointer" data-id="${u.id}" data-nome="${u.nome}" data-bs-dismiss="modal">
-                        <td>${u.nome}</td>
-                        <td>${u.email}</td>
-                        <td>${u.nomeCampus}</td>
-                    </tr>
-                `).join("");
-                $("#TbUsuario tbody").html(linhas);
-                $("#TbUsuario tbody tr").click(function() {
-                    var id = $(this).attr("data-id");
-                    var nome = $(this).attr("data-nome");
-                    $("#IdLider").val(id);
-                    $("#NomeLider").val(nome);
-                    $("#modalUsuario").modal('hide');
-                });
-
-                $("#TbUsuario").removeClass("d-none");
-                $("#DivMensagemUsuario").addClass("d-none");
-            } else {
-                $("#TbUsuario").addClass("d-none");
-                $("#DivMensagemUsuario").removeClass("d-none");
-            }
-        });
-    }
-
-$("#TxtFiltroCampus").on("keyup", function(){ buscarCampus(); });
-$("#TxtFiltroCurso").on("keyup", function(){ buscarCurso(); });
-$("#TxtFiltroUsuario").on("keyup", function(){ buscarUsuario(); });
-    </script>
-}
+                                    @section Scripts {
+                                        <script>
+                                                                                    function buscarCampus() {
+                                                                                        var f = $("#TxtFiltroCampus").val().trim(); if (!f.length) return;
+                                                                                        $.getJSON("/Campus/Buscar?filtro=" + f, function (r) {
+                                                                                            $("#DivMensagemCampus").addClass("d-none");
+                                                                                            if (r.length) {
+                                                                                                $("#TbCampus tbody").html(r.map(p => "<tr data-id='" + p.id + "'><td>" + p.nome + "</td></tr>").join(""));
+                                                                                                $("#TbCampus tbody tr").click(function () { $("#IdCampus").val($(this).data("id")); $("#NomeCampus").val($(this).find("td:first").text()); $("#ModalCampus").modal("hide"); });
+                                                                                            } else { $("#TbCampus tbody").html(""); $("#DivMensagemCampus").removeClass("d-none"); }
+                                                                                        });
+                                                                                    }
+                                                                                    function buscarCurso() {
+                                                                                        var f = $("#TxtFiltroCurso").val().trim(); if (!f.length) return;
+                                                                                        $.getJSON("/Curso/Buscar?filtro=" + f + "&campusId=" + $("#IdCampus").val().trim(), function (r) {
+                                                                                            $("#DivMensagemCurso").addClass("d-none");
+                                                                                            if (r.length) {
+                                                                                                $("#TbCurso tbody").html(r.map(p => "<tr data-id='" + p.id + "'><td>" + p.nome + "</td><td>" + p.nomeCampus + "</td></tr>").join(""));
+                                                                                                $("#TbCurso tbody tr").click(function () { $("#IdCurso").val($(this).data("id")); $("#NomeCurso").val($(this).find("td:first").text()); $("#ModalCurso").modal("hide"); });
+                                                                                            } else { $("#TbCurso tbody").html(""); $("#DivMensagemCurso").removeClass("d-none"); }
+                                                                                        });
+                                                                                    }
+                                                                                    function buscarUsuario() {
+                                                                                        var f = $("#TxtFiltroUsuario").val().trim(); if (!f.length) return;
+                                                                                        $.getJSON("/usuarios/buscar?filtro=" + encodeURIComponent(f), function (r) {
+                                                                                            if (r.length) {
+                                                                                                $("#TbUsuario tbody").html(r.map(u => "<tr data-id='" + u.id + "' data-nome='" + u.nome + "'><td>" + u.nome + "</td><td>" + u.email + "</td><td>" + u.nomeCampus + "</td></tr>").join(""));
+                                                                                                $("#TbUsuario tbody tr").click(function () { $("#IdLider").val($(this).data("id")); $("#NomeLider").val($(this).data("nome")); $("#modalUsuario").modal("hide"); });
+                                                                                                $("#TbUsuario").removeClass("d-none"); $("#DivMensagemUsuario").addClass("d-none");
+                                                                                            } else { $("#TbUsuario").addClass("d-none"); $("#DivMensagemUsuario").removeClass("d-none"); }
+                                                                                        });
+                                                                                    }
+                                                                                    $("#TxtFiltroCampus").on("keyup", buscarCampus);
+                                                                                    $("#TxtFiltroCurso").on("keyup", buscarCurso);
+                                                                                    $("#TxtFiltroUsuario").on("keyup", buscarUsuario);
+                                        </script>
+                                    }

@@ -1,90 +1,444 @@
-@model EnsinoApp.ViewModels.Relatorios.RelatorioCreateViewModel;
-
+@model EnsinoApp.ViewModels.Relatorios.RelatorioCreateViewModel
 @{
     ViewData["Title"] = "Criar Relatório";
 }
-<section class="content-header">
+
+<style>
+    :root {
+        --primary: #2563eb;
+        --primary-light: #eff6ff;
+        --primary-mid: #bfdbfe;
+        --success: #16a34a;
+        --success-light: #f0fdf4;
+        --danger: #dc2626;
+        --danger-light: #fef2f2;
+        --warning: #d97706;
+        --warning-light: #fffbeb;
+        --gray-50: #f8fafc;
+        --gray-100: #f1f5f9;
+        --gray-200: #e2e8f0;
+        --gray-300: #cbd5e1;
+        --gray-400: #94a3b8;
+        --gray-500: #64748b;
+        --gray-600: #475569;
+        --gray-700: #334155;
+        --gray-800: #1e293b;
+        --radius-sm: 6px;
+        --radius: 10px;
+        --radius-lg: 14px;
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, .08);
+        --shadow-lg: 0 10px 30px rgba(0, 0, 0, .1);
+        --font: 'Nunito', 'Segoe UI', sans-serif;
+    }
+
+    /* ─── Page header ─────────────────────────────────── */
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: .8rem;
+        font-weight: 700;
+        color: var(--gray-500);
+        text-decoration: none !important;
+        background: var(--gray-100);
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-sm);
+        padding: 5px 12px;
+        margin-bottom: 14px;
+        transition: background .18s, color .18s;
+    }
+
+    .btn-back:hover {
+        background: var(--gray-200);
+        color: var(--gray-700);
+    }
+
+    .page-title-wrap h1 {
+        font-family: var(--font);
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--gray-800);
+        margin: 0 0 2px;
+        letter-spacing: -.3px;
+    }
+
+    .page-title-wrap p {
+        font-size: .82rem;
+        color: var(--gray-400);
+        margin: 0;
+    }
+
+    /* ─── Form card ───────────────────────────────────── */
+    .form-card {
+        background: #fff;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+        margin-bottom: 18px;
+        animation: fadeUp .35s ease both;
+    }
+
+
+    fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(12px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .form-card-header {
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--gray-100);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--gray-50);
+    }
+
+    .form-header-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .75rem;
+    }
+
+    .form-card-title {
+        font-family: var(--font);
+        font-size: .88rem;
+        font-weight: 800;
+        color: var(--gray-700);
+        margin: 0;
+    }
+
+    .form-card-body {
+        padding: 20px 22px;
+    }
+
+    /* ─── Form controls ───────────────────────────────── */
+    .field-label {
+        display: block;
+        font-size: .72rem;
+        font-weight: 700;
+        color: var(--gray-500);
+        text-transform: uppercase;
+        letter-spacing: .4px;
+        margin-bottom: 5px;
+    }
+
+    .field-control {
+        width: 100%;
+        border: 1.5px solid var(--gray-200);
+        border-radius: var(--radius);
+        padding: 9px 12px;
+        font-size: .85rem;
+        color: var(--gray-700);
+        background: var(--gray-50);
+        transition: border-color .2s, box-shadow .2s;
+        outline: none;
+        font-family: var(--font);
+    }
+
+    .field-control:focus {
+        border-color: var(--primary);
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+    }
+
+    select.field-control {
+        -webkit-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2394a3b8'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        padding-right: 32px;
+        cursor: pointer;
+    }
+
+    /* ─── Presence table ──────────────────────────────── */
+    .presence-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: .83rem;
+    }
+
+    .presence-table thead th {
+        padding: 10px 16px;
+        background: var(--gray-50);
+        color: var(--gray-500);
+        font-size: .7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .4px;
+        border-bottom: 1px solid var(--gray-200);
+        white-space: nowrap;
+    }
+
+    .presence-table tbody tr {
+        border-bottom: 1px solid var(--gray-100);
+        transition: background .15s;
+    }
+
+    .presence-table tbody tr:last-child {
+        border-bottom: none;
+    }
+
+    .presence-table tbody tr:hover {
+        background: var(--gray-50);
+    }
+
+    .presence-table tbody td {
+        padding: 10px 16px;
+        color: var(--gray-700);
+        vertical-align: middle;
+    }
+
+    .td-casal {
+        font-weight: 700;
+        color: var(--gray-800) !important;
+        white-space: nowrap;
+    }
+
+    .td-casal i {
+        color: #fca5a5;
+        margin-right: 6px;
+        font-size: .7rem;
+    }
+
+    /* presença select colorido */
+    .presenca-select {
+        width: 100%;
+        min-width: 130px;
+        border: 1.5px solid var(--gray-200);
+        border-radius: var(--radius);
+        padding: 7px 30px 7px 10px;
+        font-size: .82rem;
+        font-weight: 600;
+        color: var(--gray-700);
+        background-color: var(--gray-50);
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2394a3b8'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        -webkit-appearance: none;
+        appearance: none;
+        outline: none;
+        transition: border-color .2s, box-shadow .2s;
+        cursor: pointer;
+        font-family: var(--font);
+    }
+
+    .presenca-select:focus {
+        border-color: var(--primary);
+        background-color: #fff;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+    }
+
+    .obs-textarea {
+        width: 100%;
+        min-width: 200px;
+        border: 1.5px solid var(--gray-200);
+        border-radius: var(--radius);
+        padding: 8px 12px;
+        font-size: .8rem;
+        color: var(--gray-700);
+        background: var(--gray-50);
+        resize: vertical;
+        min-height: 72px;
+        transition: border-color .2s, box-shadow .2s;
+        outline: none;
+        font-family: var(--font);
+        line-height: 1.5;
+    }
+
+    .obs-textarea:focus {
+        border-color: var(--primary);
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+    }
+
+    .obs-textarea::placeholder {
+        color: var(--gray-300);
+    }
+
+    /* ─── Footer actions ──────────────────────────────── */
+    .form-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 16px 22px;
+        border-top: 1px solid var(--gray-100);
+        background: var(--gray-50);
+    }
+
+    .btn-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        border-radius: var(--radius);
+        padding: 10px 20px;
+        font-size: .85rem;
+        font-weight: 700;
+        text-decoration: none !important;
+        transition: background .18s, transform .15s, box-shadow .2s;
+        white-space: nowrap;
+        border: none;
+        cursor: pointer;
+        font-family: var(--font);
+    }
+
+    .btn-action:hover {
+        transform: translateY(-1px);
+    }
+
+    .btn-action.btn-cancel {
+        background: var(--gray-100);
+        color: var(--gray-600) !important;
+        border: 1.5px solid var(--gray-200);
+    }
+
+    .btn-action.btn-cancel:hover {
+        background: var(--gray-200);
+    }
+
+    .btn-action.btn-save {
+        background: var(--success);
+        color: #fff !important;
+        box-shadow: 0 2px 8px rgba(22, 163, 74, .25);
+    }
+
+    .btn-action.btn-save:hover {
+        background: #15803d;
+        box-shadow: 0 4px 14px rgba(22, 163, 74, .35);
+    }
+
+    /* ─── Responsive ──────────────────────────────────── */
+    @@media (max-width: 768px) {
+        .form-card-body {
+            padding: 14px;
+        }
+
+        .form-footer {
+            padding: 12px 14px;
+        }
+
+        .btn-action {
+            flex: 1 1 auto;
+            justify-content: center;
+        }
+
+        .table-scroll {
+            overflow-x: auto;
+        }
+    }
+</style>
+
+<section class="content-header" style="padding-bottom:0">
     <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6">                
-                <h4 class="mb-4">📘 Relatório da Turma</h4>
-
+        <a asp-action="Turma" asp-route-id="@Model.IdTurma" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Voltar para a Turma
+        </a>
+        <div class="page-title-wrap" style="margin-bottom:22px">
+            <h1><i class="fas fa-file-alt" style="color:var(--primary);margin-right:8px;font-size:1.3rem"></i>Criar
+                Relatório</h1>
+                <p>Registre a lição e a presença dos casais nesta semana</p>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
+    <section class="content">
+        <div class="container-fluid">
+            <form asp-action="CriarRelatorio" method="post">
+                <input type="hidden" asp-for="IdTurma" />
+                <input type="hidden" asp-for="IdCurso" />
 
-<section class="content">
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow">
-                <div class="card-body">
-                    <form asp-action="CriarRelatorio" method="post">
-                        <input type="hidden" asp-for="IdTurma" />
-                        <input type="hidden" asp-for="IdCurso" />
-
-                        <!-- Lição -->
-                        <div class="row mb-3">
+                <!-- Lição e data -->
+                <div class="form-card" style="animation-delay:.04s">
+                    <div class="form-card-header">
+                        <div class="form-header-icon" style="background:var(--primary-light);color:var(--primary)">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <h3 class="form-card-title">Dados da Lição</h3>
+                    </div>
+                    <div class="form-card-body">
+                        <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label">Lição</label>
-                                <select asp-for="IdLicao" asp-items="Model.Licoes" class="form-control"></select>
+                                <label class="field-label">Lição</label>
+                                <select asp-for="IdLicao" asp-items="Model.Licoes" class="field-control"></select>
+                                <span asp-validation-for="IdLicao" class="text-danger" style="font-size:.75rem"></span>
                             </div>
-
                             <div class="col-md-4">
-                                <label class="form-label">Data da Lição</label>
-                                <input asp-for="DataLicao" type="date" class="form-control" />
+                                <label class="field-label">Data da Lição</label>
+                                <input asp-for="DataLicao" type="date" class="field-control" />
+                                <span asp-validation-for="DataLicao" class="text-danger" style="font-size:.75rem"></span>
                             </div>
                         </div>
-                        <div class="card-header">👫 Presença dos Casais</div>
-                        <!-- Casais -->
-                        <div class="card-body table-responsive p-0">
-
-
-                            <table class="table table-striped table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>Casal</th>
-                                        <th>Presença</th>
-                                        <th>Observações</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @for (int i = 0; i < Model.Casais.Count; i++)
-                                    {
-                                        <tr>
-                                            <td>
-                                                @Model.Casais[i].NomeCasal
-                                                <input type="hidden" asp-for="Casais[i].IdMatricula" />
-                                            </td>
-                                            <td>
-                                                <select asp-for="Casais[i].Presenca" class="form-control">
-                                                    <option value="Presente">Presente</option>
-                                                    <option value="Ausente">Ausente</option>
-                                                    <option value="Desistente">Desistente</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <div class="form-floating">
-                                                    <textarea asp-for="Casais[i].Observacoes" class="form-control" placeholder="Observações"
-                                                              id="floatingTextarea2" style="height: 100px"></textarea>
-                                                </div>
-                                                <!-- <input asp-for="Casais[i].Observacoes" class="form-control" /> -->
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="d-flex justify-content-between mt-4">
-                            <a asp-action="Turma" asp-route-id="@Model.IdTurma" class="btn btn-secondary">
-                                <i class="fas fa-arrow-left"></i> Voltar
-                            </a>
-                            <button type="submit" class="btn btn-success">Salvar <i class="fas fa-save"></i></button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
-            </div>
+
+                <!-- Presença dos casais -->
+                <div class="form-card" style="animation-delay:.1s">
+                    <div class="form-card-header">
+                        <div class="form-header-icon" style="background:#fff0f0;color:#f87171">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <h3 class="form-card-title">Presença dos Casais</h3>
+                    </div>
+
+                    <div class="table-scroll">
+                        <table class="presence-table">
+                            <thead>
+                                <tr>
+                                    <th>Casal</th>
+                                    <th style="width:150px">Presença</th>
+                                    <th>Observações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < Model.Casais.Count; i++)
+                                {
+                                    <tr>
+                                        <td class="td-casal">
+                                            <i class="fas fa-heart"></i>
+                                            @Model.Casais[i].NomeCasal
+                                            <input type="hidden" asp-for="Casais[i].IdMatricula" />
+                                        </td>
+                                        <td>
+                                            <select asp-for="Casais[i].Presenca" class="presenca-select">
+                                                <option value="Presente">✅ Presente</option>
+                                                <option value="Ausente">❌ Ausente</option>
+                                                <option value="Desistente">⚠️ Desistente</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <textarea asp-for="Casais[i].Observacoes" class="obs-textarea"
+                                                      placeholder="Observações sobre o casal..."></textarea>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="form-footer">
+                        <a asp-action="Turma" asp-route-id="@Model.IdTurma" class="btn-action btn-cancel">
+                            <i class="fas fa-times"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn-action btn-save">
+                            <i class="fas fa-save"></i> Salvar Relatório
+                        </button>
+                    </div>
+                </div>
+
+            </form>
         </div>
-    </div>
-</section>
+    </section>

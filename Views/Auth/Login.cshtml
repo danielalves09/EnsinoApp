@@ -5,77 +5,97 @@
 
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>EnsinoApp | CCVideira</title>
-    <link href="~/loginResources/bootstrap.min.css" rel="stylesheet" />
-    <link href="~/loginResources/style.min.css" rel="stylesheet" />
-    <link href="~/loginResources/style-responsive.min.css" rel="stylesheet" />
+
+    <!-- Nunito -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap"
+          rel="stylesheet" />
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
+    <!-- Login CSS -->
+    <link rel="stylesheet" href="~/css/login.css" />
 </head>
 
-<body class="bg-white">
+<body>
+    <div class="login-wrap">
 
-    <div class="login login-with-news-feed">
-        <div class="news-feed" style="background-color: black;">
-            <div class="news-image" style="background-image: url('@Url.Content("~/images/back.jpg")');"></div>
-            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%)">
-                <img src="~/images/logoVideira2.png" width="150" alt="Logo EnsinoApp" />
-            </div>
-            <div class="news-caption">
-                <h4 class="caption-title"><b>EnsinoApp</b> - Plataforma para Gestão dos cursos da CCVideira</h4>
-                <p>One | Casados Para Sempre | Pais para Toda Vida</p>
-            </div>
-        </div>
-
-        <!-- Right Content -->
-        <div class="right-content">
-            <div class="login-header text-center mb-4">
-                <img src="~/images/logo.png" width="300" class="img-fluid" alt="Logo EnsinoApp" />
-                <h4>Acesso ao sistema</h4>
-            </div>
-
-            <div class="login-content">
-                <form asp-action="Login" method="post" novalidate>
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-
-                    <div class="form-group mb-3">
-                        <input asp-for="Email" class="form-control form-control-lg" placeholder="Email" />
-                        <span asp-validation-for="Email" class="text-danger"></span>
+        <!-- ── Painel esquerdo (imagem) ───────────────── -->
+        <div class="login-panel-left">
+            <div class="bg-image" style="background-image:url('@Url.Content("~/images/back.jpg")')"></div>
+            <div class="overlay-content">
+                <img src="~/images/logoVideira2.png" class="panel-logo" alt="Logo CCVideira" />
+                <h2>Plataforma de Gestão<br />dos Cursos CCVideira</h2>
+                <p>Gerencie turmas, matrículas e relatórios<br />em um só lugar.</p>
+                <div class="login-courses">
+                    <span class="login-course-pill"><i class="fas fa-heart" style="margin-right:4px"></i>Casados Para
+                        Sempre</span>
+                        <span class="login-course-pill"><i class="fas fa-ring" style="margin-right:4px"></i>One</span>
+                        <span class="login-course-pill"><i class="fas fa-child" style="margin-right:4px"></i>Pais Para Toda
+                            Vida</span>
+                        </div>
                     </div>
+                </div>
 
-                    <div class="form-group mb-3">
-                        <input asp-for="Password" type="password" class="form-control form-control-lg"
-                               placeholder="Senha" />
-                        <span asp-validation-for="Password" class="text-danger"></span>
-                    </div>
+                <!-- ── Painel direito (formulário) ───────────── -->
+                <div class="login-panel-right">
 
-                    <div class="form-check mb-3">
-                        <input asp-for="RememberMe" class="form-check-input" id="remember_me_checkbox" />
-                        <label class="form-check-label" for="remember_me_checkbox">Lembrar da Senha</label>
-                    </div>
+                    <img src="~/images/logo.png" class="login-logo" alt="Logo EnsinoApp" />
+                    <p class="login-subtitle">Acesse o sistema com suas credenciais</p>
 
-                    <button type="submit" class="btn btn-primary btn-block btn-lg w-100 mb-3">
-                        <i class="fa fa-sign-in-alt"></i> Entrar
-                    </button>
+                    <form asp-action="Login" method="post" novalidate class="login-form">
+                        <div asp-validation-summary="ModelOnly" class="l-error"
+                             style="margin-bottom:14px;padding:10px 14px;background:#fef2f2;border:1px solid #fca5a5;border-radius:var(--radius)">
+                        </div>
 
-                    <div class="text-center">
-                        <a asp-action="ForgotPassword" class="text-success">Esqueceu a senha? Clique aqui</a>
-                    </div>
+                        <!-- Email -->
+                        <div class="l-field-group">
+                            <div class="l-field-wrap">
+                                <input asp-for="Email" class="l-field-control"                 placeholder="Seu email" />
+                                <i class="fas fa-envelope l-field-icon"></i>
+                            </div>
+                            <span asp-validation-for="Email" class="l-error"></span>
+                        </div>
 
-                    <hr>
-                    <p class="text-center text-grey-darker">
-                        ©<b>EnsinoApp - Versão 1.0</b>
-                    </p>
-                </form>
+                        <!-- Senha -->
+                        <div class="l-field-group">
+                            <div class="l-field-wrap">
+                                <input asp-for="Password"                 type="password"               class="l-field-control"             placeholder="Sua senha" />
+                                <i class="fas fa-lock l-field-icon"></i>
+                            </div>
+                            <span asp-validation-for="Password" class="l-error"></span>
+                        </div>
+
+                        <!-- Lembrar -->
+                        <label class="l-remember">
+                            <input asp-for="RememberMe" type="checkbox" />
+                            Lembrar minha senha
+                        </label>
+
+                        <!-- Botão -->
+                        <button type="submit" class="btn-login">
+                            <i class="fas fa-sign-in-alt"></i> Entrar
+                        </button>
+
+                        <!-- Esqueceu -->
+                        <a asp-action="ForgotPassword" class="l-forgot">
+                            Esqueceu a senha? Clique aqui
+                        </a>
+
+                        <hr class="l-divider" />
+
+                        <p class="l-footer">
+                            © @DateTime.Now.Year <strong>EnsinoApp · Versão 1.0</strong>
+                        </p>
+                    </form>
+
+                </div>
             </div>
-        </div>
-    </div>
 
-    <script src="~/loginResources/jquery.min.js"></script>
-    <script src="~/loginResources/bootstrap.bundle.min.js"></script>
-    <partial name="_ValidationScriptsPartial" />
-</body>
+            <script src="~/loginResources/jquery.min.js"></script>
+            <partial name="_ValidationScriptsPartial" />
+        </body>
 
-</html>
+    </html>

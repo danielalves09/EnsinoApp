@@ -1,140 +1,646 @@
 @using EnsinoApp.Models.Enums
 @model EnsinoApp.ViewModels.Lider.LiderDashboardViewModel
-
 @{
-    ViewData["Title"] = "Área do líder";
+    ViewData["Title"] = "Área do Líder";
 }
-<div class="content-header">
+
+<style>
+    :root {
+        --primary: #2563eb;
+        --primary-light: #eff6ff;
+        --primary-mid: #bfdbfe;
+        --success: #16a34a;
+        --success-light: #f0fdf4;
+        --danger: #dc2626;
+        --danger-light: #fef2f2;
+        --warning: #d97706;
+        --warning-light: #fffbeb;
+        --purple: #7c3aed;
+        --purple-light: #f5f3ff;
+        --info: #0891b2;
+        --info-light: #ecfeff;
+        --gray-50: #f8fafc;
+        --gray-100: #f1f5f9;
+        --gray-200: #e2e8f0;
+        --gray-300: #cbd5e1;
+        --gray-400: #94a3b8;
+        --gray-500: #64748b;
+        --gray-600: #475569;
+        --gray-700: #334155;
+        --gray-800: #1e293b;
+        --radius-sm: 6px;
+        --radius: 10px;
+        --radius-lg: 14px;
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, .08);
+        --shadow: 0 4px 12px rgba(0, 0, 0, .08);
+        --shadow-lg: 0 10px 30px rgba(0, 0, 0, .1);
+        --font: 'Nunito', 'Segoe UI', sans-serif;
+    }
+
+    /* ─── Welcome bar ─────────────────────────────────── */
+    .welcome-bar {
+        background: linear-gradient(135deg, #1e40af 0%, #2563eb 60%, #3b82f6 100%);
+        border-radius: var(--radius-lg);
+        padding: 22px 28px;
+        margin-bottom: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 14px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(37, 99, 235, .3);
+    }
+
+    .welcome-bar::before {
+        content: '';
+        position: absolute;
+        top: -50px;
+        right: -30px;
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, .07);
+        pointer-events: none;
+    }
+
+    .welcome-bar::after {
+        content: '';
+        position: absolute;
+        bottom: -70px;
+        right: 100px;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, .04);
+        pointer-events: none;
+    }
+
+    .welcome-text h1 {
+        font-family: var(--font);
+        font-size: 1.45rem;
+        font-weight: 800;
+        color: #fff;
+        margin: 0 0 3px;
+        letter-spacing: -.3px;
+    }
+
+    .welcome-text p {
+        font-size: .82rem;
+        color: rgba(255, 255, 255, .7);
+        margin: 0;
+    }
+
+    .welcome-icon {
+        width: 48px;
+        height: 48px;
+        background: rgba(255, 255, 255, .15);
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        color: #fff;
+        flex-shrink: 0;
+    }
+
+    /* ─── Info cards ──────────────────────────────────── */
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        margin-bottom: 22px;
+    }
+
+    .info-card {
+        background: #fff;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        padding: 18px 20px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        animation: fadeUp .35s ease both;
+    }
+
+    .info-card:nth-child(1) {
+        animation-delay: .04s;
+    }
+
+    .info-card:nth-child(2) {
+        animation-delay: .08s;
+    }
+
+    .info-card:nth-child(3) {
+        animation-delay: .12s;
+    }
+
+    .info-card:nth-child(4) {
+        animation-delay: .16s;
+    }
+
+
+    fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(12px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .info-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.05rem;
+        flex-shrink: 0;
+    }
+
+    .info-icon.cyan {
+        background: var(--info-light);
+        color: var(--info);
+    }
+
+    .info-icon.green {
+        background: var(--success-light);
+        color: var(--success);
+    }
+
+    .info-icon.purple {
+        background: var(--purple-light);
+        color: var(--purple);
+    }
+
+    .info-icon.dark {
+        background: var(--gray-100);
+        color: var(--gray-700);
+    }
+
+    .info-label {
+        font-size: .72rem;
+        color: var(--gray-400);
+        font-weight: 700;
+        margin: 0 0 3px;
+        text-transform: uppercase;
+        letter-spacing: .3px;
+    }
+
+    .info-number {
+        font-family: var(--font);
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: var(--gray-800);
+        margin: 0;
+        line-height: 1;
+        letter-spacing: -.4px;
+    }
+
+    .info-number-sm {
+        font-family: var(--font);
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--gray-700);
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    /* ─── Table card ──────────────────────────────────── */
+    .table-card {
+        background: #fff;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+        animation: fadeUp .4s ease .2s both;
+        margin-bottom: 24px;
+    }
+
+    .table-card-header {
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--gray-100);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .table-card-header-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: var(--radius-sm);
+        background: var(--primary-light);
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .75rem;
+    }
+
+    .table-card-title {
+        font-family: var(--font);
+        font-size: .9rem;
+        font-weight: 800;
+        color: var(--gray-700);
+        margin: 0;
+    }
+
+    /* ─── Table ───────────────────────────────────────── */
+    .turmas-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: .82rem;
+    }
+
+    .turmas-table thead th {
+        padding: 10px 16px;
+        background: var(--gray-50);
+        color: var(--gray-500);
+        font-size: .7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .4px;
+        border-bottom: 1px solid var(--gray-200);
+        white-space: nowrap;
+    }
+
+    .turmas-table tbody tr {
+        border-bottom: 1px solid var(--gray-100);
+        transition: background .15s;
+    }
+
+    .turmas-table tbody tr:last-child {
+        border-bottom: none;
+    }
+
+    .turmas-table tbody tr:hover {
+        background: var(--gray-50);
+    }
+
+    .turmas-table tbody td {
+        padding: 12px 16px;
+        color: var(--gray-700);
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+
+    .td-curso {
+        font-weight: 700;
+        color: var(--gray-800) !important;
+        max-width: 180px;
+        white-space: normal !important;
+        line-height: 1.3;
+    }
+
+    .td-campus {
+        color: var(--gray-500) !important;
+        font-size: .78rem;
+    }
+
+    /* ─── Badges ──────────────────────────────────────── */
+    .badge-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: .68rem;
+        font-weight: 700;
+        border-radius: 20px;
+        padding: 3px 9px;
+        white-space: nowrap;
+    }
+
+    .badge-pill::before {
+        content: '';
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: currentColor;
+        display: inline-block;
+    }
+
+    .badge-acomecar {
+        background: var(--primary-light);
+        color: var(--primary);
+        border: 1px solid var(--primary-mid);
+    }
+
+    .badge-emandamento {
+        background: var(--purple-light);
+        color: var(--purple);
+        border: 1px solid #ddd6fe;
+    }
+
+    .badge-concluida {
+        background: var(--success-light);
+        color: var(--success);
+        border: 1px solid #bbf7d0;
+    }
+
+    .badge-cancelada {
+        background: var(--danger-light);
+        color: var(--danger);
+        border: 1px solid #fca5a5;
+    }
+
+    .badge-emdia {
+        background: var(--success-light);
+        color: var(--success);
+        border: 1px solid #bbf7d0;
+    }
+
+    .badge-pendente {
+        background: var(--warning-light);
+        color: var(--warning);
+        border: 1px solid #fde68a;
+    }
+
+    /* ─── Progress bar ────────────────────────────────── */
+    .progress-wrap {
+        min-width: 110px;
+    }
+
+    .progress-track {
+        height: 7px;
+        background: var(--gray-100);
+        border-radius: 20px;
+        overflow: hidden;
+        margin-bottom: 3px;
+    }
+
+    .progress-fill {
+        height: 100%;
+        border-radius: 20px;
+        background: linear-gradient(90deg, var(--primary) 0%, #60a5fa 100%);
+        transition: width .6s ease;
+    }
+
+    .progress-fill.complete {
+        background: linear-gradient(90deg, var(--success) 0%, #4ade80 100%);
+    }
+
+    .progress-label {
+        font-size: .68rem;
+        font-weight: 700;
+        color: var(--gray-400);
+    }
+
+    /* ─── Relatórios counter ──────────────────────────── */
+    .rel-counter {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: .78rem;
+        font-weight: 700;
+        color: var(--gray-600);
+    }
+
+    .rel-counter span.sep {
+        color: var(--gray-300);
+    }
+
+    /* ─── Action button ───────────────────────────────── */
+    .btn-turma {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: var(--primary);
+        color: #fff !important;
+        border: none;
+        border-radius: var(--radius-sm);
+        padding: 6px 12px;
+        font-size: .75rem;
+        font-weight: 700;
+        text-decoration: none !important;
+        white-space: nowrap;
+        transition: background .18s, transform .15s;
+    }
+
+    .btn-turma:hover {
+        background: #1d4ed8;
+        transform: translateY(-1px);
+    }
+
+    /* ─── Empty state ─────────────────────────────────── */
+    .empty-state {
+        text-align: center;
+        padding: 40px 24px;
+    }
+
+    .empty-state i {
+        font-size: 2.4rem;
+        color: var(--gray-300);
+        margin-bottom: 10px;
+    }
+
+    .empty-state p {
+        font-size: .85rem;
+        color: var(--gray-400);
+        margin: 0;
+    }
+
+    /* ─── Responsive ──────────────────────────────────── */
+    @@media (max-width: 1024px) {
+        .info-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .table-card {
+            overflow-x: auto;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .info-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .welcome-bar {
+            padding: 16px 18px;
+        }
+
+        .welcome-text h1 {
+            font-size: 1.15rem;
+        }
+
+        .info-number {
+            font-size: 1.3rem;
+        }
+    }
+</style>
+
+<!-- Welcome Bar -->
+<section class="content-header" style="padding-bottom:0">
     <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6">
-                <h3 class="mb-4">Bem Vindo - @Model.NomeLider</h3>
-            </div><!-- /.col -->
-            <div class="col-sm-6">
-                <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="#">Área do Lider</a></li>
-                    <li class="breadcrumb-item active">Visão geral</li>
-                </ol>
-            </div><!-- /.col -->
-        </div><!-- /.row -->
-    </div><!-- /.container-fluid -->
-</div>
-<div class="container-fluid">
+        <div class="welcome-bar">
+            <div class="welcome-text">
+                <h1>Olá, @Model.NomeLider! 👋</h1>
+                <p>Aqui está o resumo das suas turmas e relatórios.</p>
+            </div>
+            <div class="welcome-icon">
+                <i class="fas fa-chalkboard-teacher"></i>
+            </div>
+        </div>
+    </div>
+</section>
 
-    <!-- Info Boxes -->
-    <div class="row">
-        <div class="col-md-3 col-sm-6 col-12">
-            <div class="info-box shadow">
-                <span class="info-box-icon bg-info"><i class="fas fa-users"></i></span>
-                <div class="info-box-content">
-                    <span class="info-box-text">Turmas Ativas</span>
-                    <span class="info-box-number">@Model.TotalTurmasAtivas</span>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 col-sm-6 col-12">
-            <div class="info-box shadow">
-                <span class="info-box-icon bg-success"><i class="fas fa-check"></i></span>
-                <div class="info-box-content">
-                    <span class="info-box-text">Turmas Concluídas</span>
-                    <span class="info-box-number">@Model.TotalTurmasConcluidas</span>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 col-sm-6 col-12">
-            <div class="info-box shadow">
-                <span class="info-box-icon bg-success"><i class="fas fa-user-graduate"></i></span>
-                <div class="info-box-content">
-                    <span class="info-box-text">Casais Ativos</span>
-                    <span class="info-box-number">@Model.TotalCasaisAtivos</span>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 col-sm-6 col-12">
-            <div class="info-box shadow">
-                <span class="info-box-icon bg-dark"><i class="fas fa-layer-group"></i></span>
-                <div class="info-box-content">
-                    <span class="info-box-text">Relatórios</span>
-                    <span class="info-box-number">@(Model.TotalRelatoriosLancados) / @(@Model.TotalRelatoriosLancados +
-                                                @Model.TotalRelatoriosPendentes)</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+<section class="content">
+    <div class="container-fluid">
 
+        <!-- Info cards -->
+        <div class="info-grid">
+            <div class="info-card">
+                <div class="info-icon cyan"><i class="fas fa-users"></i></div>
+                <div>
+                    <p class="info-label">Turmas Ativas</p>
+                    <p class="info-number">@Model.TotalTurmasAtivas</p>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-icon green"><i class="fas fa-check-circle"></i></div>
+                <div>
+                    <p class="info-label">Turmas Concluídas</p>
+                    <p class="info-number">@Model.TotalTurmasConcluidas</p>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-icon purple"><i class="fas fa-user-graduate"></i></div>
+                <div>
+                    <p class="info-label">Casais Ativos</p>
+                    <p class="info-number">@Model.TotalCasaisAtivos</p>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-icon dark"><i class="fas fa-file-alt"></i></div>
+                <div>
+                    <p class="info-label">Relatórios</p>
+                    <p class="info-number-sm">
+                        @Model.TotalRelatoriosLancados
+                        <span style="color:var(--gray-300);font-weight:400"> / </span>
+                        @(Model.TotalRelatoriosLancados + Model.TotalRelatoriosPendentes)
+                    </p>
+                </div>
+            </div>
+        </div>
 
         <!-- Tabela de Turmas -->
-        <div class="card">
-            <div class="card-header">📚 Turmas</div>
-            <div class="card-body table-responsive p-0">
-                <table class="table table-head-fixed text-nowrap">
-                    <thead>
-                        <tr>
-                            <th>Curso</th>
-                            <th>Campus</th>
-                            <th>Casais</th>
-                            <th>Relatórios</th>
-                            <th>Status Relatorios</th>
-                            <th>Progresso</th>
-                            <th>Status Turma</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var turma in Model.Turmas)
-                        {
+        <div class="table-card">
+            <div class="table-card-header">
+                <div class="table-card-header-icon">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <h3 class="table-card-title">Minhas Turmas</h3>
+            </div>
+
+            <div style="overflow-x:auto">
+                @if (Model.Turmas != null && Model.Turmas.Any())
+                {
+                    <table class="turmas-table">
+                        <thead>
                             <tr>
-                                <td>@turma.NomeCurso</td>
-                                <td>@turma.NomeCampus</td>
-                                <td>@turma.TotalCasais</td>
-                                <td>@(turma.TotalRelatoriosLancados / (turma.TotalCasais == 0 ? 1 : turma.TotalCasais)) /
-                                    @(turma.TotalRelatoriosLancados + turma.TotalRelatoriosPendentes)</td>
+                                <th>Curso</th>
+                                <th>Campus</th>
+                                <th>Casais</th>
+                                <th>Relatórios</th>
+                                <th>Status Rel.</th>
+                                <th>Progresso</th>
+                                <th>Status Turma</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var turma in Model.Turmas)
+                            {
+                                string badgeClass = "badge-acomecar";
+                                string badgeLabel = "A começar";
+
+                                if (turma.StatusTurma == StatusTurma.EmAndamento)
+                                {
+                                    badgeClass = "badge-emandamento"; badgeLabel
+                                = "Em andamento";
+                                }
+                                else if (turma.StatusTurma == StatusTurma.Concluida)
+                                {
+                                    badgeClass = "badge-concluida";
+                                    badgeLabel = "Concluída";
+                                }
+                                else if (turma.StatusTurma == StatusTurma.Cancelada)
+                                {
+                                    badgeClass = "badge-cancelada";
+                                    badgeLabel = "Cancelada";
+                                }
+
+                                int totalRel = turma.TotalRelatoriosLancados + turma.TotalRelatoriosPendentes;
+                                int porCasal = turma.TotalCasais == 0 ? 0 : turma.TotalRelatoriosLancados / turma.TotalCasais;
+
+                                <tr>
+                                    <td class="td-curso">@turma.NomeCurso</td>
+                                    <td class="td-campus">
+                                        <i class="fas fa-map-marker-alt"
+                                           style="color:var(--gray-300);margin-right:4px"></i>@turma.NomeCampus
+                                    </td>
+                                    <td>
+                                        <span style="font-weight:700;color:var(--gray-800)">@turma.TotalCasais</span>
+                                    </td>
+                                    <td>
+                                        <span class="rel-counter">
+                                            @porCasal <span class="sep">/</span> @totalRel
+                                        </span>
+                                    </td>
                                     <td>
                                         @if (turma.TotalRelatoriosPendentes == 0)
                                         {
-                                            <span class="badge bg-success">Em dia</span>
+                                            <span class="badge-pill badge-emdia">Em dia</span>
                                         }
                                         else
                                         {
-                                            <span class="badge bg-warning">Pendentes</span>
-                                        }
-                                    </td>
-                                    <td style="width: 20%;">
-                                        <div class="progress">
-                                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success"
-                                                 role="progressbar" style="width: @turma.Progresso%;"
-                                                 aria-valuenow="@turma.Progresso" aria-valuemin="0" aria-valuemax="100">
-                                                @turma.Progresso%
+                                            <span class="badge-pill badge-pendente">@turma.TotalRelatoriosPendentes
+                                                pendente(s)</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="progress-wrap">
+                                                <div class="progress-track">
+                                                    <div class="progress-fill @(turma.Progresso >= 100 ? "complete" : "")"
+                                                         style="width:@(Math.Min(turma.Progresso, 100))%"></div>
+                                                </div>
+                                                <span class="progress-label">@turma.Progresso%</span>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        @if (turma.StatusTurma == StatusTurma.Acomecar)
-                                        {
-                                            <span class="badge bg-primary">A começar</span>
-                                        }
-                                        else if (turma.StatusTurma == StatusTurma.EmAndamento)
-                                        {
-                                            <span class="badge bg-primary">Em Andamento</span>
-                                        }
-                                        else if (turma.StatusTurma == StatusTurma.Concluida)
-                                        {
-                                            <span class="badge bg-success">Concluída</span>
-                                        }
-                                        else if (turma.StatusTurma == StatusTurma.Cancelada)
-                                        {
-                                            <span class="badge bg-danger">Cancelada</span>
-                                        }
-                                    </td>
-                                    <td>
-                                        <a asp-action="Turma" asp-route-id="@turma.Id" class="btn btn-primary btn-sm">
-                                            Acessar Turma
-                                        </a>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
+                                        </td>
+                                        <td>
+                                            <span class="badge-pill @badgeClass">@badgeLabel</span>
+                                        </td>
+                                        <td>
+                                            <a asp-action="Turma" asp-route-id="@turma.Id" class="btn-turma">
+                                                <i class="fas fa-arrow-right"></i> Acessar
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                else
+                    {
+                        <div class="empty-state">
+                            <div><i class="fas fa-book-open"></i></div>
+                            <p>Nenhuma turma encontrada.</p>
+                        </div>
+                    }
                 </div>
             </div>
+
         </div>
+    </section>

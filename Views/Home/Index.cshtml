@@ -1,204 +1,662 @@
 ﻿@model EnsinoApp.ViewModels.Home.DashboardViewModel
 @using System.Text.Json
-@using Microsoft.EntityFrameworkCore.Metadata.Internal
 @{
     ViewData["Title"] = "Home";
 }
 
-<!-- Content Header (Page header) -->
-<div class="content-header">
+<style>
+    :root {
+        --primary: #2563eb;
+        --primary-light: #eff6ff;
+        --primary-mid: #bfdbfe;
+        --success: #16a34a;
+        --success-light: #f0fdf4;
+        --warning: #d97706;
+        --warning-light: #fffbeb;
+        --danger: #dc2626;
+        --danger-light: #fef2f2;
+        --info: #0891b2;
+        --info-light: #ecfeff;
+        --purple: #7c3aed;
+        --purple-light: #f5f3ff;
+        --gray-50: #f8fafc;
+        --gray-100: #f1f5f9;
+        --gray-200: #e2e8f0;
+        --gray-300: #cbd5e1;
+        --gray-400: #94a3b8;
+        --gray-500: #64748b;
+        --gray-600: #475569;
+        --gray-700: #334155;
+        --gray-800: #1e293b;
+        --gray-900: #0f172a;
+        --radius-sm: 6px;
+        --radius: 10px;
+        --radius-lg: 14px;
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, .08);
+        --shadow: 0 4px 12px rgba(0, 0, 0, .08);
+        --shadow-lg: 0 10px 30px rgba(0, 0, 0, .1);
+        --font: 'Nunito', 'Segoe UI', sans-serif;
+    }
+
+    /* ─── Welcome header ──────────────────────────────── */
+    .welcome-bar {
+        background: linear-gradient(135deg, var(--primary) 0%, #1d4ed8 60%, #1e40af 100%);
+        border-radius: var(--radius-lg);
+        padding: 24px 28px;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 16px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(37, 99, 235, .35);
+    }
+
+    .welcome-bar::before {
+        content: '';
+        position: absolute;
+        top: -40px;
+        right: -40px;
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, .07);
+    }
+
+    .welcome-bar::after {
+        content: '';
+        position: absolute;
+        bottom: -60px;
+        right: 80px;
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, .05);
+    }
+
+    .welcome-text h1 {
+        font-family: var(--font);
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #fff;
+        margin: 0 0 4px;
+        letter-spacing: -.3px;
+    }
+
+    .welcome-text p {
+        font-size: .83rem;
+        color: rgba(255, 255, 255, .7);
+        margin: 0;
+    }
+
+    .welcome-icon {
+        width: 52px;
+        height: 52px;
+        background: rgba(255, 255, 255, .15);
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        color: #fff;
+        flex-shrink: 0;
+        backdrop-filter: blur(4px);
+    }
+
+    /* ─── Stat cards (top row) ────────────────────────── */
+    .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        margin-bottom: 20px;
+    }
+
+    .stat-card {
+        background: #fff;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        padding: 18px 20px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        text-decoration: none !important;
+        transition: box-shadow .22s, transform .18s;
+        animation: fadeUp .35s ease both;
+    }
+
+    .stat-card:hover {
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-3px);
+    }
+
+    .stat-card:nth-child(1) {
+        animation-delay: .04s;
+    }
+
+    .stat-card:nth-child(2) {
+        animation-delay: .08s;
+    }
+
+    .stat-card:nth-child(3) {
+        animation-delay: .12s;
+    }
+
+    .stat-card:nth-child(4) {
+        animation-delay: .16s;
+    }
+
+
+    fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(12px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.15rem;
+        flex-shrink: 0;
+    }
+
+    .stat-icon.blue {
+        background: var(--primary-light);
+        color: var(--primary);
+    }
+
+    .stat-icon.green {
+        background: var(--success-light);
+        color: var(--success);
+    }
+
+    .stat-icon.yellow {
+        background: var(--warning-light);
+        color: var(--warning);
+    }
+
+    .stat-icon.red {
+        background: var(--danger-light);
+        color: var(--danger);
+    }
+
+    .stat-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .stat-number {
+        font-family: var(--font);
+        font-size: 1.7rem;
+        font-weight: 900;
+        color: var(--gray-800);
+        line-height: 1;
+        margin: 0 0 3px;
+        letter-spacing: -.5px;
+    }
+
+    .stat-label {
+        font-size: .75rem;
+        color: var(--gray-400);
+        font-weight: 600;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .stat-arrow {
+        color: var(--gray-300);
+        font-size: .75rem;
+        flex-shrink: 0;
+        transition: color .2s, transform .2s;
+    }
+
+    .stat-card:hover .stat-arrow {
+        color: var(--primary);
+        transform: translateX(3px);
+    }
+
+    /* ─── Info boxes (second row) ─────────────────────── */
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        margin-bottom: 24px;
+    }
+
+    .info-card {
+        background: #fff;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        padding: 16px 18px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        animation: fadeUp .35s ease both;
+    }
+
+    .info-card:nth-child(1) {
+        animation-delay: .20s;
+    }
+
+    .info-card:nth-child(2) {
+        animation-delay: .24s;
+    }
+
+    .info-card:nth-child(3) {
+        animation-delay: .28s;
+    }
+
+    .info-card:nth-child(4) {
+        animation-delay: .32s;
+    }
+
+    .info-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+
+    .info-icon.cyan {
+        background: var(--info-light);
+        color: var(--info);
+    }
+
+    .info-icon.blue {
+        background: var(--primary-light);
+        color: var(--primary);
+    }
+
+    .info-icon.green {
+        background: var(--success-light);
+        color: var(--success);
+    }
+
+    .info-icon.dark {
+        background: var(--gray-100);
+        color: var(--gray-700);
+    }
+
+    .info-label {
+        font-size: .73rem;
+        color: var(--gray-400);
+        font-weight: 600;
+        margin: 0 0 2px;
+        text-transform: uppercase;
+        letter-spacing: .3px;
+    }
+
+    .info-number {
+        font-family: var(--font);
+        font-size: 1.35rem;
+        font-weight: 900;
+        color: var(--gray-800);
+        margin: 0;
+        line-height: 1;
+        letter-spacing: -.3px;
+    }
+
+    /* ─── Charts ──────────────────────────────────────── */
+    .charts-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .chart-card {
+        background: #fff;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+        animation: fadeUp .4s ease both;
+    }
+
+    .chart-card:nth-child(1) {
+        animation-delay: .36s;
+    }
+
+    .chart-card:nth-child(2) {
+        animation-delay: .40s;
+    }
+
+    .chart-card:nth-child(3) {
+        animation-delay: .44s;
+    }
+
+    .chart-header {
+        padding: 14px 18px 10px;
+        border-bottom: 1px solid var(--gray-100);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .chart-header-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .75rem;
+    }
+
+    .chart-title {
+        font-family: var(--font);
+        font-size: .88rem;
+        font-weight: 800;
+        color: var(--gray-700);
+        margin: 0;
+    }
+
+    .chart-body {
+        padding: 16px 14px;
+        position: relative;
+    }
+
+    /* ─── Responsive ──────────────────────────────────── */
+    @@media (max-width: 1024px) {
+        .stat-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .info-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .charts-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .charts-grid .chart-card:last-child {
+            grid-column: span 2;
+            max-width: 440px;
+            margin: 0 auto;
+            width: 100%;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .stat-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .info-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .charts-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .charts-grid .chart-card:last-child {
+            grid-column: span 1;
+            max-width: 100%;
+        }
+
+        .welcome-bar {
+            padding: 18px;
+        }
+
+        .welcome-text h1 {
+            font-size: 1.2rem;
+        }
+
+        .stat-number {
+            font-size: 1.4rem;
+        }
+    }
+
+    @@media (max-width: 400px) {
+        .stat-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<!-- Welcome Bar -->
+<section class="content-header" style="padding-bottom:0">
     <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6">
-                <h1 class="m-0">Bem Vindo, @ViewBag.NomeUsuario!</h1>
+        <div class="welcome-bar">
+            <div class="welcome-text">
+                <h1>Bem-vindo, @ViewBag.NomeUsuario! 👋</h1>
+                <p>Aqui está o resumo geral do sistema hoje.</p>
             </div>
-            <div class="col-sm-6">
-                <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="#">Home</a></li>
-                    <li class="breadcrumb-item active">Visão geral</li>
-                </ol>
+            <div class="welcome-icon">
+                <i class="fas fa-tachometer-alt"></i>
             </div>
         </div>
     </div>
-</div>
+</section>
 
 <section class="content">
     <div class="container-fluid">
 
-        <!-- Small boxes -->
-        <div class="row">
-            <div class="col-lg-3 col-6">
-                <div class="small-box card-outline card-info shadow">
-                    <div class="inner">
-                        <h3>@ViewBag.QtdCampus</h3>
-                        <p>Campus</p>
-                    </div>
-                    <div class="icon"><i class="fas fa-building nav-icon"></i></div>
-                    <a href="/campus/" class="small-box-footer bg-light">Gerenciar <i
-                        class="fas fa-arrow-circle-right"></i></a>
-                    </div>
+        <!-- Stat cards -->
+        <div class="stat-grid">
+            <a href="/campus/" class="stat-card">
+                <div class="stat-icon blue"><i class="fas fa-building"></i></div>
+                <div class="stat-info">
+                    <p class="stat-number">@ViewBag.QtdCampus</p>
+                    <p class="stat-label">Campus</p>
                 </div>
-                <div class="col-lg-3 col-6">
-                    <div class="small-box card-outline card-success shadow">
-                        <div class="inner">
-                            <h3>@ViewBag.QtdSupervisoes</h3>
-                            <p>Supervisões</p>
-                        </div>
-                        <div class="icon"><i class="fas fa-users nav-icon"></i></div>
-                        <a href="/supervisao/" class="small-box-footer bg-light">Gerenciar <i
-                            class="fas fa-arrow-circle-right"></i></a>
-                        </div>
+                <i class="fas fa-chevron-right stat-arrow"></i>
+            </a>
+
+            <a href="/supervisao/" class="stat-card">
+                <div class="stat-icon green"><i class="fas fa-users"></i></div>
+                <div class="stat-info">
+                    <p class="stat-number">@ViewBag.QtdSupervisoes</p>
+                    <p class="stat-label">Supervisões</p>
+                </div>
+                <i class="fas fa-chevron-right stat-arrow"></i>
+            </a>
+
+            <a href="/usuarios/" class="stat-card">
+                <div class="stat-icon yellow"><i class="fas fa-user"></i></div>
+                <div class="stat-info">
+                    <p class="stat-number">@ViewBag.QtdLideres</p>
+                    <p class="stat-label">Líderes de Curso</p>
+                </div>
+                <i class="fas fa-chevron-right stat-arrow"></i>
+            </a>
+
+            <a href="/matricula/" class="stat-card">
+                <div class="stat-icon red"><i class="fas fa-graduation-cap"></i></div>
+                <div class="stat-info">
+                    <p class="stat-number">@ViewBag.QtdCasaisMatriculados</p>
+                    <p class="stat-label">Casais Matriculados</p>
+                </div>
+                <i class="fas fa-chevron-right stat-arrow"></i>
+            </a>
+        </div>
+
+        <!-- Info cards -->
+        <div class="info-grid">
+            <div class="info-card">
+                <div class="info-icon cyan"><i class="fas fa-users"></i></div>
+                <div>
+                    <p class="info-label">Casais Cadastrados</p>
+                    <p class="info-number">@Model.TotalCasais</p>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-icon blue"><i class="fas fa-file-signature"></i></div>
+                <div>
+                    <p class="info-label">Inscrições Realizadas</p>
+                    <p class="info-number">@Model.TotalInscricoes</p>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-icon green"><i class="fas fa-user-graduate"></i></div>
+                <div>
+                    <p class="info-label">Matrículas Ativas</p>
+                    <p class="info-number">@Model.MatriculasAtivas</p>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-icon dark"><i class="fas fa-layer-group"></i></div>
+                <div>
+                    <p class="info-label">Turmas Em Andamento</p>
+                    <p class="info-number">@Model.TurmasAtivas</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-header-icon" style="background:var(--primary-light);color:var(--primary)">
+                        <i class="fas fa-calendar-alt"></i>
                     </div>
-                    <div class="col-lg-3 col-6">
-                        <div class="small-box card-outline card-warning shadow">
-                            <div class="inner">
-                                <h3>@ViewBag.QtdLideres</h3>
-                                <p>Líderes de curso</p>
-                            </div>
-                            <div class="icon"><i class="fas fa-user nav-icon"></i></div>
-                            <a href="/usuarios/" class="small-box-footer bg-light">Gerenciar <i
-                                class="fas fa-arrow-circle-right"></i></a>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-6">
-                            <div class="small-box card-outline card-danger shadow">
-                                <div class="inner">
-                                    <h3>@ViewBag.QtdCasaisMatriculados</h3>
-                                    <p>Casais Matriculados</p>
-                                </div>
-                                <div class="icon"><i class="fas fa-graduation-cap nav-icon"></i></div>
-                                <a href="/matricula/" class="small-box-footer bg-light">Gerenciar <i
-                                    class="fas fa-arrow-circle-right"></i></a>
-                                </div>
-                            </div>
-                        </div>
+                    <h3 class="chart-title">Inscrições por Mês</h3>
+                </div>
+                <div class="chart-body">
+                    <canvas id="inscricoesPorMesChart"></canvas>
+                </div>
+            </div>
 
-                        <!-- Info Boxes -->
-                        <div class="row">
-                            <div class="col-md-3 col-sm-6 col-12">
-                                <div class="info-box shadow">
-                                    <span class="info-box-icon bg-info"><i class="fas fa-users"></i></span>
-                                    <div class="info-box-content">
-                                        <span class="info-box-text">Casais Cadastrados</span>
-                                        <span class="info-box-number">@Model.TotalCasais</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-sm-6 col-12">
-                                <div class="info-box shadow">
-                                    <span class="info-box-icon bg-primary"><i class="fas fa-file-signature"></i></span>
-                                    <div class="info-box-content">
-                                        <span class="info-box-text">Inscrições Realizadas</span>
-                                        <span class="info-box-number">@Model.TotalInscricoes</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-sm-6 col-12">
-                                <div class="info-box shadow">
-                                    <span class="info-box-icon bg-success"><i class="fas fa-user-graduate"></i></span>
-                                    <div class="info-box-content">
-                                        <span class="info-box-text">Matrículas Ativas</span>
-                                        <span class="info-box-number">@Model.MatriculasAtivas</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-sm-6 col-12">
-                                <div class="info-box shadow">
-                                    <span class="info-box-icon bg-dark"><i class="fas fa-layer-group"></i></span>
-                                    <div class="info-box-content">
-                                        <span class="info-box-text">Turmas Em Andamento</span>
-                                        <span class="info-box-number">@Model.TurmasAtivas</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Gráficos -->
-                        <div class="row">
-                            <!-- Inscrições por mês -->
-                            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
-                                <div class="card shadow-sm h-100">
-                                    <div class="card-header">📅 Inscrições por Mês</div>
-                                    <div class="card-body">
-                                        <canvas id="inscricoesPorMesChart"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Matrículas por curso -->
-                            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
-                                <div class="card shadow-sm h-100">
-                                    <div class="card-header">🎓 Matrículas por Curso</div>
-                                    <div class="card-body">
-                                        <canvas id="matriculasPorCursoChart"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Casais por campus -->
-                            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
-                                <div class="card shadow-sm h-100">
-                                    <div class="card-header">🏫 Casais por Campus</div>
-                                    <div class="card-body">
-                                        <canvas id="casaisPorCampusChart"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-header-icon" style="background:var(--success-light);color:var(--success)">
+                        <i class="fas fa-graduation-cap"></i>
                     </div>
-                </section>
+                    <h3 class="chart-title">Matrículas por Curso</h3>
+                </div>
+                <div class="chart-body">
+                    <canvas id="matriculasPorCursoChart"></canvas>
+                </div>
+            </div>
 
-                @section Scripts {
-                    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                    <script>
-                        // --- Inscrições por mês ---
-                        var ctxInscricoes = document.getElementById('inscricoesPorMesChart').getContext('2d');
-                        new Chart(ctxInscricoes, {
-                        type: 'line',
-                        data: {
-                        labels: @Html.Raw(JsonSerializer.Serialize(Model.InscricoesPorMes.Select(x => x.MesAno))),
-                        datasets: [{
-                        label: 'Inscrições',
-                        data: @Html.Raw(JsonSerializer.Serialize(Model.InscricoesPorMes.Select(x => x.Total))),
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        fill: true,
-                        tension: 0.3
-                        }]
-                        },
-                        options: { responsive: true, plugins: { legend: { display: false } } }
-                        });
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-header-icon" style="background:var(--warning-light);color:var(--warning)">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <h3 class="chart-title">Casais por Campus</h3>
+                </div>
+                <div class="chart-body" style="display:flex;justify-content:center">
+                    <canvas id="casaisPorCampusChart" style="max-width:240px"></canvas>
+                </div>
+            </div>
+        </div>
 
-                        // --- Matrículas por curso ---
-                        var ctxMatriculas = document.getElementById('matriculasPorCursoChart').getContext('2d');
-                        new Chart(ctxMatriculas, {
-                        type: 'bar',
-                        data: {
-                        labels: @Html.Raw(JsonSerializer.Serialize(Model.MatriculasPorCurso.Select(x => x.Curso))),
-                        datasets: [{
-                        label: 'Matrículas Ativas',
-                        data: @Html.Raw(JsonSerializer.Serialize(Model.MatriculasPorCurso.Select(x => x.Total))),
-                        backgroundColor: 'rgba(40, 167, 69, 0.7)',
-                        borderColor: 'rgba(40, 167, 69, 1)',
-                        borderWidth: 1
-                        }]
-                        },
-                        options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
-                        });
+    </div>
+</section>
 
-                        // --- Casais por campus ---
-                        var ctxCasais = document.getElementById('casaisPorCampusChart').getContext('2d');
-                        new Chart(ctxCasais, {
-                        type: 'doughnut',
-                        data: {
-                        labels: @Html.Raw(JsonSerializer.Serialize(Model.CasaisPorCampus.Select(x => x.Campus))),
-                        datasets: [{
-                        label: 'Casais',
-                        data: @Html.Raw(JsonSerializer.Serialize(Model.CasaisPorCampus.Select(x => x.Total))),
-                        backgroundColor: ['#FFC107', '#17A2B8', '#6F42C1', '#DC3545', '#28A745']
-                        }]
-                        },
-                        options: { responsive: true }
-                        });
-                    </script>
-                }
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        Chart.defaults.font.family = "'Nunito', 'Segoe UI', sans-serif";
+        Chart.defaults.font.size = 12;
+        Chart.defaults.color = '#64748b';
+
+        // Inscrições por mês
+        new Chart(document.getElementById('inscricoesPorMesChart'), {
+        type: 'line',
+        data: {
+        labels: @Html.Raw(JsonSerializer.Serialize(Model.InscricoesPorMes.Select(x => x.MesAno))),
+        datasets: [{
+        label: 'Inscrições',
+        data: @Html.Raw(JsonSerializer.Serialize(Model.InscricoesPorMes.Select(x => x.Total))),
+        borderColor: '#2563eb',
+        backgroundColor: 'rgba(37,99,235,0.08)',
+        borderWidth: 2.5,
+        pointBackgroundColor: '#2563eb',
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        fill: true,
+        tension: 0.4
+        }]
+        },
+        options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+        y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { precision: 0 } },
+        x: { grid: { display: false } }
+        }
+        }
+        });
+
+        // Matrículas por curso
+        new Chart(document.getElementById('matriculasPorCursoChart'), {
+        type: 'bar',
+        data: {
+        labels: @Html.Raw(JsonSerializer.Serialize(Model.MatriculasPorCurso.Select(x => x.Curso))),
+        datasets: [{
+        label: 'Matrículas Ativas',
+        data: @Html.Raw(JsonSerializer.Serialize(Model.MatriculasPorCurso.Select(x => x.Total))),
+        backgroundColor: 'rgba(22,163,74,0.15)',
+        borderColor: '#16a34a',
+        borderWidth: 2,
+        borderRadius: 6,
+        borderSkipped: false,
+        }]
+        },
+        options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+        y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { precision: 0 } },
+        x: { grid: { display: false } }
+        }
+        }
+        });
+
+        // Casais por campus
+        new Chart(document.getElementById('casaisPorCampusChart'), {
+        type: 'doughnut',
+        data: {
+        labels: @Html.Raw(JsonSerializer.Serialize(Model.CasaisPorCampus.Select(x => x.Campus))),
+        datasets: [{
+        data: @Html.Raw(JsonSerializer.Serialize(Model.CasaisPorCampus.Select(x => x.Total))),
+        backgroundColor: ['#2563eb', '#16a34a', '#d97706', '#dc2626', '#7c3aed'],
+        borderWidth: 0,
+        hoverOffset: 6
+        }]
+        },
+        options: {
+        responsive: true,
+        cutout: '65%',
+        plugins: {
+        legend: {
+        position: 'bottom',
+        labels: { padding: 14, boxWidth: 10, borderRadius: 4 }
+        }
+        }
+        }
+        });
+    </script>
+}

@@ -1,130 +1,119 @@
 @using EnsinoApp.Models.Enums
 @model EnsinoApp.ViewModels.Cursos.CursoDashboardViewModel
-@{
-    ViewData["Title"] = "Dashboard do Curso";
-}
+@{ ViewData["Title"] = "Dashboard do Curso"; }
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<section class="content-header mb-3">
-    <a asp-action="Index" class="btn  btn-xs">
-        <i class="fas fa-arrow-left"></i> Voltar
-    </a>
+<section class="content-header" style="padding-bottom:0">
     <div class="container-fluid">
-        <h1>@Model.Nome</h1>
-        <p>@Model.Descricao</p>
-        <p><strong>Campus:</strong> @Model.NomeCampus</p>
+        <a asp-action="Index" class="ea-btn-back"><i class="fas fa-arrow-left"></i> Voltar para Cursos</a>
+        <div class="ea-welcome">
+            <div class="ea-welcome-text">
+                <h1><i class="fas fa-graduation-cap" style="margin-right:8px;opacity:.85"></i>@Model.Nome</h1>
+                @if (!string.IsNullOrWhiteSpace(Model.Descricao)) { <p>@Model.Descricao</p> }
+                <span style="display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.15);border-radius:20px;padding:3px 10px;font-size:.75rem;color:rgba(255,255,255,.9);font-weight:600;margin-top:4px">
+                    <i class="fas fa-map-marker-alt"></i>@Model.NomeCampus
+                </span>
+            </div>
+            <div class="ea-welcome-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+        </div>
     </div>
 </section>
 
-<!-- Resumo geral -->
-<div class="container-fluid mb-4">
-    <div class="row">
-        <div class="col-md-4">
-            <div class="info-box shadow">
-                <span class="info-box-icon bg-primary"><i class="bi bi-building"></i></span>
+<section class="content">
+    <div class="container-fluid">
 
-                <div class="info-box-content">
-                    <span class="info-box-text">Total de Turmas</span>
-                    <span class="info-box-number">@Model.TotalTurmas</span>
-                </div>
-                <!-- /.info-box-content -->
+        <div class="ea-stat-grid">
+            <div class="ea-stat-card ea-fade ea-fade-1">
+                <div class="ea-stat-icon blue"><i class="fas fa-users"></i></div>
+                <div><p class="ea-stat-label">Total de Turmas</p><p class="ea-stat-number">@Model.TotalTurmas</p></div>
             </div>
-            @* <div class="card text-white bg-primary shadow">
-                <div class="card-body">
-                    <h5 class="card-title"><i class="bi bi-building"></i> Total de Turmas</h5>
-                    <p class="card-text display-6">@Model.TotalTurmas</p>
-                </div>
-            </div> *@
-        </div>
-        <div class="col-md-4">
-            <div class="info-box shadow">
-                <span class="info-box-icon bg-success"><i class="bi bi-people"></i></span>
-
-                <div class="info-box-content">
-                    <span class="info-box-text">Total de Casais</span>
-                    <span class="info-box-number">@Model.TotalCasais</span>
-                </div>
-                <!-- /.info-box-content -->
+            <div class="ea-stat-card ea-fade ea-fade-2">
+                <div class="ea-stat-icon green"><i class="fas fa-heart"></i></div>
+                <div><p class="ea-stat-label">Total de Casais</p><p class="ea-stat-number">@Model.TotalCasais</p></div>
             </div>
-            @* <div class="card text-white bg-success shadow">
-                <div class="card-body">
-                    <h5 class="card-title"><i class="bi bi-people"></i> Total de Casais</h5>
-                    <p class="card-text display-6">@Model.TotalCasais</p>
-                </div>
-            </div> *@
-        </div>
-        <div class="col-md-4">
-            <div class="info-box shadow">
-                <span class="info-box-icon bg-warning"><i class="bi bi-person-check"></i></span>
-
-                <div class="info-box-content">
-                    <span class="info-box-text">Casais Ativos</span>
-                    <span class="info-box-number">@Model.CasaisAtivos</span>
-                </div>
-                <!-- /.info-box-content -->
+            <div class="ea-stat-card ea-fade ea-fade-3">
+                <div class="ea-stat-icon yellow"><i class="fas fa-user-check"></i></div>
+                <div><p class="ea-stat-label">Casais Ativos</p><p class="ea-stat-number">@Model.CasaisAtivos</p></div>
             </div>
-            @*   <div class="card text-white bg-warning shadow">
-                <div class="card-body">
-                    <h5 class="card-title"><i class="bi bi-person-check"></i> Casais Ativos</h5>
-                    <p class="card-text display-6">@Model.CasaisAtivos</p>
-                </div>
-            </div> *@
         </div>
-    </div>
-</div>
 
-<!-- Turmas -->
-<div class="container-fluid">
-    <div class="row">
-        @foreach (var turma in Model.Turmas)
+        @if (Model.Turmas != null && Model.Turmas.Any())
         {
-            var cardColor = turma.Status == StatusTurma.Acomecar ? "card-warning" :
-                            turma.Status == StatusTurma.EmAndamento ? "card-primary" : "card-success";
+            <p style="font-family:var(--font);font-size:.88rem;font-weight:800;color:var(--gray-600);text-transform:uppercase;letter-spacing:.5px;margin:0 0 14px;display:flex;align-items:center;gap:7px">
+                <i class="fas fa-layer-group"></i> Turmas do Curso
+                <span style="flex:1;height:1px;background:var(--gray-200)"></span>
+            </p>
 
-            var colorBadge = turma.Status == StatusTurma.Acomecar ? "bg-warning" :
-                            turma.Status == StatusTurma.EmAndamento ? "bg-primary" : "bg-success";                
-            <div class="col-md-6 mb-4">
-               <div class="card shadow card-outline @cardColor">
-                    <div class="card-header d-flex align-items-center gap-3">
-                        <div class="widget-user-image flex-shrink-0 mr-3">
-                            <img class="user-image img-circle elevation-2" src="@(turma.imgLider ?? "/images/avatar-default.jpg")"
-                                 alt="User Avatar" style="width: 60px; height: 60px; object-fit: cover;">
-                        </div>
-                        <div class="flex-grow-1 ">
-                            <h5 class="mb-1">Turma #@turma.Id - Líderes: @turma.NomeLider</h5>
-                            <small>@turma.DataInicio.ToString("dd/MM/yyyy") - @turma.DataFim.ToString("dd/MM/yyyy")</small>
-                        </div>
-                        <span class="badge @colorBadge align-self-start ml-2">@turma.Status</span>
-                    </div>
-                    <div class="card-body bg-white text-dark">
-                        <h6>Casais Matriculados:</h6>
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Marido</th>
-                                    <th>Esposa</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var casal in turma.Casais)
-                                {
-                                    var badgeColor = casal.StatusCasal == StatusCasal.Ativo ? "bg-success" :
-                                                     casal.StatusCasal == StatusCasal.Desistente ? "bg-danger" : "bg-secondary";
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;margin-bottom:24px">
+                @foreach (var turma in Model.Turmas)
+                {
+                    string accent = "blue", badge = "acomecar", label = "A começar";
+                    if (turma.Status == StatusTurma.EmAndamento)  { accent = "purple"; badge = "emandamento"; label = "Em andamento"; }
+                    else if (turma.Status == StatusTurma.Concluida) { accent = "green";  badge = "concluida";   label = "Concluída"; }
+                    else if (turma.Status == StatusTurma.Cancelada) { accent = "red";    badge = "cancelada";   label = "Cancelada"; }
 
-                                    <tr>
-                                        <td>@casal.NomeMarido</td>
-                                        <td>@casal.NomeEsposa</td>
-                                        <td><span class="badge @badgeColor">@casal.StatusCasal</span></td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
+                    <div class="ea-card ea-fade">
+                        <div class="ea-card-accent @accent"></div>
+                        <div style="padding:14px 16px 10px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--gray-100)">
+                            <img src="@(string.IsNullOrWhiteSpace(turma.imgLider)?"/images/avatar-default.jpg":turma.imgLider)"
+                                 alt="Líder" style="width:46px;height:46px;border-radius:50%;object-fit:cover;border:2px solid var(--gray-200);flex-shrink:0" />
+                            <div style="flex:1;min-width:0">
+                                <p style="font-size:.68rem;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.3px;margin:0 0 1px">Turma #@turma.Id</p>
+                                <p style="font-family:var(--font);font-size:.9rem;font-weight:800;color:var(--gray-800);margin:0 0 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                                    <i class="fas fa-user-tie" style="color:var(--gray-300);margin-right:4px;font-size:.75rem"></i>@turma.NomeLider
+                                </p>
+                                <span class="ea-date-pill">
+                                    <i class="fas fa-calendar-alt"></i>@turma.DataInicio.ToString("dd/MM/yyyy")
+                                    <span style="color:var(--gray-300)">→</span>@turma.DataFim.ToString("dd/MM/yyyy")
+                                </span>
+                            </div>
+                            <span class="ea-badge @badge" style="align-self:flex-start;flex-shrink:0">@label</span>
+                        </div>
+
+                        <div style="padding:0 0 4px">
+                            <p style="font-size:.72rem;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.4px;padding:10px 16px 6px;margin:0">
+                                <i class="fas fa-heart" style="color:#fca5a5;margin-right:4px"></i>Casais (@(turma.Casais?.Count ?? 0))
+                            </p>
+                            @if (turma.Casais != null && turma.Casais.Any())
+                            {
+                                <table style="width:100%;border-collapse:collapse;font-size:.78rem">
+                                    <thead>
+                                        <tr>
+                                            <th style="padding:6px 16px;background:var(--gray-50);color:var(--gray-400);font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.3px;border-top:1px solid var(--gray-100);border-bottom:1px solid var(--gray-100)">Marido</th>
+                                            <th style="padding:6px 16px;background:var(--gray-50);color:var(--gray-400);font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.3px;border-top:1px solid var(--gray-100);border-bottom:1px solid var(--gray-100)">Esposa</th>
+                                            <th style="padding:6px 16px;background:var(--gray-50);color:var(--gray-400);font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.3px;border-top:1px solid var(--gray-100);border-bottom:1px solid var(--gray-100)">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var casal in turma.Casais)
+                                        {
+                                            string cb = casal.StatusCasal == StatusCasal.Ativo ? "ativo" :
+                                                        casal.StatusCasal == StatusCasal.Desistente ? "cancelada" : "inativo";
+                                            <tr style="border-bottom:1px solid var(--gray-100)">
+                                                <td style="padding:8px 16px;font-weight:600;color:var(--gray-800)">@casal.NomeMarido</td>
+                                                <td style="padding:8px 16px;font-weight:600;color:var(--gray-800)">@casal.NomeEsposa</td>
+                                                <td style="padding:8px 16px"><span class="ea-badge @cb">@casal.StatusCasal</span></td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                            else
+                            {
+                                <p style="padding:18px 16px;text-align:center;font-size:.78rem;color:var(--gray-300);font-style:italic;margin:0">Nenhum casal matriculado</p>
+                            }
+                        </div>
                     </div>
-                </div>
+                }
             </div>
         }
+        else
+        {
+            <div class="ea-empty">
+                <i class="fas fa-users"></i>
+                <h3>Nenhuma turma cadastrada</h3>
+                <p>Este curso ainda não possui turmas.</p>
+            </div>
+        }
+
     </div>
-</div>
+</section>

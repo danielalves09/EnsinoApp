@@ -3,104 +3,89 @@
     ViewData["Title"] = "Validar Certificado";
 }
 
-
 <!DOCTYPE html>
 <html lang="pt-br">
 
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"]</title>
+    <title>@ViewData["Title"] - EnsinoApp</title>
 
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
+    <!-- Nunito -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap"
+          rel="stylesheet" />
     <!-- FontAwesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-
-    <!-- jQuery + jQuery Mask -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
-
-    <style>
-        body {
-        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-        min-height: 100vh;
-        font-family: 'Segoe UI', sans-serif;
-        }
-
-        .card {
-        border-radius: 12px;
-        }
-
-        .section-title {
-        font-weight: 600;
-        margin-top: 30px;
-        margin-bottom: 15px;
-        }
-
-        .logo {
-        font-size: 28px;
-        font-weight: 700;
-        color: #0d6efd;
-        }
-    </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
+    <!-- Bootstrap (apenas grid) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- CSS da página -->
+    <link rel="stylesheet" href="~/css/validar-certificado.css" />
 </head>
 
 <body>
-    <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
+    <div class="val-page">
 
-                <!-- Cabeçalho -->
-                <div class="text-center mb-4">
-                    <div class="logo mb-2"><i class="fas fa-heart"></i> EnsinoApp</div>
-                    <div class="logo mb-2"><img class="rounded-circle" width="100px" src="~/images/logoVideira.png" />
+        <div class="val-card">
+
+            <!-- Header azul -->
+            <div class="val-card-header">
+                <img src="~/images/logoVideira.png" class="val-logo" alt="Logo" />
+                <h1><i class="fas fa-certificate" style="margin-right:7px;opacity:.85"></i>Validar Certificado</h1>
+                <p>Digite o código presente no seu certificado para verificar sua autenticidade.</p>
+            </div>
+
+            <!-- Body -->
+            <div class="val-card-body">
+
+                @if (ViewBag.Mensagem != null)
+                {
+                    <!-- Detecta tipo de mensagem pelo conteúdo -->
+                    string msg = ViewBag.Mensagem?.ToString() ?? "";
+                    string resultClass = msg.ToLower().Contains("válido") || msg.ToLower().Contains("encontrado") &&
+                    !msg.ToLower().Contains("não")
+                        ? "success"
+                        : msg.ToLower().Contains("não") || msg.ToLower().Contains("inválido") || msg.ToLower().Contains("erro")
+                            ? "error"
+                            : "warning";
+                    string resultIcon = resultClass == "success" ? "fas fa-check"
+                        : resultClass == "error" ? "fas fa-times"
+                        : "fas fa-exclamation";
+
+                    <div class="val-result @resultClass">
+                        <div class="val-result-icon">
+                            <i class="@resultIcon"></i>
+                        </div>
+                        <div>@ViewBag.Mensagem</div>
                     </div>
-                    <h4>Validação de Certificado</h4>
-                    <p class="text-muted">
-                        Preencha o código presente no seu certificado.
-                    </p>
-                </div>
+                }
 
-                <!-- Card do Formulário -->
-                <div class="card shadow">
-                    <div class="card-body p-4">
-                        @if (ViewBag.Mensagem != null)
-                        {
-                            <p>@ViewBag.Mensagem</p>
-                        }
-
-                        <form asp-action="Verificar" method="post">
-                            <input type="text" class="form-control" name="codigo"
-                                   placeholder="Digite o código do certificado" required />
-                            <div class="d-grid mt-4">
-                                <button type="submit" class="btn btn-primary btn-lg">
-                                    <i class="fas fa-paper-plane"></i> Validar
-                                </button>
-                            </div>
-                        </form>
-
+                <form asp-action="Verificar" method="post">
+                    <label class="val-label">
+                        <i class="fas fa-hashtag" style="margin-right:4px"></i>Código do Certificado
+                    </label>
+                    <div class="val-input-wrap">
+                        <input type="text" name="codigo" class="val-input" placeholder="Ex: CERT-2024-XXXXX"
+                               autocomplete="off" required />
+                        <i class="fas fa-qrcode val-input-icon"></i>
                     </div>
-                </div>
 
-                <!-- Rodapé -->
-                <div class="text-center mt-4 text-muted small">
-                    © @DateTime.Now.Year - EnsinoApp • Todos os direitos reservados
-                </div>
+                    <button type="submit" class="val-btn">
+                        <i class="fas fa-shield-alt"></i> Validar Certificado
+                    </button>
+                </form>
 
             </div>
+
         </div>
+
+        <div class="val-footer">
+            © @DateTime.Now.Year EnsinoApp · Todos os direitos reservados
+        </div>
+
     </div>
 
-    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
     <partial name="_ValidationScriptsPartial" />
-
-
-
-
 </body>
 
 </html>

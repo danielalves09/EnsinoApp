@@ -1,54 +1,86 @@
 @model EnsinoApp.ViewModels.Matricula.MatriculaFormViewModel
-
 @{
     ViewData["Title"] = "Matricular Casal";
 }
 
-<section class="content-header">
+<section class="content-header" style="padding-bottom:0">
     <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6">
-                <h1>📝 Matricular Casal</h1>
-            </div>
+        <a asp-action="Index" class="ea-btn-back"><i class="fas fa-arrow-left"></i> Voltar para Matrículas</a>
+        <div class="ea-page-title">
+            <h1><i class="fas fa-user-plus" style="color:var(--primary);margin-right:8px"></i>Matricular Casal</h1>
+            <p>Selecione a turma e confirme a matrícula do casal</p>
         </div>
     </div>
 </section>
 
-<section class=content>
-    <div class=row>
-        <div class=col-12>
-            <div class="card shadow">
-                <div class="card-body">
+<section class="content">
+    <div class="container-fluid">
+        <form asp-action="Cadastrar" method="post">
+            <div asp-validation-summary="All" class="text-danger" style="font-size:.8rem;margin-bottom:12px"></div>
+            <input type="hidden" asp-for="IdInscricao" />
 
-                    <form asp-action="Cadastrar" method="post">
-                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
-                        <input type="hidden" asp-for="IdInscricao" />
-
-                        <div class="mb-3">
-                            <label class="form-label">Casal</label>
-                            <input class="form-control" asp-for="NomeCasal" readonly />
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Campus</label>
-                            <input class="form-control" asp-for="NomeCampus" readonly />
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">GC</label>
-                            <input class="form-control" asp-for="NomeGC" readonly />
-                        </div>
-                        <div class="mb-3">
-                            <label asp-for="IdTurma" class="form-label"></label>
-                            @Html.DropDownList("IdTurma", (SelectList)Model.SelectTurmas, "Selecione uma turma",
-                                new { @class = "form-control" })
-                            <span asp-validation-for="IdTurma" class="text-danger"></span>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-check"></i> Matricular
-                        </button>
-                    </form>
+            <!-- Destaque do casal -->
+            <div style="background:linear-gradient(135deg,#fff0f0,#fce7f3);border:1px solid #fecaca;border-radius:var(--radius-lg);padding:16px 20px;display:flex;align-items:center;gap:14px;margin-bottom:16px"
+                 class="ea-fade ea-fade-1">
+                <div
+                    style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#fecaca,#fda4af);display:flex;align-items:center;justify-content:center;color:#f43f5e;font-size:1.15rem;flex-shrink:0">
+                    <i class="fas fa-heart"></i>
                 </div>
-            </div>
-        </div>
-    </div>
-</section>
+                <div>
+                    <p
+                        style="font-size:.7rem;font-weight:700;color:#f43f5e;text-transform:uppercase;letter-spacing:.4px;margin:0 0 2px">
+                        Casal a ser matriculado</p>
+                        <p style="font-family:var(--font);font-size:1rem;font-weight:800;color:var(--gray-800);margin:0">
+                            @Model.NomeCasal</p>
+                        </div>
+                    </div>
+
+                    <div class="ea-form-card ea-fade ea-fade-2">
+                        <div class="ea-form-card-header">
+                            <div class="ea-form-header-icon" style="background:var(--primary-light);color:var(--primary)"><i
+                                class="fas fa-info-circle"></i></div>
+                                <h3 class="ea-form-card-title">Dados da Inscrição</h3>
+                            </div>
+                            <div class="ea-form-card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="ea-field-group">
+                                            <label class="ea-field-label"><i class="fas fa-map-marker-alt"
+                                                                                 style="margin-right:4px;color:var(--primary)"></i>Campus</label>
+                                                <input class="ea-field-control" asp-for="NomeCampus" readonly />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="ea-field-group">
+                                                <label class="ea-field-label"><i class="fas fa-sitemap"
+                                                                                     style="margin-right:4px;color:var(--primary)"></i>GC / Supervisão</label>
+                                                    <input class="ea-field-control" asp-for="NomeGC" readonly />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="ea-form-card ea-fade ea-fade-3">
+                                    <div class="ea-form-card-header">
+                                        <div class="ea-form-header-icon" style="background:var(--success-light);color:var(--success)"><i
+                                            class="fas fa-users"></i></div>
+                                            <h3 class="ea-form-card-title">Selecionar Turma</h3>
+                                        </div>
+                                        <div class="ea-form-card-body">
+                                            <div class="ea-field-group">
+                                                <label asp-for="IdTurma" class="ea-field-label"></label>
+                                                @Html.DropDownList("IdTurma",(SelectList)Model.SelectTurmas,"— Selecione uma turma          —",new{@class="ea-field-control"})
+                                                <span asp-validation-for="IdTurma" class="ea-field-error"></span>
+                                            </div>
+                                        </div>
+                                        <div class="ea-form-footer">
+                                            <a asp-action="Index" class="ea-btn-action cancel"><i class="fas fa-times"></i> Cancelar</a>
+                                            <button type="submit" class="ea-btn-action save"><i class="fas fa-check"></i> Confirmar
+                                                Matrícula</button>
+                                            </div>
+                                        </div>
+
+                                    </form>
+                                </div>
+                            </section>

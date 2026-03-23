@@ -6,126 +6,106 @@
 
 <section class="content-header">
     <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6">
-                <h1>Gerenciar Turmas</h1>
-            </div>
-            <div>
-
-            </div>
+        <div class="ea-page-title">
+            <h1><i class="fas fa-users" style="color:var(--primary);margin-right:8px"></i>Gerenciar Turmas</h1>
+            <p>Filtre, visualize e gerencie as turmas ativas e encerradas</p>
         </div>
     </div>
 </section>
+
 <section class="content">
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header col-12">
-                    <div class="d-flex justify-content-between">
-                        <form method="get">
-                            <div class="row g-3">
-                                <div class="col-md-4">
-                                    @Html.DropDownList(
-                                    "IdCurso",
-                                    (SelectList)ViewBag.Cursos,
-                                    "Selecione um curso",
-                                    new { @class = "form-control" }
-                                    )
+    <div class="container-fluid">
 
-                                </div>
-                                <div class="col-md-3">
-
-                                    @Html.DropDownList(
-                                    "IdCampus",
-                                    (SelectList)ViewBag.Campuses,
-                                    "Selecione um campus",
-                                    new { @class = "form-control" }
-                                    )
-
-                                </div>
-                                <div class="col-md-2">
-                                    @Html.DropDownList(
-                                    "Status",
-                                    (SelectList)ViewBag.Status,
-                                    "Status",
-                                    new { @class = "form-control" })
-
-
-                                </div>
-                                <div class="col-md-3">
-                                    <button type="submit" class="btn btn-primary">Filtrar</button>
-                                    <a asp-action="Index" class="btn btn-secondary">Limpar</a>
-                                </div>
-                            </div>
-                        </form>
-
-                        <a href="/turma/adicionar" class="btn btn-outline-primary btn-sm">Nova Turma <i
-                            class="fas fa-plus"></i></a>
-
-                        </div>
+        <div class="ea-toolbar">
+            <form method="get" style="flex:1 1 auto">
+                <div class="ea-filter-group">
+                    <div class="ea-filter-item">
+                        <label><i class="fas fa-graduation-cap" style="margin-right:3px"></i>Curso</label>
+                        @Html.DropDownList("IdCurso",(SelectList)ViewBag.Cursos,"Todos os cursos",new{@class="ea-filter-select"})
                     </div>
-                    <!-- /.card-header -->
+                    <div class="ea-filter-item">
+                        <label><i class="fas fa-map-marker-alt" style="margin-right:3px"></i>Campus</label>
+                        @Html.DropDownList("IdCampus",(SelectList)ViewBag.Campuses,"Todos os campi",new{@class="ea-filter-select"})
+                    </div>
+                    <div class="ea-filter-item" style="flex:0 1 140px">
+                        <label><i class="fas fa-circle" style="margin-right:3px"></i>Status</label>
+                        @Html.DropDownList("Status",(SelectList)ViewBag.Status,"Todos",new{@class="ea-filter-select"})
+                    </div>
+                    <div style="display:flex;align-items:flex-end;gap:6px">
+                        <button type="submit" class="ea-btn-filter"><i class="fas fa-filter"></i> Filtrar</button>
+                        <a asp-action="Index" class="ea-btn-clear"><i class="fas fa-times"></i> Limpar</a>
+                    </div>
                 </div>
-                <!-- /.card -->
-            </div>
+            </form>
+            <a href="/turma/adicionar" class="ea-btn-new"><i class="fas fa-plus"></i> Nova Turma</a>
         </div>
 
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body table-responsive p-0">
-                        <table class="table table-striped mt-3">
-                            <thead>
-                                <tr>
-                                    <th>Curso</th>
-                                    <th>Campus</th>
-                                    <th>Líderes</th>
-                                    <th>Data Início</th>
-                                    <th>Data Fim</th>
-                                    <th>Status</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var t in Model)
-                                {
-                                    <tr>
-                                        <td>@t.NomeCurso</td>
-                                        <td>@t.NomeCampus</td>
-                                        <td>@t.NomeLider</td>
-                                        <td>@t.DataInicio.ToShortDateString()</td>
-                                        <td>@t.DataFim.ToShortDateString()</td>
-                                        <td> @if (t.Status == StatusTurma.Acomecar)
-                                            {
-                                                <span class="badge bg-primary">A começar</span>
-                                            }
-                                    else if (t.Status == StatusTurma.EmAndamento)
-                                            {
-                                                <span class="badge bg-primary">Em Andamento</span>
-                                            }
-                                            else if (t.Status == StatusTurma.Concluida)
-                                            {
-                                                <span class="badge bg-success">Concluída</span>
-                                            }
-                                            else if (t.Status == StatusTurma.Cancelada)
-                                            {
-                                                <span class="badge bg-danger">Cancelada</span>
-                                            }
-                                        </td>
-                                        <td>
-                                            <a asp-action="Dashboard" asp-route-id="@t.Id" class="btn btn-sm btn-info"><i
-                                                class="fa fa-search"></i></a>
-                                                <a asp-action="Editar" asp-route-id="@t.Id" class="btn btn-sm btn-primary"><i
-                                                    class="fa fa-edit"></i></a>
-                                                </td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        @if (Model != null && Model.Any())
+        {
+            <div class="ea-grid">
+                @foreach (var t in Model)
+                {
+                    string accent = "blue", badge = "acomecar", label = "A começar";
+                    if (t.Status == StatusTurma.EmAndamento)
+                    {
+                        accent = "purple"; badge = "emandamento"; label = "Em andamento";
+                    }
+                    else if (t.Status == StatusTurma.Concluida) { accent = "green"; badge = "concluida"; label = "Concluída"; }
+                    else if (t.Status == StatusTurma.Cancelada) { accent = "red"; badge = "cancelada"; label = "Cancelada"; }
 
-            </section>
-            <!-- /.content -->
+                    <div class="ea-card ea-fade ea-fade-1">
+                        <div class="ea-card-accent @accent"></div>
+                        <div class="ea-card-body">
+                            <div
+                                style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:10px">
+                                <h3
+                                    style="font-family:var(--font);font-size:.98rem;font-weight:800;color:var(--gray-800);margin:0">
+                                    @t.NomeCurso</h3>
+                                    <span class="ea-badge @badge">@label</span>
+                                </div>
+                                <div style="display:flex;flex-direction:column;gap:6px">
+                                    <div style="display:flex;align-items:center;gap:7px;font-size:.78rem;color:var(--gray-500)">
+                                        <div
+                                            style="width:22px;height:22px;border-radius:var(--radius-sm);background:var(--gray-100);display:flex;align-items:center;justify-content:center;color:var(--primary);font-size:.65rem">
+                                            <i class="fas fa-map-marker-alt"></i></div>
+                                            <span><span style="color:var(--gray-400);font-size:.72rem;margin-right:2px">Campus
+                                            </span>@t.NomeCampus</span>
+                                        </div>
+                                        @if (!string.IsNullOrWhiteSpace(t.NomeLider))
+                                        {
+                                            <div style="display:flex;align-items:center;gap:7px;font-size:.78rem;color:var(--gray-500)">
+                                                <div
+                                                    style="width:22px;height:22px;border-radius:var(--radius-sm);background:var(--gray-100);display:flex;align-items:center;justify-content:center;color:var(--primary);font-size:.65rem">
+                                                    <i class="fas fa-user-tie"></i></div>
+                                                    <span><span style="color:var(--gray-400);font-size:.72rem;margin-right:2px">Líder
+                                                    </span>@t.NomeLider</span>
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="ea-date-pill" style="margin-top:10px;display:inline-flex">
+                                            <i class="fas fa-calendar-alt"></i>
+                                            @t.DataInicio.ToShortDateString() <span style="color:var(--gray-300)">→</span>
+                                            @t.DataFim.ToShortDateString()
+                                        </div>
+                                    </div>
+                                    <div class="ea-card-footer">
+                                        <a asp-action="Dashboard" asp-route-id="@t.Id" class="ea-action-btn info" title="Visão Geral"><i
+                                            class="fas fa-chart-pie"></i></a>
+                                            <a asp-action="Editar" asp-route-id="@t.Id" class="ea-action-btn primary" title="Editar"><i
+                                                class="fas fa-edit"></i></a>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+        else
+                            {
+                                <div class="ea-empty">
+                                    <i class="fas fa-users"></i>
+                                    <h3>Nenhuma turma encontrada</h3>
+                                    <p>Ajuste os filtros ou crie uma nova turma.</p>
+                                </div>
+                            }
+
+                        </div>
+                    </section>

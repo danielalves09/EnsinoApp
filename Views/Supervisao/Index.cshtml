@@ -2,98 +2,87 @@
 @{
     ViewData["Title"] = "Gerenciar Supervisões";
 }
+
 <section class="content-header">
     <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6">
-                <h1>Gerenciar Supervisões</h1>
-            </div>
+        <div class="ea-page-title">
+            <h1><i class="fas fa-sitemap" style="color:var(--primary);margin-right:8px"></i>Gerenciar Supervisões</h1>
+            <p>Cadastre e gerencie os grupos de supervisão</p>
         </div>
     </div>
 </section>
 
-<!-- Main content -->
 <section class="content">
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <div class="d-flex justify-content-between">
-                        <form asp-action="Index">
-                            <div class="input-group input-group-sm" style="width: 300px;">
-                                <input type="text" class="form-control" placeholder="Buscar supervisão" name="filtro"
-                                       value="@ViewBag.Filtro">
+    <div class="container-fluid">
 
-                                <div class="input-group-append">
-                                    <button type="submit" class="btn btn-default">
-                                        <i class="fas fa-search"></i>
-                                    </button>
+        <div class="ea-toolbar">
+            <form asp-action="Index" style="flex:1 1 220px">
+                <div class="ea-search-wrap">
+                    <i class="fas fa-search ea-search-icon"></i>
+                    <input type="text" placeholder="Buscar supervisão..." name="filtro" value="@ViewBag.Filtro" />
+                    <button type="submit" class="ea-btn-search"><i class="fas fa-search"></i></button>
+                </div>
+            </form>
+            <a href="/supervisao/adicionar" class="ea-btn-new"><i class="fas fa-plus"></i> Nova Supervisão</a>
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="ea-grid">
+                @foreach (var p in Model!)
+                {
+                    <div class="ea-card ea-fade ea-fade-1">
+                        <div class="ea-card-accent blue"></div>
+                        <div class="ea-card-body">
+                            <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+                                <div
+                                    style="width:44px;height:44px;border-radius:var(--radius);background:linear-gradient(135deg,var(--primary-light),var(--primary-mid));display:flex;align-items:center;justify-content:center;color:var(--primary);font-size:1.1rem;flex-shrink:0">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <h3
+                                    style="font-family:var(--font);font-size:.98rem;font-weight:800;color:var(--gray-800);margin:0">
+                                    @p.Nome</h3>
+                                </div>
+                                <span class="ea-meta-pill"><i class="fas fa-map-marker-alt"></i>@p.NomeCampus</span>
+                            </div>
+                            <div class="ea-card-footer">
+                                <a href="/supervisao/editar/@p.Id" class="ea-action-btn primary" title="Editar"><i
+                                    class="fas fa-edit"></i></a>
+                                    <a asp-controller="Supervisao" asp-action="Excluir" asp-route-id="@p.Id"
+                                       onclick="return confirm('Excluir a supervisão @p.Nome?')" class="ea-action-btn danger"
+                                       title="Excluir"><i class="fas fa-trash"></i></a>
                                 </div>
                             </div>
-                        </form>
-
-                        <a href="/supervisao/adicionar" class="btn btn-outline-primary btn-sm">Nova Supervisão</a>
+                        }
                     </div>
-                </div>
-                <!-- /.card-header -->
-                <div class="card-body table-responsive p-0">
-                    <table class="table table-head-fixed text-nowrap">
-                        <thead>
-                            <tr>
-                                <th>Nome</th>
-                                <th>Campus</th>
-                                <th style="width: 40px"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var p in Model!)
-                            {
-                                <tr>
-                                    <td>@p.Nome</td>
-                                    <td>@p.NomeCampus</td>
-                                    <td>
-                                        <a href="/supervisao/editar/@p.Id" class="btn btn-primary btn-sm mr-1"
-                                               title="Editar">
-                                            <span class="fas fa-edit"></span>
-                                        </a>
-                                        <a asp-controller="Supervisao" asp-action="Excluir" asp-route-id="@p.Id"
-                                               onclick="return confirm('Tem certeza que deseja excluir a supervisao?')"
-                                               class="btn btn-sm btn-danger" tytle="Excluir">
-                                            <span class="fas fa-trash"></span>
-                                        </a>
-                                    </td>
-                                </tr>
-                            }
+                }
+        else
+                {
+                    <div class="ea-empty">
+                        <i class="fas fa-sitemap"></i>
+                        <h3>Nenhuma supervisão encontrada</h3>
+                        <p>Tente outro termo ou cadastre uma nova supervisão.</p>
+                    </div>
+                }
 
-
-                        </tbody>
-                    </table>
-                </div>
-                <!-- /.card-body -->
-                <div class="card-footer clearfix">
-                    @if (ViewBag.Totalpaginas > 1)
-                    {
-                        <ul class="pagination pagination-sm m-0 float-right">
-                            @if (ViewBag.NumeroPagina > 1)
-                            {
-                                <li class="page-item"><a class="page-link"
-                                                             href="@Url.Action("Index", "Medicos", new { Filtro = ViewBag.Filtro, Pagina = ViewBag.NumeroPagina - 1 })">&laquo;</a>
-                                </li>
+                @if (ViewBag.Totalpaginas > 1)
+                {
+                    <div class="ea-pagination">
+                        @if (ViewBag.NumeroPagina > 1)
+                        {
+                            <a class="ea-page-btn"
+                                   href="@Url.Action("Index","Supervisao",new{Filtro=ViewBag.Filtro,Pagina=ViewBag.NumeroPagina-1})"><i
+                                class="fas fa-chevron-left"></i></a>
                             }
-                            <li class="page-item page-link">Página @ViewBag.NumeroPagina de @ViewBag.TotalPaginas</li>
+                            <span class="ea-page-info">Página @ViewBag.NumeroPagina de @ViewBag.TotalPaginas</span>
                             @if (ViewBag.NumeroPagina < ViewBag.TotalPaginas)
                             {
-                                <li class="page-item"><a class="page-link"
-                                                             href="@Url.Action("Index", "Medicos", new { Filtro = ViewBag.Filtro, Pagina = ViewBag.NumeroPagina + 1 })">&raquo;</a>
-                                </li>
-                            }
-                        </ul>
+                                <a class="ea-page-btn"
+                                       href="@Url.Action("Index","Supervisao",new{Filtro=ViewBag.Filtro,Pagina=ViewBag.NumeroPagina+1})"><i
+                                    class="fas fa-chevron-right"></i></a>
+                                }
+                            </div>
+                        }
 
-                    }
-                </div>
-            </div>
-            <!-- /.card -->
-        </div>
-    </div>
-</section>
-<!-- /.content -->
+                    </div>
+                </section>

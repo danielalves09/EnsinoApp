@@ -1,195 +1,218 @@
-@model EnsinoApp.ViewModels.Usuario.AdicionarUsuarioViewModel;
+@model EnsinoApp.ViewModels.Usuario.AdicionarUsuarioViewModel
+@{
+    ViewData["Title"] = "Novo Usuário";
+}
 
-<!-- Content Header (Page header) -->
-<section class="content-header">
+<section class="content-header" style="padding-bottom:0">
     <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6">
-                <h1>Usuários</h1>
-            </div>
+        <a asp-action="Index" class="ea-btn-back"><i class="fas fa-arrow-left"></i> Voltar para Usuários</a>
+        <div class="ea-page-title">
+            <h1><i class="fas fa-user-plus" style="color:var(--primary);margin-right:8px"></i>Novo Usuário</h1>
+            <p>Preencha os dados para cadastrar um novo usuário no sistema</p>
         </div>
-    </div><!-- /.container-fluid -->
+    </div>
 </section>
 
-<section class=content>
-    <div class=row>
-        <div class=col-12>
-            <div class="card shadow">
-                <div class="card-body">
-                    <form asp-action="Adicionar" method="post">
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                        <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label asp-for="NomeMarido" class="form-label"></label>
-                            <input asp-for="NomeMarido" class="form-control" />
-                        </div>
+<section class="content">
+    <div class="container-fluid">
+        <form asp-action="Adicionar" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger" style="font-size:.8rem;margin-bottom:12px">
+            </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label asp-for="NomeEsposa" class="form-label"></label>
-                            <input asp-for="NomeEsposa" class="form-control" />
-                        </div>
-                        </div>
-                        <div class="mb-3">
-                            <label asp-for="Email" class="form-label"></label>
-                            <input asp-for="Email" class="form-control" />
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="Senha" class="form-label"></label>
-                                <input asp-for="Senha" class="form-control" type="password" />
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="ConfirmarSenha" class="form-label"></label>
-                                <input asp-for="ConfirmarSenha" class="form-control" type="password" />
-                            </div>
-                        </div>
-
-                        <!-- CAMPUS -->
-                       <div class="row">
-                                <div class="col-md-6 mb-3">
-                                <label asp-for="IdCampus" class="form-label">Campus</label>
-                                <div class="input-group">
-                                    <input asp-for="NomeCampus" class="form-control" readonly
-                                        placeholder="Selecione um Campus" />
-                                    <input type="hidden" asp-for="IdCampus" />
-                                    <button type="button" id="BtnBuscarCampus" class="btn btn-primary" data-toggle="modal"
-                                            data-target="#ModalCampus">Buscar</button>
+            <div class="ea-form-card ea-fade ea-fade-1">
+                <div class="ea-form-card-header">
+                    <div class="ea-form-header-icon" style="background:#fff0f0;color:#f87171"><i
+                        class="fas fa-heart"></i></div>
+                        <h3 class="ea-form-card-title">Dados do Casal</h3>
+                    </div>
+                    <div class="ea-form-card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="ea-field-group">
+                                    <label asp-for="NomeMarido" class="ea-field-label"></label>
+                                    <input asp-for="NomeMarido" class="ea-field-control" />
+                                    <span asp-validation-for="NomeMarido" class="ea-field-error"></span>
                                 </div>
                             </div>
-
-                            <!-- SUPERVISÃO -->
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="IdSupervisao" class="form-label">Supervisão (opcional)</label>
-                                <div class="input-group">
-                                    <input asp-for="NomeSupervisao" class="form-control" readonly
-                                        placeholder="Selecione uma Supervisão" />
-                                    <input type="hidden" asp-for="IdSupervisao" />
-                                    <button type="button" id="BtnBuscarSupervisao" class="btn btn-primary" data-toggle="modal"
-                                            data-target="#ModalSupervisao">Buscar</button>
+                            <div class="col-md-6">
+                                <div class="ea-field-group">
+                                    <label asp-for="NomeEsposa" class="ea-field-label"></label>
+                                    <input asp-for="NomeEsposa" class="ea-field-control" />
+                                    <span asp-validation-for="NomeEsposa" class="ea-field-error"></span>
                                 </div>
                             </div>
                         </div>
-
-                        
-                    
-                        <div class="form-check mb-3">
-                            <input asp-for="Ativo" class="form-check-input" />
-                            <label asp-for="Ativo" class="form-check-label"></label>
+                        <div class="ea-field-group">
+                            <label asp-for="Email" class="ea-field-label"></label>
+                            <input asp-for="Email" class="ea-field-control" />
+                            <span asp-validation-for="Email" class="ea-field-error"></span>
                         </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Role" class="form-label"></label>
-                            <select asp-for="Role" class="form-control" asp-items="Model.Roles">                               
-                                <option value="">-- Selecione uma função --</option>
-                            </select>                             
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="ea-field-group">
+                                    <label asp-for="Senha" class="ea-field-label"></label>
+                                    <input asp-for="Senha" type="password" class="ea-field-control" />
+                                    <span asp-validation-for="Senha" class="ea-field-error"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="ea-field-group">
+                                    <label asp-for="ConfirmarSenha" class="ea-field-label"></label>
+                                    <input asp-for="ConfirmarSenha" type="password" class="ea-field-control" />
+                                    <span asp-validation-for="ConfirmarSenha" class="ea-field-error"></span>
+                                </div>
+                            </div>
                         </div>
-
-                         <div class="d-flex justify-content-between mt-4">
-                                <a asp-action="Index" class="btn btn-secondary">
-                                    <i class="fas fa-arrow-left"></i> Voltar
-                                </a>
-                        <button type="submit" class="btn btn-success">Cadastrar <i class="fas fa-save"></i></button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
-            </div>
-        </div>
-    </div>
-</section>
 
-<!-- ================= MODAL CAMPUS ================= -->
-<div class="modal fade" id="ModalCampus" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Buscar Campus</h5>
-               <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <input type="text" id="TxtFiltroCampus" class="form-control mb-2" placeholder="Digite o nome do campus" />
-                <table class="table table-hover" id="TbCampus">
-                    <tbody></tbody>
-                </table>
-                <div id="DivMensagemCampus" class="d-none">Nenhum campus encontrado.</div>
-            </div>
-        </div>
-    </div>
-</div>
+                <div class="ea-form-card ea-fade ea-fade-2">
+                    <div class="ea-form-card-header">
+                        <div class="ea-form-header-icon" style="background:var(--primary-light);color:var(--primary)"><i
+                            class="fas fa-map-marker-alt"></i></div>
+                            <h3 class="ea-form-card-title">Vínculo</h3>
+                        </div>
+                        <div class="ea-form-card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="ea-field-group">
+                                        <label class="ea-field-label">Campus</label>
+                                        <div class="ea-input-group">
+                                            <input asp-for="NomeCampus" class="ea-field-control" readonly
+                                                   placeholder="Selecione um campus" />
+                                            <input type="hidden" asp-for="IdCampus" />
+                                            <button type="button" class="ea-btn-buscar" data-toggle="modal"
+                                                    data-target="#ModalCampus"><i class="fas fa-search"></i> Buscar</button>
+                                        </div>
+                                        <span asp-validation-for="IdCampus" class="ea-field-error"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="ea-field-group">
+                                        <label class="ea-field-label">Supervisão <span
+                                            style="color:var(--gray-300);font-weight:400;text-transform:none">(opcional)</span></label>
+                                            <div class="ea-input-group">
+                                                <input asp-for="NomeSupervisao" class="ea-field-control" readonly
+                                                       placeholder="Selecione uma supervisão" />
+                                                <input type="hidden" asp-for="IdSupervisao" />
+                                                <button type="button" class="ea-btn-buscar" data-toggle="modal"
+                                                        data-target="#ModalSupervisao"><i class="fas fa-search"></i> Buscar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-<!-- ================= MODAL SUPERVISÃO ================= -->
-<div class="modal fade" id="ModalSupervisao" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Buscar Supervisão</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <input type="text" id="TxtFiltroSupervisao" class="form-control mb-2" placeholder="Digite o nome da supervisão" />
-                <table class="table table-hover" id="TbSupervisao">
-                    <tbody></tbody>
-                </table>
-                <div id="DivMensagemSupervisao" class="d-none">Nenhuma supervisão encontrada.</div>
-            </div>
-        </div>
-    </div>
-</div>
+                        <div class="ea-form-card ea-fade ea-fade-3">
+                            <div class="ea-form-card-header">
+                                <div class="ea-form-header-icon" style="background:var(--success-light);color:var(--success)"><i
+                                    class="fas fa-shield-alt"></i></div>
+                                    <h3 class="ea-form-card-title">Permissões</h3>
+                                </div>
+                                <div class="ea-form-card-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="ea-field-group">
+                                                <label asp-for="Role" class="ea-field-label"></label>
+                                                <select asp-for="Role" class="ea-field-control" asp-items="Model.Roles">
+                                                    <option value="">-- Selecione uma função --</option>
+                                                </select>
+                                                <span asp-validation-for="Role" class="ea-field-error"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6" style="display:flex;align-items:center;padding-top:18px">
+                                            <div class="ea-toggle-row">
+                                                <label class="ea-toggle">
+                                                    <input asp-for="Ativo" />
+                                                    <span class="ea-toggle-slider"></span>
+                                                </label>
+                                                <div>
+                                                    <div class="ea-toggle-label">Usuário Ativo</div>
+                                                    <div class="ea-toggle-desc">Permite acesso ao sistema</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="ea-form-footer">
+                                    <a asp-action="Index" class="ea-btn-action cancel"><i class="fas fa-times"></i> Cancelar</a>
+                                    <button type="submit" class="ea-btn-action save"><i class="fas fa-save"></i> Cadastrar
+                                        Usuário</button>
+                                    </div>
+                                </div>
 
-@section Scripts{
-<script>
-function buscarCampus() {
-    var filtro = $("#TxtFiltroCampus").val().trim();
-    if(filtro.length === 0) return;
+                            </form>
+                        </div>
+                    </section>
 
-    $.getJSON("/Campus/Buscar?filtro=" + filtro, function(resultado){
-        if(resultado.length > 0) {
-            var linhas = resultado.map(p => "<tr style='cursor:pointer' data-id='" + p.id + "'><td>" + p.nome + "</td></tr>").join("");
-            $("#TbCampus tbody").html(linhas);
+                    <div class="modal fade ea-modal" id="ModalCampus" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title"><i class="fas fa-building"
+                                                                   style="color:var(--primary);margin-right:6px"></i>Buscar Campus</h5>
+                                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="text" id="TxtFiltroCampus" class="ea-modal-search"
+                                               placeholder="Digite o nome do campus..." />
+                                        <div style="overflow-y:auto;max-height:300px">
+                                            <table class="ea-modal-table" id="TbCampus">
+                                                <tbody></tbody>
+                                            </table>
+                                            <div id="DivMensagemCampus" class="ea-modal-empty d-none">Nenhum campus encontrado.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-            $("#TbCampus tbody tr").click(function(){
-                var id = $(this).attr("data-id");
-                var nome = $(this).children()[0].innerText;
-                $("#IdCampus").val(id);
-                $("#NomeCampus").val(nome);
-                $("#ModalCampus").modal('hide');
-            });
-        } else {
-            $("#TbCampus tbody").html("");
-            $("#DivMensagemCampus").removeClass("d-none");
-        }
-    });
-}
+                        <div class="modal fade ea-modal" id="ModalSupervisao" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title"><i class="fas fa-sitemap"
+                                                                       style="color:var(--primary);margin-right:6px"></i>Buscar Supervisão</h5>
+                                            <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <input type="text" id="TxtFiltroSupervisao" class="ea-modal-search"
+                                                   placeholder="Digite o nome da supervisão..." />
+                                            <div style="overflow-y:auto;max-height:300px">
+                                                <table class="ea-modal-table" id="TbSupervisao">
+                                                    <tbody></tbody>
+                                                </table>
+                                                <div id="DivMensagemSupervisao" class="ea-modal-empty d-none">Nenhuma supervisão encontrada.</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-$("#TxtFiltroCampus").on("keyup", function(){ buscarCampus(); });
-
-function buscarSupervisao() {
-    var filtro = $("#TxtFiltroSupervisao").val().trim();
-    if(filtro.length === 0) return;
-
-    $.getJSON("/Supervisao/Buscar?filtro=" + filtro, function(resultado){
-        if(resultado.length > 0) {
-            var linhas = resultado.map(p => "<tr style='cursor:pointer' data-id='" + p.id + "'><td>" + p.nome + "</td></tr>").join("");
-            $("#TbSupervisao tbody").html(linhas);
-
-            $("#TbSupervisao tbody tr").click(function(){
-                var id = $(this).attr("data-id");
-                var nome = $(this).children()[0].innerText;
-                $("#IdSupervisao").val(id);
-                $("#NomeSupervisao").val(nome);
-                $("#ModalSupervisao").modal('hide');
-            });
-        } else {
-            $("#TbSupervisao tbody").html("");
-            $("#DivMensagemSupervisao").removeClass("d-none");
-        }
-    });
-}
-
-$("#TxtFiltroSupervisao").on("keyup", function(){ buscarSupervisao(); });
-</script>
-}
+                            @section Scripts {
+                                <script>
+                                                                    function buscarCampus() {
+                                                                        var f = $("#TxtFiltroCampus").val().trim(); if (!f.length) return;
+                                                                        $.getJSON("/Campus/Buscar?filtro=" + f, function (r) {
+                                                                            $("#DivMensagemCampus").addClass("d-none");
+                                                                            if (r.length) {
+                                                                                $("#TbCampus tbody").html(r.map(p => "<tr data-id='" + p.id + "'><td>" + p.nome + "</td></tr>").join(""));
+                                                                                $("#TbCampus tbody tr").click(function () { $("#IdCampus").val($(this).data("id")); $("#NomeCampus").val($(this).find("td").text()); $("#ModalCampus").modal("hide"); });
+                                                                            } else { $("#TbCampus tbody").html(""); $("#DivMensagemCampus").removeClass("d-none"); }
+                                                                        });
+                                                                    }
+                                                                    function buscarSupervisao() {
+                                                                        var f = $("#TxtFiltroSupervisao").val().trim(); if (!f.length) return;
+                                                                        $.getJSON("/Supervisao/Buscar?filtro=" + f, function (r) {
+                                                                            $("#DivMensagemSupervisao").addClass("d-none");
+                                                                            if (r.length) {
+                                                                                $("#TbSupervisao tbody").html(r.map(p => "<tr data-id='" + p.id + "'><td>" + p.nome + "</td></tr>").join(""));
+                                                                                $("#TbSupervisao tbody tr").click(function () { $("#IdSupervisao").val($(this).data("id")); $("#NomeSupervisao").val($(this).find("td").text()); $("#ModalSupervisao").modal("hide"); });
+                                                                            } else { $("#TbSupervisao tbody").html(""); $("#DivMensagemSupervisao").removeClass("d-none"); }
+                                                                        });
+                                                                    }
+                                                                    $("#TxtFiltroCampus").on("keyup", buscarCampus);
+                                                                    $("#TxtFiltroSupervisao").on("keyup", buscarSupervisao);
+                                </script>
+                            }
