@@ -92,7 +92,6 @@ public class MatriculaController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Cadastrar(MatriculaFormViewModel model)
     {
-        Console.WriteLine("Entrou na função");
         if (!ModelState.IsValid)
         {
             model.SelectTurmas = new SelectList(await _turmaService.FindAllAtivasAsync(model.IdCurso), "Id", "Descricao");

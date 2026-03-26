@@ -122,7 +122,7 @@ public class CursoController : Controller
 
     public IActionResult Dashboard(int id)
     {
-        var curso = _cursoService.FindByIdDashboard(id); // Certifique-se que inclui Turmas -> Matriculas -> Casal
+        var curso = _cursoService.FindByIdDashboard(id);
 
         if (curso == null) return NotFound();
 
@@ -168,8 +168,6 @@ public class CursoController : Controller
             Nome = c.Nome,
             NomeCampus = c.Campus.Nome,
         });
-
-        Console.WriteLine(curso);
 
         return Json(curso);
 
