@@ -67,45 +67,50 @@
                                     <div style="display:flex;align-items:center;gap:7px;font-size:.78rem;color:var(--gray-500)">
                                         <div
                                             style="width:22px;height:22px;border-radius:var(--radius-sm);background:var(--gray-100);display:flex;align-items:center;justify-content:center;color:var(--primary);font-size:.65rem">
-                                            <i class="fas fa-map-marker-alt"></i></div>
-                                            <span><span style="color:var(--gray-400);font-size:.72rem;margin-right:2px">Campus
-                                            </span>@t.NomeCampus</span>
+                                            <i class="fas fa-map-marker-alt"></i>
                                         </div>
-                                        @if (!string.IsNullOrWhiteSpace(t.NomeLider))
-                                        {
-                                            <div style="display:flex;align-items:center;gap:7px;font-size:.78rem;color:var(--gray-500)">
-                                                <div
-                                                    style="width:22px;height:22px;border-radius:var(--radius-sm);background:var(--gray-100);display:flex;align-items:center;justify-content:center;color:var(--primary);font-size:.65rem">
-                                                    <i class="fas fa-user-tie"></i></div>
-                                                    <span><span style="color:var(--gray-400);font-size:.72rem;margin-right:2px">Líder
-                                                    </span>@t.NomeLider</span>
-                                                </div>
-                                            }
-                                        </div>
-                                        <div class="ea-date-pill" style="margin-top:10px;display:inline-flex">
-                                            <i class="fas fa-calendar-alt"></i>
-                                            @t.DataInicio.ToShortDateString() <span style="color:var(--gray-300)">→</span>
-                                            @t.DataFim.ToShortDateString()
-                                        </div>
+                                        <span><span style="color:var(--gray-400);font-size:.72rem;margin-right:2px">Campus
+                                        </span>@t.NomeCampus</span>
                                     </div>
-                                    <div class="ea-card-footer">
-                                        <a asp-action="Dashboard" asp-route-id="@t.Id" class="ea-action-btn info" title="Visão Geral"><i
-                                            class="fas fa-chart-pie"></i></a>
-                                            <a asp-action="Editar" asp-route-id="@t.Id" class="ea-action-btn primary" title="Editar"><i
-                                                class="fas fa-edit"></i></a>
+                                    @if (!string.IsNullOrWhiteSpace(t.NomeLider))
+                                    {
+                                        <div style="display:flex;align-items:center;gap:7px;font-size:.78rem;color:var(--gray-500)">
+                                            <img src="@(string.IsNullOrWhiteSpace(t.imgLider)?"/images/avatar-default.jpg":t.imgLider)"
+                                                 alt="Líder"
+                                                 style="width:46px;height:46px;border-radius:50%;object-fit:cover;border:2px solid var(--gray-200);flex-shrink:0" />
+                                            <div
+                                                style="width:22px;height:22px;border-radius:var(--radius-sm);background:var(--gray-100);display:flex;align-items:center;justify-content:center;color:var(--primary);font-size:.65rem">
+                                                <i class="fas fa-user-tie"></i>
                                             </div>
+                                            <span><span style="color:var(--gray-400);font-size:.72rem;margin-right:2px">Líder
+                                            </span>@t.NomeLider</span>
                                         </div>
                                     }
                                 </div>
-                            }
-        else
-                            {
-                                <div class="ea-empty">
-                                    <i class="fas fa-users"></i>
-                                    <h3>Nenhuma turma encontrada</h3>
-                                    <p>Ajuste os filtros ou crie uma nova turma.</p>
+                                <div class="ea-date-pill" style="margin-top:10px;display:inline-flex">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    @t.DataInicio.ToShortDateString() <span style="color:var(--gray-300)">→</span>
+                                    @t.DataFim.ToShortDateString()
+                                </div>
+                            </div>
+                            <div class="ea-card-footer">
+                                <a asp-action="Dashboard" asp-route-id="@t.Id" class="ea-action-btn info" title="Visão Geral"><i
+                                    class="fas fa-chart-pie"></i></a>
+                                    <a asp-action="Editar" asp-route-id="@t.Id" class="ea-action-btn primary" title="Editar"><i
+                                        class="fas fa-edit"></i></a>
+                                    </div>
                                 </div>
                             }
-
                         </div>
-                    </section>
+                    }
+        else
+                    {
+                        <div class="ea-empty">
+                            <i class="fas fa-users"></i>
+                            <h3>Nenhuma turma encontrada</h3>
+                            <p>Ajuste os filtros ou crie uma nova turma.</p>
+                        </div>
+                    }
+
+                </div>
+            </section>

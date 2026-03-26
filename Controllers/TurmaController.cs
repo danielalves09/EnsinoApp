@@ -59,6 +59,7 @@ public class TurmaController : Controller
             NomeCurso = t.Curso.Nome,
             NomeCampus = t.Campus.Nome,
             NomeLider = _utilService.GetNomeSobrenome(t.Lider.NomeMarido, t.Lider.NomeEsposa),
+            imgLider = t.Lider.FotoPerfil,
             DataInicio = t.DataInicio,
             DataFim = t.DataFim,
             Status = t.Status
@@ -86,6 +87,7 @@ public class TurmaController : Controller
             NomeCurso = turma.Curso.Nome,
             NomeCampus = turma.Campus.Nome,
             NomeLider = $"{turma.Lider.NomeMarido} / {turma.Lider.NomeEsposa}",
+            imgLider = turma.Lider.FotoPerfil,
             DataInicio = turma.DataInicio,
             DataFim = turma.DataFim,
             TotalLicoes = turma.Curso.Licoes.Count(),

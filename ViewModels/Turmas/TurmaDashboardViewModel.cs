@@ -8,6 +8,7 @@ namespace EnsinoApp.ViewModels.Turmas
         public string NomeCurso { get; set; } = null!;
         public string NomeCampus { get; set; } = null!;
         public string NomeLider { get; set; } = null!;
+        public string imgLider { get; set; } = null!;
         public DateTime DataInicio { get; set; }
         public DateTime DataFim { get; set; }
         public StatusTurma Status { get; set; }

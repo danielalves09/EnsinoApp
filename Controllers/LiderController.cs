@@ -107,6 +107,7 @@ public class LiderController : Controller
             NomeCurso = turma.Curso.Nome,
             NomeCampus = turma.Campus.Nome,
             NomeLider = $"{turma.Lider.NomeMarido} / {turma.Lider.NomeEsposa}",
+            imgLider = turma.Lider.FotoPerfil,
             DataInicio = turma.DataInicio,
             DataFim = turma.DataFim,
             TotalLicoes = turma.Curso.Licoes.Count(),

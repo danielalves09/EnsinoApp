@@ -5,369 +5,90 @@
     var idTurma = Model.FirstOrDefault()?.Matricula?.IdTurma;
 }
 
-<style>
-    :root {
-        --primary: #2563eb;
-        --primary-light: #eff6ff;
-        --primary-mid: #bfdbfe;
-        --success: #16a34a;
-        --success-light: #f0fdf4;
-        --danger: #dc2626;
-        --danger-light: #fef2f2;
-        --warning: #d97706;
-        --warning-light: #fffbeb;
-        --gray-50: #f8fafc;
-        --gray-100: #f1f5f9;
-        --gray-200: #e2e8f0;
-        --gray-300: #cbd5e1;
-        --gray-400: #94a3b8;
-        --gray-500: #64748b;
-        --gray-600: #475569;
-        --gray-700: #334155;
-        --gray-800: #1e293b;
-        --radius-sm: 6px;
-        --radius: 10px;
-        --radius-lg: 14px;
-        --shadow-sm: 0 1px 3px rgba(0, 0, 0, .08);
-        --font: 'Nunito', 'Segoe UI', sans-serif;
-    }
-
-    .btn-back {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        font-size: .8rem;
-        font-weight: 700;
-        color: var(--gray-500);
-        text-decoration: none !important;
-        background: var(--gray-100);
-        border: 1px solid var(--gray-200);
-        border-radius: var(--radius-sm);
-        padding: 5px 12px;
-        margin-bottom: 14px;
-        transition: background .18s, color .18s;
-    }
-
-    .btn-back:hover {
-        background: var(--gray-200);
-        color: var(--gray-700);
-    }
-
-    .page-title-wrap h1 {
-        font-family: var(--font);
-        font-size: 1.5rem;
-        font-weight: 800;
-        color: var(--gray-800);
-        margin: 0 0 2px;
-        letter-spacing: -.3px;
-    }
-
-    .page-title-wrap p {
-        font-size: .82rem;
-        color: var(--gray-400);
-        margin: 0 0 20px;
-    }
-
-    /* ─── Table card ──────────────────────────────────── */
-    .table-card {
-        background: #fff;
-        border: 1px solid var(--gray-200);
-        border-radius: var(--radius-lg);
-        box-shadow: var(--shadow-sm);
-        overflow: hidden;
-        margin-bottom: 18px;
-        animation: fadeUp .35s ease both;
-    }
-
-    fadeUp {
-        from {
-            opacity: 0;
-            transform: translateY(12px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .table-card-header {
-        padding: 14px 20px;
-        border-bottom: 1px solid var(--gray-100);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        background: var(--gray-50);
-    }
-
-    .table-header-icon {
-        width: 28px;
-        height: 28px;
-        border-radius: var(--radius-sm);
-        background: var(--primary-light);
-        color: var(--primary);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: .75rem;
-    }
-
-    .table-card-title {
-        font-family: var(--font);
-        font-size: .9rem;
-        font-weight: 800;
-        color: var(--gray-700);
-        margin: 0;
-    }
-
-    .total-badge {
-        margin-left: auto;
-        background: var(--primary-light);
-        color: var(--primary);
-        border: 1px solid var(--primary-mid);
-        border-radius: 20px;
-        padding: 2px 10px;
-        font-size: .72rem;
-        font-weight: 700;
-    }
-
-    /* ─── Table ───────────────────────────────────────── */
-    .rel-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: .82rem;
-    }
-
-    .rel-table thead th {
-        padding: 10px 16px;
-        background: var(--gray-50);
-        color: var(--gray-500);
-        font-size: .7rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .4px;
-        border-bottom: 1px solid var(--gray-200);
-        white-space: nowrap;
-    }
-
-    .rel-table tbody tr {
-        border-bottom: 1px solid var(--gray-100);
-        transition: background .15s;
-    }
-
-    .rel-table tbody tr:last-child {
-        border-bottom: none;
-    }
-
-    .rel-table tbody tr:hover {
-        background: var(--gray-50);
-    }
-
-    .rel-table tbody td {
-        padding: 12px 16px;
-        color: var(--gray-700);
-        vertical-align: middle;
-    }
-
-    .date-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        font-size: .75rem;
-        font-weight: 700;
-        background: var(--gray-100);
-        border: 1px solid var(--gray-200);
-        border-radius: var(--radius-sm);
-        padding: 4px 9px;
-        color: var(--gray-600);
-        white-space: nowrap;
-    }
-
-    .date-pill i {
-        color: var(--gray-400);
-        font-size: .65rem;
-    }
-
-    .licao-title {
-        font-weight: 700;
-        color: var(--gray-800);
-        max-width: 200px;
-        white-space: normal;
-        line-height: 1.3;
-        display: block;
-    }
-
-    .casal-cell {
-        white-space: nowrap;
-        font-weight: 600;
-        color: var(--gray-700);
-    }
-
-    .casal-cell i {
-        color: #fca5a5;
-        font-size: .7rem;
-        margin-right: 5px;
-    }
-
-    /* ─── Presença badges ─────────────────────────────── */
-    .badge-presenca {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        font-size: .72rem;
-        font-weight: 700;
-        border-radius: 20px;
-        padding: 3px 10px;
-        white-space: nowrap;
-    }
-
-    .badge-presente {
-        background: var(--success-light);
-        color: var(--success);
-        border: 1px solid #bbf7d0;
-    }
-
-    .badge-ausente {
-        background: var(--danger-light);
-        color: var(--danger);
-        border: 1px solid #fca5a5;
-    }
-
-    .badge-desistente {
-        background: var(--warning-light);
-        color: var(--warning);
-        border: 1px solid #fde68a;
-    }
-
-    .obs-cell {
-        max-width: 260px;
-        font-size: .78rem;
-        color: var(--gray-500);
-        white-space: normal;
-        line-height: 1.5;
-    }
-
-    .obs-empty {
-        color: var(--gray-300);
-        font-style: italic;
-        font-size: .75rem;
-    }
-
-    /* ─── Empty state ─────────────────────────────────── */
-    .empty-state {
-        text-align: center;
-        padding: 48px 24px;
-    }
-
-    .empty-state i {
-        font-size: 2.4rem;
-        color: var(--gray-300);
-        margin-bottom: 10px;
-    }
-
-    .empty-state h3 {
-        font-size: .95rem;
-        font-weight: 700;
-        color: var(--gray-600);
-        margin: 0 0 4px;
-    }
-
-    .empty-state p {
-        font-size: .8rem;
-        color: var(--gray-400);
-        margin: 0;
-    }
-
-    @@media (max-width: 576px) {
-        .page-title-wrap h1 {
-            font-size: 1.2rem;
-        }
-    }
-</style>
-
 <section class="content-header" style="padding-bottom:0">
     <div class="container-fluid">
         @if (idTurma.HasValue)
         {
-            <a asp-action="Turma" asp-route-id="@idTurma" class="btn-back">
+            <a asp-action="Turma" asp-route-id="@idTurma" class="ea-btn-back">
                 <i class="fas fa-arrow-left"></i> Voltar para a Turma
             </a>
         }
-        <div class="page-title-wrap">
-            <h1><i class="fas fa-file-alt" style="color:var(--primary);margin-right:8px;font-size:1.3rem"></i>Histórico
-                de Relatórios</h1>
-                <p>Registro de presenças e lições por semana</p>
-            </div>
+        <div class="ea-page-title">
+            <h1><i class="fas fa-file-alt" style="color:var(--primary);margin-right:8px"></i>Histórico de Relatórios
+            </h1>
+            <p>Registro de presenças e lições por semana</p>
         </div>
-    </section>
+    </div>
+</section>
 
-    <section class="content">
-        <div class="container-fluid">
+<section class="content">
+    <div class="container-fluid">
 
-            <div class="table-card">
-                <div class="table-card-header">
-                    <div class="table-header-icon">
-                        <i class="fas fa-book-open"></i>
-                    </div>
-                    <h3 class="table-card-title">Relatório das Lições</h3>
-                    @if (Model.Any())
-                    {
-                        <span class="total-badge">@Model.Count() registros</span>
-                    }
-                </div>
+        <div class="ea-table-card ea-fade">
+            <div class="ea-table-card-header">
+                <div class="ea-table-header-icon"><i class="fas fa-book-open"></i></div>
+                <h3 class="ea-table-card-title">Relatório das Lições</h3>
+                @if (Model.Any())
+                {
+                    <span class="ea-count-badge">@Model.Count() registros</span>
+                }
+            </div>
 
-                <div style="overflow-x:auto">
-                    @if (Model.Any())
-                    {
-                        <table class="rel-table">
-                            <thead>
-                                <tr>
-                                    <th>Data</th>
-                                    <th>Lição</th>
-                                    <th>Casal</th>
-                                    <th>Presença</th>
-                                    <th>Observações</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var r in Model)
+            <div style="overflow-x:auto">
+                @if (Model.Any())
+                {
+                    <table class="ea-table">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Lição</th>
+                                <th>Casal</th>
+                                <th>Presença</th>
+                                <th>Observações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var r in Model)
+                            {
+                                string pb = "ativo", pi = "fas fa-check";
+                                if (r.Presenca == StatusPresenca.Ausente) { pb = "cancelada"; pi = "fas fa-times"; }
+                                else if (r.Presenca == StatusPresenca.Desistente)
                                 {
-                                    string presencaClass = "badge-presente";
-                                    string presencaIcon = "fas fa-check";
+                                    pb = "pendente"; pi = "fas fa-exclamation";
+                                }
 
-                                    if (r.Presenca == StatusPresenca.Ausente)
-                                    { presencaClass = "badge-ausente"; presencaIcon = "fas fa-times"; }
-                                    else if (r.Presenca == StatusPresenca.Desistente)
-                                    { presencaClass = "badge-desistente"; presencaIcon = "fas fa-exclamation"; }
+                                <tr>
+                                    <td>
+                                        <span class="ea-date-pill">
+                                            <i class="fas fa-calendar-alt"></i>
+                                            @r.DataRegistro.ToString("dd/MM/yyyy")
+                                        </span>
+                                    </td>
+                                    <td
+                                        style="font-weight:700;color:var(--gray-800);max-width:200px;white-space:normal;line-height:1.3">
+                                        @r.Licao.Titulo
+                                    </td>
+                                    <td style="white-space:nowrap;font-weight:600;color:var(--gray-700)">
+                                        <i class="fas fa-heart" style="color:#fca5a5;font-size:.7rem;margin-right:5px"></i>
+                                        @r.Matricula.Casal.NomeConjuge1 &amp; @r.Matricula.Casal.NomeConjuge2
+                                    </td>
+                                    <td>
+                                        <span class="ea-badge @pb">
+                                            <i class="@pi" style="font-size:.6rem"></i>
+                                            @r.Presenca
+                                        </span>
+                                    </td>
+                                    <td
+                                        style="max-width:260px;font-size:.78rem;color:var(--gray-500);white-space:normal;line-height:1.5">
+                                        @if (!string.IsNullOrWhiteSpace(r.Observacoes))
+                                        {
+                                            @r.Observacoes
+                                        }
+                                        else
+                                        {
 
-                                    <tr>
-                                        <td>
-                                            <span class="date-pill">
-                                                <i class="fas fa-calendar-alt"></i>
-                                                @r.DataRegistro.ToString("dd/MM/yyyy")
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span class="licao-title">@r.Licao.Titulo</span>
-                                        </td>
-                                        <td class="casal-cell">
-                                            <i class="fas fa-heart"></i>
-                                            @r.Matricula.Casal.NomeConjuge1 &amp; @r.Matricula.Casal.NomeConjuge2
-                                        </td>
-                                        <td>
-                                            <span class="badge-presenca @presencaClass">
-                                                <i class="@presencaIcon" style="font-size:.6rem"></i>
-                                                @r.Presenca
-                                            </span>
-                                        </td>
-                                        <td class="obs-cell">
-                                            @if (!string.IsNullOrWhiteSpace(r.Observacoes))
-                                            {
-                                                @r.Observacoes
-                                            }
-                                            else
-                                            {
-                                                <span class="obs-empty">Sem observações</span>
+                                            <span style="color:var(--gray-300);font-style:italic;font-size:.75rem">Sem
+                                                observações</span>
                                             }
                                         </td>
                                     </tr>
@@ -375,10 +96,10 @@
                             </tbody>
                         </table>
                     }
-                    else
+                else
                     {
-                        <div class="empty-state">
-                            <div><i class="fas fa-file-alt"></i></div>
+                        <div class="ea-empty" style="border:none;border-radius:0">
+                            <i class="fas fa-file-alt"></i>
                             <h3>Nenhum relatório encontrado</h3>
                             <p>Os relatórios aparecerão aqui após serem criados.</p>
                         </div>

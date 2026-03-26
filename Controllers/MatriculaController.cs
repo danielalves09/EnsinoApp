@@ -39,7 +39,7 @@ public class MatriculaController : Controller
         _campusService = campusService;
     }
 
-    public IActionResult Index(int? idCurso, int? idCampus)
+    public async Task<IActionResult> Index(int? idCurso, int? idCampus)
     {
 
         ViewBag.Cursos = new SelectList(_cursoService.FindAll(), "Id", "Nome", idCurso);
@@ -59,7 +59,7 @@ public class MatriculaController : Controller
             TotalCasais = _casalService.ContarTotal(),
             TotalInscricoes = _inscricaoService.ContarTotal(),
             InscricoesPendentes = _inscricaoService.ContarPendentes(),
-            MatriculasAtivas = _matriculaService.ContarAtivas(),
+            MatriculasAtivas = await _matriculaService.ContarAtivas(),
             TurmasAtivas = _turmaService.ContarAtivas(),
 
             InscricoesPendentesLista = listaInscricoesPendentes,

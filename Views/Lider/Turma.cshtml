@@ -592,8 +592,9 @@
                         <span class="course-meta-pill"><i class="fas fa-user-tie"></i> @Model.NomeLider</span>
                     </div>
                 </div>
-                <div class="course-banner-icon">
-                    <i class="fas fa-chalkboard-teacher"></i>
+                <div><img src="@(string.IsNullOrWhiteSpace(Model.imgLider) ? "/images/avatar-default.jpg" : Model.imgLider)"
+                              alt="Líder"
+                              style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid var(--gray-200);flex-shrink:0" />
                 </div>
             </div>
         </div>
