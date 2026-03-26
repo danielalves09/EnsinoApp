@@ -8,6 +8,7 @@ using EnsinoApp.Services.Inscricao;
 using EnsinoApp.Services.Matricula;
 using EnsinoApp.Services.Supervisao;
 using EnsinoApp.Services.Turmas;
+using EnsinoApp.Services.Usuarios;
 using EnsinoApp.ViewModels.Home;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -20,18 +21,24 @@ namespace EnsinoApp.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly UserManager<Usuario> _userManager;
-
         private readonly ICasalService _casalService;
         private readonly IInscricaoOnlineService _inscricaoService;
         private readonly IMatriculaService _matriculaService;
         private readonly ITurmaService _turmaService;
-        private readonly ICursoService _cursoService;
         private readonly ICampusService _campusService;
-
         private readonly ISupervisaoService _supervisaoService;
+        private readonly IUsuariosService _usuariosService;
 
-
-        public HomeController(ILogger<HomeController> logger, UserManager<Usuario> userManager, ICasalService casalService, IInscricaoOnlineService inscricaoService, IMatriculaService matriculaService, ITurmaService turmaService, ICursoService cursoService, ICampusService campusService, ISupervisaoService supervisaoService)
+        public HomeController(
+            ILogger<HomeController> logger,
+            UserManager<Usuario> userManager,
+            ICasalService casalService,
+            IInscricaoOnlineService inscricaoService,
+            IMatriculaService matriculaService,
+            ITurmaService turmaService,
+            ICampusService campusService,
+            ISupervisaoService supervisaoService,
+            IUsuariosService usuariosService)
         {
             _logger = logger;
             _userManager = userManager;
@@ -39,81 +46,71 @@ namespace EnsinoApp.Controllers
             _inscricaoService = inscricaoService;
             _matriculaService = matriculaService;
             _turmaService = turmaService;
-            _cursoService = cursoService;
             _campusService = campusService;
             _supervisaoService = supervisaoService;
+            _usuariosService = usuariosService;
         }
 
         public async Task<IActionResult> Index()
         {
-            string nomeUsuario = "Visitante";
+            // Dados do usuário logado 
+            var user = await _userManager.GetUserAsync(User);
 
-            if (User.Identity!.IsAuthenticated)
-            {
-                // Busca o usuário logado pelo Id
-                var user = await _userManager.GetUserAsync(User);
-
-                if (user != null)
-                {
-                    //Opção para exibir o nome do casal futuramente
-                    //nomeUsuario = user.NomeMarido + (string.IsNullOrEmpty(user.NomeEsposa) ? "" : " & " + user.NomeEsposa);
-                    nomeUsuario = user.NomeMarido;
-                    ViewBag.FotoPerfil = user.FotoPerfil;
-                    ViewBag.QtdCampus = await _campusService.ContarTotal();
-                    ViewBag.QtdSupervisoes = await _supervisaoService.ContarTotal();
-                    var lideres = await _userManager.GetUsersInRoleAsync("Lider");
-                    ViewBag.QtdLideres = lideres.Count();
-                    ViewBag.QtdCasaisMatriculados = _matriculaService.ContarAtivas();
-                }
-            }
-
-            ViewBag.NomeUsuario = nomeUsuario;
+            ViewBag.NomeUsuario = user?.NomeMarido ?? "Visitante";
+            ViewBag.FotoPerfil = user?.FotoPerfil;
 
 
-            var vm = new DashboardViewModel();
 
-            // KPIs dos cards
-            vm.TotalCasais = _casalService.ContarTotal();
-            vm.TotalInscricoes = _inscricaoService.ContarTotal();
-            vm.MatriculasAtivas = _matriculaService.ContarAtivas();
-            vm.TurmasAtivas = _turmaService.ContarAtivas();
+            var qtdCampus = await _campusService.ContarTotal();
+            var qtdSupervisoes = await _supervisaoService.ContarTotal();
+            var qtdLideres = await _usuariosService.ContarLideresAsync();
 
-            // Gráfico 1: Inscrições por mês (últimos 6 meses)
-            var inscricoes = await _inscricaoService.GetUltimosMesesAsync(6);
-            vm.InscricoesPorMes = inscricoes.Select(i => new InscricaoPorMes
-            {
-                MesAno = i.MesAno,
-                Total = i.Total
-            }).ToList();
 
-            // Gráfico 2: Matrículas por curso
+            var matriculasAtivas = await _matriculaService.ContarAtivas();
+
+            ViewBag.QtdCampus = qtdCampus;
+            ViewBag.QtdSupervisoes = qtdSupervisoes;
+            ViewBag.QtdLideres = qtdLideres;
+            ViewBag.QtdCasaisMatriculados = matriculasAtivas;
+
+            // Dados dos gráficos 
+            var inscricoesPorMes = await _inscricaoService.GetUltimosMesesAsync(6);
             var matriculasPorCurso = await _matriculaService.GetMatriculasPorCursoAsync();
-            vm.MatriculasPorCurso = matriculasPorCurso.Select(m => new MatriculasPorCurso
-            {
-                Curso = m.Curso,
-                Total = m.Total
-            }).ToList();
-
-            // Gráfico 3: Casais por campus
             var casaisPorCampus = await _casalService.GetCasaisPorCampusAsync();
-            vm.CasaisPorCampus = casaisPorCampus.Select(c => new CasaisPorCampus
+
+            // Montar ViewModel 
+            var vm = new DashboardViewModel
             {
-                Campus = c.Campus,
-                Total = c.Total
-            }).ToList();
+                TotalCasais = _casalService.ContarTotal(),
+                TotalInscricoes = _inscricaoService.ContarTotal(),
+                MatriculasAtivas = matriculasAtivas,
+                TurmasAtivas = _turmaService.ContarAtivas(),
+
+                InscricoesPorMes = inscricoesPorMes
+                    .Select(i => new InscricaoPorMes { MesAno = i.MesAno, Total = i.Total })
+                    .ToList(),
+
+                MatriculasPorCurso = matriculasPorCurso
+                    .Select(m => new MatriculasPorCurso { Curso = m.Curso, Total = m.Total })
+                    .ToList(),
+
+                CasaisPorCampus = casaisPorCampus
+                    .Select(c => new CasaisPorCampus { Campus = c.Campus, Total = c.Total })
+                    .ToList()
+            };
 
             return View(vm);
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+        public IActionResult Privacy() => View();
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View(new ErrorViewModel
+            {
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+            });
         }
     }
 }

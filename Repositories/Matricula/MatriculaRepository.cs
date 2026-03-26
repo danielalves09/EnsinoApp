@@ -65,9 +65,9 @@ public class MatriculaRepository : IMatriculaRepository
         }
     }
 
-    public int ContarAtivas()
+    public async Task<int> ContarAtivas()
     {
-        return _context.Matriculas.Count(m => m.Status == StatusMatricula.Ativa);
+        return await _context.Matriculas.CountAsync(m => m.Status == StatusMatricula.Ativa);
     }
 
     public bool ExisteMatriculaAtiva(int idCasal, int idTurma)

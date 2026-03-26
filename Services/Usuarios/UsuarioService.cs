@@ -48,4 +48,6 @@ public class UsuariosService : IUsuariosService
             return $"{partes[0]}"; // Primeiro nome
         return partes[0];
     }
+
+    public Task<int> ContarLideresAsync() => _usuarioRepository.ContarLideresAsync();
 }

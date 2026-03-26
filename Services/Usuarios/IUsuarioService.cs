@@ -11,4 +11,6 @@ public interface IUsuariosService
     IEnumerable<Usuario> findBySupervisao(int idSupervisao);
     public string GetNomeReduzido(string nome1, string nome2);
 
+    Task<int> ContarLideresAsync();
+
 }

@@ -9,4 +9,6 @@ public interface IUsuariosRepository
     IEnumerable<Usuario> FindByCampus(int idCampus);
     IEnumerable<Usuario> findBySupervisao(int idSupervisao);
 
+    Task<int> ContarLideresAsync();
+
 }

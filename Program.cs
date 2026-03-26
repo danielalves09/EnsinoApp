@@ -87,7 +87,7 @@ builder.Services.AddDbContextPool<EnsinoAppContext>(options =>
 );
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<INotificationService, NotificationService>();
+
 
 // [ADICIONADO] Compressão de resposta — reduz o tamanho dos dados enviados ao cliente externo
 builder.Services.AddResponseCompression(options =>
@@ -122,6 +122,7 @@ builder.Services.AddScoped<ICertificadoService, CertificadoService>();
 builder.Services.AddScoped<IPdfService, PdfService>();
 builder.Services.AddScoped<IRazorViewToStringRenderer, RazorViewToStringRenderer>();
 builder.Services.AddScoped<IUtilService, UtilService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 // Identity
 builder.Services.AddIdentity<Usuario, IdentityRole<int>>(options =>

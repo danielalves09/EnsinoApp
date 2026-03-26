@@ -9,7 +9,7 @@ public interface IMatriculaService
     Task UpdateAsync(Models.Entities.Matricula matricula);
     Task DeleteAsync(int id);
 
-    int ContarAtivas();
+    Task<int> ContarAtivas();
     void MatricularCasal(int idCasal, int idTurma);
     Task<IEnumerable<(string Curso, int Total)>> GetMatriculasPorCursoAsync();
     Task<bool> PodeConcluirCursoAsync(int idMatricula);

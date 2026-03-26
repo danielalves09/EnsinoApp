@@ -9,7 +9,7 @@ public interface IMatriculaRepository
     Task UpdateAsync(Models.Entities.Matricula matricula);
     Task DeleteAsync(int id);
 
-    int ContarAtivas();
+    Task<int> ContarAtivas();
     bool ExisteMatriculaAtiva(int idCasal, int idTurma);
 
     bool ExisteMatriculaAtivaPorCasal(int idCasal);

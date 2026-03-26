@@ -24,9 +24,9 @@ public class MatriculaService : IMatriculaService
     public Task UpdateAsync(Models.Entities.Matricula matricula) => _repository.UpdateAsync(matricula);
     public Task DeleteAsync(int id) => _repository.DeleteAsync(id);
 
-    public int ContarAtivas()
+    public async Task<int> ContarAtivas()
     {
-        return _repository.ContarAtivas();
+        return await _repository.ContarAtivas();
     }
 
     public void MatricularCasal(int idCasal, int idTurma)
