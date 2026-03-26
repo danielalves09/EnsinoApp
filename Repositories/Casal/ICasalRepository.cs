@@ -1,3 +1,4 @@
+using EnsinoApp.ViewModels.Casal;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace EnsinoApp.Repositories.Casal;
@@ -14,4 +15,6 @@ public interface ICasalRepository
     int ContarTotal();
     List<Models.Entities.Casal> ObterTodos();
     Task<IEnumerable<(string Campus, int Total)>> GetCasaisPorCampusAsync();
+
+    public List<CasalResumoViewModel> ObterResumoCasais();
 }

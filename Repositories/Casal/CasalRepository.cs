@@ -1,6 +1,8 @@
 
 
 using EnsinoApp.Data;
+using EnsinoApp.Models.Enums;
+using EnsinoApp.ViewModels.Casal;
 using Microsoft.EntityFrameworkCore;
 
 namespace EnsinoApp.Repositories.Casal;
@@ -71,6 +73,21 @@ public class CasalRepository : ICasalRepository
             .Select(g => new { Campus = g.Key, Total = g.Count() })
             .ToListAsync()
             .ContinueWith(t => t.Result.Select(x => (x.Campus, x.Total)));
+    }
+
+    public List<CasalResumoViewModel> ObterResumoCasais()
+    {
+        return _context.Casais
+            .AsNoTracking()
+            .OrderBy(c => c.NomeConjuge1)
+            .Select(c => new CasalResumoViewModel
+            {
+                Id = c.Id,
+                NomeCasal = c.NomeConjuge1 + " e " + c.NomeConjuge2,
+                PossuiMatriculaAtiva = c.Matriculas
+                    .Any(m => m.Status == StatusMatricula.Ativa)
+            })
+            .ToList();
     }
 
 }

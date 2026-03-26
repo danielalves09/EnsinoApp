@@ -34,14 +34,7 @@ public class CasalService : ICasalService
 
     public List<CasalResumoViewModel> ObterResumoCasais()
     {
-        var casais = _casalRepository.ObterTodos();
-
-        return casais.Select(c => new CasalResumoViewModel
-        {
-            Id = c.Id,
-            NomeCasal = $"{c.NomeConjuge1} e {c.NomeConjuge2}",
-            PossuiMatriculaAtiva = _matriculaRepository.ExisteMatriculaAtivaPorCasal(c.Id)
-        }).ToList();
+        return _casalRepository.ObterResumoCasais();
     }
 
     public async Task<IEnumerable<(string Campus, int Total)>> GetCasaisPorCampusAsync()
