@@ -4,7 +4,9 @@ namespace EnsinoApp.ViewModels.Usuario;
 
 public class UsuarioPerfilViewModel
 {
-    public string? Nome { get; set; } = null!;
+    public string Nome { get; set; } = null!;
+    public string? NomeMarido { get; set; } = null!;
+    public string? NomeEsposa { get; set; } = null!;
     public string? Email { get; set; } = null!;
     public string? FotoPerfilUrl { get; set; }
 

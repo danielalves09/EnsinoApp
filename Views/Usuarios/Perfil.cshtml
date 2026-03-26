@@ -214,9 +214,9 @@
                 <div class="perfil-sidebar ea-fade ea-fade-1">
                     <div class="perfil-sidebar-top">
                         <div class="perfil-avatar-wrap">
-                            <img id="fotoPerfil"                   class="perfil-avatar"
-                                 src="@(Model.FotoPerfilUrl ?? "../images/avatar-default.jpg")"              alt="Foto do usuário" />
-                            <button type="button"           class="perfil-avatar-btn"        data-toggle="modal" data-target="#modalFoto"
+                            <img id="fotoPerfil" class="perfil-avatar"
+                                 src="@(Model.FotoPerfilUrl ?? "../images/avatar-default.jpg")" alt="Foto do usuário" />
+                            <button type="button" class="perfil-avatar-btn" data-toggle="modal" data-target="#modalFoto"
                                     title="Alterar foto">
                                 <i class="fas fa-camera"></i>
                             </button>
@@ -271,8 +271,12 @@
                         <div class="tab-pane active" id="tab-dados">
                             <form asp-controller="Usuarios" asp-action="AtualizarDados" method="post">
                                 <div class="ea-field-group">
-                                    <label class="ea-field-label">Nome</label>
-                                    <input asp-for="Nome" class="ea-field-control" placeholder="Seu nome completo" />
+                                    <label class="ea-field-label">Nome Marido</label>
+                                    <input asp-for="NomeMarido" class="ea-field-control" placeholder="Nome do marido" />
+                                </div>
+                                <div class="ea-field-group">
+                                    <label class="ea-field-label">Nome Esposa</label>
+                                    <input asp-for="NomeEsposa" class="ea-field-control" placeholder="Nome da esposa" />
                                 </div>
                                 <div class="ea-field-group">
                                     <label class="ea-field-label">Email</label>
@@ -355,51 +359,51 @@
 
 @section Scripts {
     <script>
-            /* ── Tabs ── */
-            document.querySelectorAll('.perfil-tab-btn').forEach(btn => {
-                btn.addEventListener('click', function () {
-                    document.querySelectorAll('.perfil-tab-btn').forEach(b => b.classList.remove('active'));
-                    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-                    this.classList.add('active');
-                    document.getElementById('tab-' + this.dataset.tab).classList.add('active');
+        /* ── Tabs ── */
+        document.querySelectorAll('.perfil-tab-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.perfil-tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById('tab-' + this.dataset.tab).classList.add('active');
+            });
+        });
+
+        /* ── Cropper ── */
+        let cropper;
+        const inputImagem = document.getElementById('inputImagem');
+        const previewImagem = document.getElementById('previewImagem');
+        const btnSalvar = document.getElementById('btnSalvarFoto');
+
+        inputImagem.addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                previewImagem.src = event.target.result;
+                previewImagem.style.display = 'block';
+                if (cropper) cropper.destroy();
+                cropper = new Cropper(previewImagem, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    autoCropArea: 0.8,
+                    responsive: true,
+                    background: false,
+                    minContainerHeight: 260,
+                    maxContainerHeight: 300
                 });
-            });
+            };
+            reader.readAsDataURL(file);
+        });
 
-            /* ── Cropper ── */
-            let cropper;
-            const inputImagem = document.getElementById('inputImagem');
-            const previewImagem = document.getElementById('previewImagem');
-            const btnSalvar = document.getElementById('btnSalvarFoto');
-
-            inputImagem.addEventListener('change', function (e) {
-                const file = e.target.files[0];
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = function (event) {
-                    previewImagem.src = event.target.result;
-                    previewImagem.style.display = 'block';
-                    if (cropper) cropper.destroy();
-                    cropper = new Cropper(previewImagem, {
-                        aspectRatio: 1,
-                        viewMode: 1,
-                        autoCropArea: 0.8,
-                        responsive: true,
-                        background: false,
-                        minContainerHeight: 260,
-                        maxContainerHeight: 300
-                    });
-                };
-                reader.readAsDataURL(file);
+        btnSalvar.addEventListener('click', function () {
+            if (!cropper) return;
+            cropper.getCroppedCanvas({ width: 300, height: 300 }).toBlob(blob => {
+                const formData = new FormData();
+                formData.append('Foto', blob, 'foto.jpg');
+                fetch('/Usuarios/AlterarFoto', { method: 'POST', body: formData })
+                    .then(r => { if (r.ok) location.reload(); else alert('Erro ao salvar a foto'); });
             });
-
-            btnSalvar.addEventListener('click', function () {
-                if (!cropper) return;
-                cropper.getCroppedCanvas({ width: 300, height: 300 }).toBlob(blob => {
-                    const formData = new FormData();
-                    formData.append('Foto', blob, 'foto.jpg');
-                    fetch('/Usuarios/AlterarFoto', { method: 'POST', body: formData })
-                        .then(r => { if (r.ok) location.reload(); else alert('Erro ao salvar a foto'); });
-                });
-            });
+        });
     </script>
 }

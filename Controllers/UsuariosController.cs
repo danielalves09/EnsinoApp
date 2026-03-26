@@ -2,6 +2,7 @@ using EnsinoApp.Models.Entities;
 using EnsinoApp.Services.Campus;
 using EnsinoApp.Services.Notifications;
 using EnsinoApp.Services.Usuarios;
+using EnsinoApp.Services.Util;
 using EnsinoApp.ViewModels.Usuario;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -18,9 +19,11 @@ public class UsuariosController : Controller
     private readonly RoleManager<IdentityRole<int>> _roleManager;
     private readonly IWebHostEnvironment _env;
     private readonly INotificationService _notification;
+
+    private readonly IUtilService _utilService;
     private const int TAMANHO_PAGINA = 10;
 
-    public UsuariosController(UserManager<Usuario> userManager, RoleManager<IdentityRole<int>> roleManager, IUsuariosService usuarioService, IWebHostEnvironment env, INotificationService notification, SignInManager<Usuario> signInManager)
+    public UsuariosController(UserManager<Usuario> userManager, RoleManager<IdentityRole<int>> roleManager, IUsuariosService usuarioService, IWebHostEnvironment env, INotificationService notification, SignInManager<Usuario> signInManager, IUtilService utilService)
     {
         _userManager = userManager;
         _roleManager = roleManager;
@@ -28,6 +31,7 @@ public class UsuariosController : Controller
         _env = env;
         _notification = notification;
         _signInManager = signInManager;
+        _utilService = utilService;
     }
 
     [Authorize(Roles = "Admin,Pastor,Coordenador,Supervisor")]
@@ -132,7 +136,9 @@ public class UsuariosController : Controller
         var usuario = user != null ? _usuarioService.FindById(user.Id) : null;
         var model = new UsuarioPerfilViewModel
         {
-            Nome = user!.NomeMarido,
+            Nome = _utilService.GetNomeSobrenome(user!.NomeMarido, user.NomeEsposa),
+            NomeMarido = user.NomeMarido,
+            NomeEsposa = user.NomeEsposa,
             Email = user.Email,
             FotoPerfilUrl = user.FotoPerfil,
             Role = (await _userManager.GetRolesAsync(user)).FirstOrDefault() ?? "Não definida",
@@ -214,7 +220,8 @@ public class UsuariosController : Controller
 
         var user = await _userManager.GetUserAsync(User);
 
-        user.NomeMarido = model.Nome;
+        user.NomeMarido = model.NomeMarido ?? string.Empty;
+        user.NomeEsposa = model.NomeEsposa ?? string.Empty;
         user.Email = model.Email;
         user.UserName = model.Email;
 
