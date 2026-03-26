@@ -1,7 +1,9 @@
 using EnsinoApp.Data;
 using EnsinoApp.Models.Entities;
 using EnsinoApp.Models.Enums;
+using EnsinoApp.Repositories.Casal;
 using EnsinoApp.Repositories.Inscricao;
+using EnsinoApp.Repositories.Matricula;
 using EnsinoApp.ViewModels.Inscricao;
 
 namespace EnsinoApp.Services.Inscricao;
@@ -9,12 +11,17 @@ namespace EnsinoApp.Services.Inscricao;
 public class InscricaoOnlineService : IInscricaoOnlineService
 {
     private readonly IInscricaoOnlineRepository _repository;
+    private readonly ICasalRepository _casalRepository;
+
+    private readonly IMatriculaRepository _matriculaRepository;
     private readonly EnsinoAppContext _context;
 
-    public InscricaoOnlineService(IInscricaoOnlineRepository repository, EnsinoAppContext context)
+    public InscricaoOnlineService(IInscricaoOnlineRepository repository, EnsinoAppContext context, ICasalRepository casalRepository, IMatriculaRepository matriculaRepository)
     {
         _repository = repository;
         _context = context;
+        _casalRepository = casalRepository;
+        _matriculaRepository = matriculaRepository;
     }
 
     public Task<List<Models.Entities.InscricaoOnline>> FindAllAsync() => _repository.FindAllAsync();
@@ -49,8 +56,8 @@ public class InscricaoOnlineService : IInscricaoOnlineService
             Cep = inscricao.Cep,
             IdCampus = inscricao.IdCampus
         };
-        _context.Casais.Add(casal);
-        await _context.SaveChangesAsync();
+
+        _casalRepository.CreateAsync(casal).Wait();
 
 
         var matricula = new Models.Entities.Matricula
@@ -61,7 +68,8 @@ public class InscricaoOnlineService : IInscricaoOnlineService
             Status = StatusMatricula.Ativa,
             NomeGC = inscricao.NomeGC
         };
-        _context.Matriculas.Add(matricula);
+
+        _matriculaRepository.CreateAsync(matricula).Wait();
 
         // Marcar inscrição como processada
         inscricao.Processada = true;

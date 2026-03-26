@@ -10,8 +10,6 @@ namespace EnsinoApp.Data;
 
 public class EnsinoAppContext : IdentityDbContext<Usuario, IdentityRole<int>, int>
 {
-    // [ATUALIZADO] Construtor agora recebe DbContextOptions injetado pelo AddDbContextPool
-    // A configuração da connection string foi movida para o Program.cs
     public EnsinoAppContext(DbContextOptions<EnsinoAppContext> options) : base(options)
     {
     }
@@ -26,7 +24,7 @@ public class EnsinoAppContext : IdentityDbContext<Usuario, IdentityRole<int>, in
     public DbSet<RelatorioSemanal> Relatorios => Set<RelatorioSemanal>();
     public DbSet<InscricaoOnline> InscricoesOnline => Set<InscricaoOnline>();
 
-    // [REMOVIDO] OnConfiguring — configuração movida para Program.cs (necessário para AddDbContextPool)
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
