@@ -68,6 +68,8 @@ public class AuthController : Controller
 
             if (result.Succeeded)
             {
+                var roles = await _userManager.GetRolesAsync(user);
+
                 _logger.LogInformation(
                     "Login realizado com sucesso | UserId: {UserId} | Email: {Email}",
                     user.Id,
@@ -83,7 +85,7 @@ public class AuthController : Controller
                     return Redirect(returnUrl);
                 }
 
-                if (await _userManager.IsInRoleAsync(user, "Lider"))
+                if (roles.Contains("Lider"))
                 {
                     _logger.LogInformation(
                         "Redirecionando usuário para área de Líder | UserId: {UserId}",
@@ -93,9 +95,7 @@ public class AuthController : Controller
                 }
 
                 if (
-                    await _userManager.IsInRoleAsync(user, "Admin") ||
-                    await _userManager.IsInRoleAsync(user, "Pastor") ||
-                    await _userManager.IsInRoleAsync(user, "Coordenador")
+                    roles.Any(r => r is "Admin" or "Pastor" or "Coordenador")
                 )
                 {
                     _logger.LogInformation(
