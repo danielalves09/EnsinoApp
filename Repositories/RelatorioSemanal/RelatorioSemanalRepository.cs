@@ -14,7 +14,7 @@ public class RelatorioSemanalRepository : IRelatorioSemanalRepository
 
     public async Task<List<Models.Entities.Turma>> GetTurmasDoLiderAsync(int idUsuario)
     {
-        return await _context.Turmas
+        return await _context.Turmas.AsNoTracking()
             .Include(t => t.Curso)
             .ThenInclude(t => t.Licoes)
             .Include(t => t.Matriculas)
@@ -26,7 +26,7 @@ public class RelatorioSemanalRepository : IRelatorioSemanalRepository
 
     public async Task<List<Models.Entities.Matricula>> GetMatriculasPorTurmaAsync(int idTurma)
     {
-        return await _context.Matriculas
+        return await _context.Matriculas.AsNoTracking()
             .Include(m => m.Casal)
             .Where(m => m.IdTurma == idTurma)
             .ToListAsync();
@@ -34,7 +34,7 @@ public class RelatorioSemanalRepository : IRelatorioSemanalRepository
 
     public async Task<List<Models.Entities.RelatorioSemanal>> GetRelatoriosAsync(int idTurma)
     {
-        return await _context.Relatorios
+        return await _context.Relatorios.AsNoTracking()
             .Include(r => r.Matricula)
                 .ThenInclude(m => m.Casal)
             .Include(r => r.Licao)

@@ -42,7 +42,7 @@ public class SupervisaoRepository : ISupervisaoRepository
 
     public ICollection<Models.Entities.Supervisao> FindAll(string filtro)
     {
-        var supervisoesEncontradas = _context.Supervisoes.Where(c => c.Nome.Contains(filtro)).ToList();
+        var supervisoesEncontradas = _context.Supervisoes.AsNoTracking().Where(c => c.Nome.Contains(filtro)).ToList();
 
         return supervisoesEncontradas;
     }

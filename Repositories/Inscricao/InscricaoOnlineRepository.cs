@@ -16,7 +16,7 @@ public class InscricaoOnlineRepository : IInscricaoOnlineRepository
 
     public async Task<List<Models.Entities.InscricaoOnline>> FindAllAsync()
     {
-        return await _context.Set<InscricaoOnline>()
+        return await _context.Set<InscricaoOnline>().AsNoTracking()
             .Include(i => i.Campus)
             .Include(i => i.Curso)
             .ToListAsync();
@@ -24,7 +24,7 @@ public class InscricaoOnlineRepository : IInscricaoOnlineRepository
 
     public async Task<Models.Entities.InscricaoOnline?> FindByIdAsync(int id)
     {
-        return await _context.Set<InscricaoOnline>()
+        return await _context.Set<InscricaoOnline>().AsNoTracking()
             .Include(i => i.Campus)
             .Include(i => i.Curso)
             .FirstOrDefaultAsync(i => i.Id == id);
@@ -75,7 +75,9 @@ public class InscricaoOnlineRepository : IInscricaoOnlineRepository
                 Id = i.Id,
                 NomeCasal = $"{i.NomeMarido} e {i.NomeEsposa}",
                 Curso = i.Curso.Nome,
+                IdCurso = i.IdCurso,
                 Campus = i.Campus.Nome,
+                IdCampus = i.IdCampus,
                 DataInscricao = i.DataInscricao
             })
             .ToList();

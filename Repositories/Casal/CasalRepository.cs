@@ -23,7 +23,7 @@ public class CasalRepository : ICasalRepository
 
     public async Task<Models.Entities.Casal?> FindByIdAsync(int id)
     {
-        return await _context.Casais
+        return await _context.Casais.AsNoTracking()
             .FirstOrDefaultAsync(m => m.Id == id);
     }
 
@@ -58,18 +58,17 @@ public class CasalRepository : ICasalRepository
 
     public List<Models.Entities.Casal> ObterTodos()
     {
-        return _context.Casais
+        return _context.Casais.AsNoTracking()
                 .OrderBy(c => c.NomeConjuge1)
                 .ToList();
     }
 
     public async Task<IEnumerable<(string Campus, int Total)>> GetCasaisPorCampusAsync()
     {
-        return await _context.Casais
+        return await _context.Casais.AsNoTracking()
             .Include(c => c.Campus)
             .GroupBy(c => c.Campus.Nome)
             .Select(g => new { Campus = g.Key, Total = g.Count() })
-            .AsNoTracking()
             .ToListAsync()
             .ContinueWith(t => t.Result.Select(x => (x.Campus, x.Total)));
     }

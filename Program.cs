@@ -29,6 +29,7 @@ using EnsinoApp.Services.Turmas;
 using EnsinoApp.Services.Usuarios;
 using EnsinoApp.Services.Util;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -46,10 +47,9 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Host.UseSerilog();
+//builder.Host.UseSerilog();
 
 // ================= CARREGAR DLLS NATIVAS DINKTOPDF ==================
-// Define o caminho das DLLs dependendo do SO
 string nativeLibPath;
 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
     nativeLibPath = Path.Combine(AppContext.BaseDirectory, "libwkhtmltox.dll");
@@ -59,32 +59,42 @@ else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
     nativeLibPath = Path.Combine(AppContext.BaseDirectory, "libwkhtmltox.dylib");
 else
     throw new PlatformNotSupportedException("Sistema operacional não suportado para DinkToPdf");
-/* 
-var wkhtmlPath = Path.Combine(
-    builder.Environment.ContentRootPath,
-    "libwkhtmltox.dll"
-); */
 
-// Carrega DLL nativa
 var context = new CustomAssemblyLoadContext();
-context.LoadUnmanagedLibrary(nativeLibPath);
+//context.LoadUnmanagedLibrary(nativeLibPath);
 
 
 // ==================== DATA PROTECTION - IIS =====================
-var keysFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "EnsinoApp", "Keys");
+/* var keysFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "EnsinoApp", "Keys");
 Directory.CreateDirectory(keysFolder);
 
 builder.Services.AddDataProtection()
    .PersistKeysToFileSystem(new DirectoryInfo(keysFolder))
-   .SetApplicationName("EnsinoApp");
+   .SetApplicationName("EnsinoApp"); */
 
 
 // =================== SERVIÇOS E DEPENDÊNCIAS =====================
 builder.Services.AddControllersWithViews();
-builder.Services.AddDbContext<EnsinoAppContext>();
+// [ATUALIZADO] AddDbContextPool reutiliza conexões entre requisições (mais performático que AddDbContext)
+builder.Services.AddDbContextPool<EnsinoAppContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("EnsinoAppConnection"),
+        sqlOptions =>
+        {
+            sqlOptions.CommandTimeout(30);
+            sqlOptions.EnableRetryOnFailure(3);
+        }
+    )
+);
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+
+// [ADICIONADO] Compressão de resposta — reduz o tamanho dos dados enviados ao cliente externo
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+});
 
 // Repositories
 builder.Services.AddScoped<ICampusRepository, CampusRepository>();
@@ -144,26 +154,40 @@ builder.WebHost.ConfigureKestrel(options =>
 var app = builder.Build();
 
 // ======== PIPELINE DE MIDDLEWARE ==========
+
+// [ATUALIZADO] ForwardedHeaders configurado para confiar no IIS como proxy reverso local
+// Com IP fixo, liberamos apenas a rede interna como proxy confiável (mais seguro)
+/* var forwardedOptions = new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+};
+// Remove as restrições padrão
+forwardedOptions.KnownNetworks.Clear();
+forwardedOptions.KnownProxies.Clear();
+//IP interno do servidor onde o IIS está rodando
+forwardedOptions.KnownProxies.Add(System.Net.IPAddress.Parse("192.168.1.12"));
+app.UseForwardedHeaders(forwardedOptions);
+ */
+// [MOVIDO] ExceptionMiddleware deve ser o primeiro da fila para capturar todos os erros
+app.UseMiddleware<ExceptionMiddleware>();
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    //app.UseHsts();
+    // app.UseHsts(); — mantido comentado, reativar quando tiver domínio com HTTPS
 }
 
-//app.UseHttpsRedirection();
+// app.UseHttpsRedirection(); — mantido comentado, reativar quando tiver domínio com HTTPS
+
+// [ADICIONADO] Compressão deve vir antes dos arquivos estáticos e do routing
+app.UseResponseCompression();
+
+// [RESTAURADO] UseStaticFiles é necessário para o pipeline do ASP.NET atrás do IIS
 app.UseStaticFiles();
 app.UseRouting();
 
-app.UseMiddleware<ExceptionMiddleware>();
-
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.MapStaticAssets();
-
-// app.MapControllerRoute(
-//     name: "default",
-//     pattern: "{controller=Home}/{action=Index}/{id?}")
 
 app.MapControllerRoute(
     name: "default",

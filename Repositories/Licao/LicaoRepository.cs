@@ -37,7 +37,7 @@ public class LicaoRepository : ILicaoRepository
 
     public async Task<IEnumerable<Models.Entities.Licao>> FindByCursoAsync(int cursoId)
     {
-        return await _context.Licoes
+        return await _context.Licoes.AsNoTracking()
                 .Where(l => l.IdCurso == cursoId)
                 .OrderBy(l => l.NumeroSemana)
                 .ToListAsync();
@@ -46,12 +46,12 @@ public class LicaoRepository : ILicaoRepository
 
     public async Task<Models.Entities.Licao> FindByIdAsync(int id)
     {
-        return await _context.Licoes.FirstOrDefaultAsync(l => l.Id == id);
+        return await _context.Licoes.AsNoTracking().FirstOrDefaultAsync(l => l.Id == id);
     }
 
     public async Task<ICollection<Models.Entities.Licao>> GetByCursoAsync(int cursoId)
     {
-        return await _context.Licoes
+        return await _context.Licoes.AsNoTracking()
                .Where(l => l.IdCurso == cursoId)
                .OrderBy(l => l.NumeroSemana)
                .ToListAsync();

@@ -18,17 +18,16 @@ public class TurmaRepository : ITurmaRepository
 
     public ICollection<Turma> FindAll()
     {
-        return _context.Turmas
+        return _context.Turmas.AsNoTracking()
              .Include(t => t.Curso)
              .Include(t => t.Campus)
              .Include(t => t.Lider)
-             .AsNoTracking()
              .ToList();
     }
 
     public Turma? FindById(int id)
     {
-        return _context.Turmas
+        return _context.Turmas.AsNoTracking()
             .Include(t => t.Curso)
             .ThenInclude(t => t.Licoes)
             .Include(t => t.Campus)
@@ -62,12 +61,12 @@ public class TurmaRepository : ITurmaRepository
 
     public int ContarAtivas()
     {
-        return _context.Turmas.Count(t => t.Status == StatusTurma.EmAndamento);
+        return _context.Turmas.AsNoTracking().Count(t => t.Status == StatusTurma.EmAndamento);
     }
 
     public List<TurmaResumoViewModel> ObterTurmasAtivasResumo()
     {
-        return _context.Turmas
+        return _context.Turmas.AsNoTracking()
             .Where(t => t.Status == StatusTurma.EmAndamento)
             .Select(t => new TurmaResumoViewModel
             {
@@ -81,7 +80,7 @@ public class TurmaRepository : ITurmaRepository
 
     public async Task<IEnumerable<Turma>> FindAllAtivasAsync(int idCurso)
     {
-        return await _context.Turmas
+        return await _context.Turmas.AsNoTracking()
                 .Include(t => t.Curso)
                 .Include(t => t.Lider)
                 .Where(t => t.IdCurso == idCurso && t.Status == Models.Enums.StatusTurma.Acomecar)

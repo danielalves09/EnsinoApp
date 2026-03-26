@@ -16,7 +16,7 @@ public class UsuariosRepository : IUsuariosRepository
 
     public IEnumerable<Usuario> FindAll()
     {
-        return _context.Users
+        return _context.Users.AsNoTracking()
             .Include(u => u.Campus)
             .Include(u => u.Supervisao)
             .ToList();
@@ -24,7 +24,7 @@ public class UsuariosRepository : IUsuariosRepository
 
     public IEnumerable<Usuario> FindByCampus(int idCampus)
     {
-        return _context.Users
+        return _context.Users.AsNoTracking()
            .Include(u => u.Campus)
            .Where(u => u.IdCampus == idCampus)
            .ToList();
@@ -32,7 +32,7 @@ public class UsuariosRepository : IUsuariosRepository
 
     public IEnumerable<Usuario> findBySupervisao(int idSupervisao)
     {
-        return _context.Users
+        return _context.Users.AsNoTracking()
             .Include(u => u.Supervisao)
             .Where(u => u.IdSupervisao == idSupervisao)
             .ToList();
@@ -40,7 +40,7 @@ public class UsuariosRepository : IUsuariosRepository
 
     public Usuario? FindById(int id)
     {
-        return _context.Users
+        return _context.Users.AsNoTracking()
             .Include(u => u.Campus)
             .Include(u => u.Supervisao)
             .FirstOrDefault(u => u.Id == id);

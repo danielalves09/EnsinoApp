@@ -43,7 +43,7 @@ public class CampusRepository : ICampusRepository
 
     public ICollection<Models.Entities.Campus> FindAll(string filtro)
     {
-        var campusEncontrados = _context.Campuses.Where(c => c.Nome.Contains(filtro)).ToList();
+        var campusEncontrados = _context.Campuses.AsNoTracking().Where(c => c.Nome.Contains(filtro)).ToList();
 
         return campusEncontrados;
     }

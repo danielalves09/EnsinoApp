@@ -15,7 +15,7 @@ public class MatriculaRepository : IMatriculaRepository
 
     public async Task<List<Models.Entities.Matricula>> FindAllAsync()
     {
-        return await _context.Matriculas
+        return await _context.Matriculas.AsNoTracking()
             .Include(m => m.Casal)
             .Include(m => m.Turma)
             .ThenInclude(t => t.Curso)
@@ -26,7 +26,7 @@ public class MatriculaRepository : IMatriculaRepository
 
     public async Task<Models.Entities.Matricula?> FindByIdAsync(int id)
     {
-        return await _context.Matriculas
+        return await _context.Matriculas.AsNoTracking()
             .Include(m => m.Casal)
             .Include(m => m.Turma)
             .ThenInclude(t => t.Curso)
@@ -37,7 +37,7 @@ public class MatriculaRepository : IMatriculaRepository
 
     public async Task<List<Models.Entities.Matricula>> FindByTurmaAsync(int idTurma)
     {
-        return await _context.Matriculas
+        return await _context.Matriculas.AsNoTracking()
             .Include(m => m.Casal)
             .Include(m => m.Turma)
             .Where(m => m.IdTurma == idTurma)
@@ -101,13 +101,13 @@ public class MatriculaRepository : IMatriculaRepository
 
     public async Task<int> GetTotalRelatoriosAsync(int idMatricula)
     {
-        return await _context.Relatorios
+        return await _context.Relatorios.AsNoTracking()
             .Where(r => r.IdMatricula == idMatricula)
             .CountAsync();
     }
     public async Task<int> GetTotalLicoesDoCursoAsync(int idMatricula)
     {
-        return await _context.Matriculas
+        return await _context.Matriculas.AsNoTracking()
             .Where(m => m.Id == idMatricula)
             .Select(m => m.Turma.Curso.Licoes.Count)
             .FirstOrDefaultAsync();
@@ -154,7 +154,7 @@ public class MatriculaRepository : IMatriculaRepository
         if (string.IsNullOrWhiteSpace(codigo))
             return null;
 
-        return await _context.Matriculas
+        return await _context.Matriculas.AsNoTracking()
             .Include(m => m.Casal)
             .Include(m => m.Turma)
                 .ThenInclude(t => t.Curso)

@@ -1,6 +1,8 @@
 using EnsinoApp.Models.Entities;
 using EnsinoApp.Models.Enums;
+using EnsinoApp.Services.Campus;
 using EnsinoApp.Services.Casal;
+using EnsinoApp.Services.Cursos;
 using EnsinoApp.Services.Inscricao;
 using EnsinoApp.Services.Matricula;
 using EnsinoApp.Services.Turmas;
@@ -19,20 +21,39 @@ public class MatriculaController : Controller
     private readonly IMatriculaService _matriculaService;
     private readonly ITurmaService _turmaService;
 
+    private readonly ICursoService _cursoService;
+    private readonly ICampusService _campusService;
     public MatriculaController(
             ICasalService casalService,
             IInscricaoOnlineService inscricaoService,
             IMatriculaService matriculaService,
-            ITurmaService turmaService)
+            ITurmaService turmaService,
+            ICursoService cursoService,
+            ICampusService campusService)
     {
         _casalService = casalService;
         _inscricaoService = inscricaoService;
         _matriculaService = matriculaService;
         _turmaService = turmaService;
+        _cursoService = cursoService;
+        _campusService = campusService;
     }
 
-    public IActionResult Index()
+    public IActionResult Index(int? idCurso, int? idCampus)
     {
+
+        ViewBag.Cursos = new SelectList(_cursoService.FindAll(), "Id", "Nome", idCurso);
+        ViewBag.Campuses = new SelectList(_campusService.FindAll(), "Id", "Nome", idCampus);
+
+        var listaInscricoesPendentes = _inscricaoService.ObterPendentesResumo();
+
+        if (idCurso.HasValue)
+            listaInscricoesPendentes = listaInscricoesPendentes.Where(i => i.IdCurso == idCurso.Value).ToList();
+
+        if (idCampus.HasValue)
+            listaInscricoesPendentes = listaInscricoesPendentes.Where(i => i.IdCampus == idCampus.Value).ToList();
+
+
         var dashboard = new MatriculaDashboardViewModel
         {
             TotalCasais = _casalService.ContarTotal(),
@@ -41,7 +62,7 @@ public class MatriculaController : Controller
             MatriculasAtivas = _matriculaService.ContarAtivas(),
             TurmasAtivas = _turmaService.ContarAtivas(),
 
-            InscricoesPendentesLista = _inscricaoService.ObterPendentesResumo(),
+            InscricoesPendentesLista = listaInscricoesPendentes,
             Casais = _casalService.ObterResumoCasais(),
             Turmas = _turmaService.ObterResumoTurmasAtivas()
         };

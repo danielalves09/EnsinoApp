@@ -53,19 +53,18 @@ public class CursoRepository : ICursoRepository
 
     public IEnumerable<Curso> FindAllDashboard()
     {
-        return _context.Cursos
+        return _context.Cursos.AsNoTracking()
                 .Include(c => c.Campus)
                 .Include(c => c.Turmas)
                     .ThenInclude(t => t.Lider)
                 .Include(c => c.Turmas)
                     .ThenInclude(t => t.Matriculas)
                         .ThenInclude(m => m.Casal)
-                .AsNoTracking()
                 .ToList();
     }
     public Curso? FindByIdDashboard(int id)
     {
-        return _context.Cursos
+        return _context.Cursos.AsNoTracking()
                 .Include(c => c.Campus)
                 .Include(c => c.Turmas)
                     .ThenInclude(t => t.Lider)
