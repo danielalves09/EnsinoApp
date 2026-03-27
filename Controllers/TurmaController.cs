@@ -1,7 +1,9 @@
 using EnsinoApp.Models.Entities;
 using EnsinoApp.Models.Enums;
+using EnsinoApp.Services.Agenda;
 using EnsinoApp.Services.Campus;
 using EnsinoApp.Services.Cursos;
+using EnsinoApp.Services.Licao;
 using EnsinoApp.Services.Lider;
 using EnsinoApp.Services.Notifications;
 using EnsinoApp.Services.Turmas;
@@ -22,11 +24,14 @@ public class TurmaController : Controller
 
     private readonly ILiderService _liderService;
 
+    private readonly IAgendaService _agendaService;
+    private readonly ILicaoService _licaoService;
+
     private readonly IUtilService _utilService;
 
     private readonly INotificationService _notification;
 
-    public TurmaController(ITurmaService turmaService, ICursoService cursoService, ICampusService campusService, ILiderService liderService, INotificationService notification, IUtilService utilService)
+    public TurmaController(ITurmaService turmaService, ICursoService cursoService, ICampusService campusService, ILiderService liderService, INotificationService notification, IUtilService utilService, IAgendaService agendaService, ILicaoService licaoService)
     {
         _turmaService = turmaService;
         _cursoService = cursoService;
@@ -34,6 +39,8 @@ public class TurmaController : Controller
         _liderService = liderService;
         _notification = notification;
         _utilService = utilService;
+        _agendaService = agendaService;
+        _licaoService = licaoService;
     }
 
     /*public IActionResult Index()
@@ -120,6 +127,44 @@ public class TurmaController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Adicionar(TurmaViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var turma = new Turma
+        {
+            IdCurso = model.IdCurso,
+            IdCampus = model.IdCampus,
+            IdLider = model.IdLider,
+            DataInicio = model.DataInicio,
+            DataFim = model.DataFim,
+            Status = model.Status,
+            DiaSemana = model.DiaSemana
+        };
+
+        _turmaService.Create(turma);
+
+        // ── Geração automática da agenda ─────────────────────────────────────────
+        // Busca as lições do curso para gerar as datas
+        var licoes = await _licaoService.FindByCursoAsync(turma.IdCurso);
+
+        if (licoes.Any())
+        {
+            await _agendaService.GerarAgendaAsync(turma, licoes);
+            _notification.Success("Turma criada e agenda gerada automaticamente!");
+        }
+        else
+        {
+            _notification.Info("Turma criada. Adicione lições ao curso para gerar a agenda.");
+        }
+        // ─────────────────────────────────────────────────────────────────────────
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    /* [HttpPost]
+    [ValidateAntiForgeryToken]
     public IActionResult Adicionar(TurmaViewModel model)
     {
         if (!ModelState.IsValid)
@@ -137,7 +182,7 @@ public class TurmaController : Controller
 
         _turmaService.Create(turma);
         return RedirectToAction(nameof(Index));
-    }
+    } */
 
     public async Task<IActionResult> Relatorios(int idTurma)
     {

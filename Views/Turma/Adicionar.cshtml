@@ -94,6 +94,23 @@
                                                         class="ea-field-control"></select>
                                                 <span asp-validation-for="Status" class="ea-field-error"></span>
                                             </div>
+                                            <div class="ea-field-group">
+                                                <label class="ea-field-label">Dia da Semana</label>
+                                                <select asp-for="DiaSemana" class="ea-field-control">
+                                                    <option value="0">Domingo</option>
+                                                    <option value="1">Segunda-feira</option>
+                                                    <option value="2">Terça-feira</option>
+                                                    <option value="3">Quarta-feira</option>
+                                                    <option value="4">Quinta-feira</option>
+                                                    <option value="5">Sexta-feira</option>
+                                                    <option value="6" selected>Sábado</option>
+                                                </select>
+                                                <span asp-validation-for="DiaSemana" class="ea-field-error"></span>
+                                                <p style="font-size:.72rem;color:var(--gray-400);margin:4px 0 0">
+                                                    <i class="fas fa-info-circle" style="margin-right:3px"></i>
+                                                    A agenda será gerada automaticamente com base neste dia da semana e na data de início.
+                                                </p>
+                                            </div>
                                         </div>
                                         <div class="ea-form-footer">
                                             <a asp-action="Index" class="ea-btn-action cancel"><i class="fas fa-times"></i> Cancelar</a>
@@ -186,38 +203,38 @@
 
                                     @section Scripts {
                                         <script>
-                                                                                    function buscarCampus() {
-                                                                                        var f = $("#TxtFiltroCampus").val().trim(); if (!f.length) return;
-                                                                                        $.getJSON("/Campus/Buscar?filtro=" + f, function (r) {
-                                                                                            $("#DivMensagemCampus").addClass("d-none");
-                                                                                            if (r.length) {
-                                                                                                $("#TbCampus tbody").html(r.map(p => "<tr data-id='" + p.id + "'><td>" + p.nome + "</td></tr>").join(""));
-                                                                                                $("#TbCampus tbody tr").click(function () { $("#IdCampus").val($(this).data("id")); $("#NomeCampus").val($(this).find("td:first").text()); $("#ModalCampus").modal("hide"); });
-                                                                                            } else { $("#TbCampus tbody").html(""); $("#DivMensagemCampus").removeClass("d-none"); }
-                                                                                        });
-                                                                                    }
-                                                                                    function buscarCurso() {
-                                                                                        var f = $("#TxtFiltroCurso").val().trim(); if (!f.length) return;
-                                                                                        $.getJSON("/Curso/Buscar?filtro=" + f + "&campusId=" + $("#IdCampus").val().trim(), function (r) {
-                                                                                            $("#DivMensagemCurso").addClass("d-none");
-                                                                                            if (r.length) {
-                                                                                                $("#TbCurso tbody").html(r.map(p => "<tr data-id='" + p.id + "'><td>" + p.nome + "</td><td>" + p.nomeCampus + "</td></tr>").join(""));
-                                                                                                $("#TbCurso tbody tr").click(function () { $("#IdCurso").val($(this).data("id")); $("#NomeCurso").val($(this).find("td:first").text()); $("#ModalCurso").modal("hide"); });
-                                                                                            } else { $("#TbCurso tbody").html(""); $("#DivMensagemCurso").removeClass("d-none"); }
-                                                                                        });
-                                                                                    }
-                                                                                    function buscarUsuario() {
-                                                                                        var f = $("#TxtFiltroUsuario").val().trim(); if (!f.length) return;
-                                                                                        $.getJSON("/usuarios/buscar?filtro=" + encodeURIComponent(f), function (r) {
-                                                                                            if (r.length) {
-                                                                                                $("#TbUsuario tbody").html(r.map(u => "<tr data-id='" + u.id + "' data-nome='" + u.nome + "'><td>" + u.nome + "</td><td>" + u.email + "</td><td>" + u.nomeCampus + "</td></tr>").join(""));
-                                                                                                $("#TbUsuario tbody tr").click(function () { $("#IdLider").val($(this).data("id")); $("#NomeLider").val($(this).data("nome")); $("#modalUsuario").modal("hide"); });
-                                                                                                $("#TbUsuario").removeClass("d-none"); $("#DivMensagemUsuario").addClass("d-none");
-                                                                                            } else { $("#TbUsuario").addClass("d-none"); $("#DivMensagemUsuario").removeClass("d-none"); }
-                                                                                        });
-                                                                                    }
-                                                                                    $("#TxtFiltroCampus").on("keyup", buscarCampus);
-                                                                                    $("#TxtFiltroCurso").on("keyup", buscarCurso);
-                                                                                    $("#TxtFiltroUsuario").on("keyup", buscarUsuario);
+                                            function buscarCampus() {
+                                                var f = $("#TxtFiltroCampus").val().trim(); if (!f.length) return;
+                                                $.getJSON("/Campus/Buscar?filtro=" + f, function (r) {
+                                                    $("#DivMensagemCampus").addClass("d-none");
+                                                    if (r.length) {
+                                                        $("#TbCampus tbody").html(r.map(p => "<tr data-id='" + p.id + "'><td>" + p.nome + "</td></tr>").join(""));
+                                                        $("#TbCampus tbody tr").click(function () { $("#IdCampus").val($(this).data("id")); $("#NomeCampus").val($(this).find("td:first").text()); $("#ModalCampus").modal("hide"); });
+                                                    } else { $("#TbCampus tbody").html(""); $("#DivMensagemCampus").removeClass("d-none"); }
+                                                });
+                                            }
+                                            function buscarCurso() {
+                                                var f = $("#TxtFiltroCurso").val().trim(); if (!f.length) return;
+                                                $.getJSON("/Curso/Buscar?filtro=" + f + "&campusId=" + $("#IdCampus").val().trim(), function (r) {
+                                                    $("#DivMensagemCurso").addClass("d-none");
+                                                    if (r.length) {
+                                                        $("#TbCurso tbody").html(r.map(p => "<tr data-id='" + p.id + "'><td>" + p.nome + "</td><td>" + p.nomeCampus + "</td></tr>").join(""));
+                                                        $("#TbCurso tbody tr").click(function () { $("#IdCurso").val($(this).data("id")); $("#NomeCurso").val($(this).find("td:first").text()); $("#ModalCurso").modal("hide"); });
+                                                    } else { $("#TbCurso tbody").html(""); $("#DivMensagemCurso").removeClass("d-none"); }
+                                                });
+                                            }
+                                            function buscarUsuario() {
+                                                var f = $("#TxtFiltroUsuario").val().trim(); if (!f.length) return;
+                                                $.getJSON("/usuarios/buscar?filtro=" + encodeURIComponent(f), function (r) {
+                                                    if (r.length) {
+                                                        $("#TbUsuario tbody").html(r.map(u => "<tr data-id='" + u.id + "' data-nome='" + u.nome + "'><td>" + u.nome + "</td><td>" + u.email + "</td><td>" + u.nomeCampus + "</td></tr>").join(""));
+                                                        $("#TbUsuario tbody tr").click(function () { $("#IdLider").val($(this).data("id")); $("#NomeLider").val($(this).data("nome")); $("#modalUsuario").modal("hide"); });
+                                                        $("#TbUsuario").removeClass("d-none"); $("#DivMensagemUsuario").addClass("d-none");
+                                                    } else { $("#TbUsuario").addClass("d-none"); $("#DivMensagemUsuario").removeClass("d-none"); }
+                                                });
+                                            }
+                                            $("#TxtFiltroCampus").on("keyup", buscarCampus);
+                                            $("#TxtFiltroCurso").on("keyup", buscarCurso);
+                                            $("#TxtFiltroUsuario").on("keyup", buscarUsuario);
                                         </script>
                                     }

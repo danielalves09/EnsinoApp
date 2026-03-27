@@ -84,7 +84,7 @@ namespace EnsinoApp.Data.Migrations
                     Status = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     Rua = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Numero = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Complemento = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Complemento = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Bairro = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Cidade = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Estado = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -144,6 +144,49 @@ namespace EnsinoApp.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "InscricoesOnline",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    NomeMarido = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NomeEsposa = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TelefoneMarido = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    TelefoneEsposa = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    EmailMarido = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    EmailEsposa = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Rua = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Numero = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Complemento = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Bairro = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Cidade = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Estado = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Cep = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IdCampus = table.Column<int>(type: "int", nullable: false),
+                    IdCurso = table.Column<int>(type: "int", nullable: false),
+                    ParticipaGC = table.Column<bool>(type: "bit", nullable: false),
+                    NomeGC = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    DataInscricao = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Processada = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InscricoesOnline", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_InscricoesOnline_Campuses_IdCampus",
+                        column: x => x.IdCampus,
+                        principalTable: "Campuses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_InscricoesOnline_Cursos_IdCurso",
+                        column: x => x.IdCurso,
+                        principalTable: "Cursos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Licoes",
                 columns: table => new
                 {
@@ -178,6 +221,7 @@ namespace EnsinoApp.Data.Migrations
                     IdSupervisao = table.Column<int>(type: "int", nullable: true),
                     Ativo = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     DataCriacao = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    FotoPerfil = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -306,7 +350,8 @@ namespace EnsinoApp.Data.Migrations
                     IdLider = table.Column<int>(type: "int", nullable: false),
                     DataInicio = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DataFim = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 0)
+                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    DiaSemana = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -332,6 +377,37 @@ namespace EnsinoApp.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AgendaLicoes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    IdTurma = table.Column<int>(type: "int", nullable: false),
+                    IdLicao = table.Column<int>(type: "int", nullable: false),
+                    DataAula = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DiaSemana = table.Column<int>(type: "int", nullable: false),
+                    Local = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true),
+                    Observacoes = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    LembreteEnviado = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AgendaLicoes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AgendaLicoes_Licoes_IdLicao",
+                        column: x => x.IdLicao,
+                        principalTable: "Licoes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_AgendaLicoes_Turmas_IdTurma",
+                        column: x => x.IdTurma,
+                        principalTable: "Turmas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Matriculas",
                 columns: table => new
                 {
@@ -341,6 +417,9 @@ namespace EnsinoApp.Data.Migrations
                     IdTurma = table.Column<int>(type: "int", nullable: false),
                     DataMatricula = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DataConclusao = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CertificadoEmitido = table.Column<bool>(type: "bit", nullable: false),
+                    CaminhoCertificado = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CodigoValidacao = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     NomeGC = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false)
                 },
@@ -397,6 +476,22 @@ namespace EnsinoApp.Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AgendaLicoes_DataAula_LembreteEnviado",
+                table: "AgendaLicoes",
+                columns: new[] { "DataAula", "LembreteEnviado" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AgendaLicoes_IdLicao",
+                table: "AgendaLicoes",
+                column: "IdLicao");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AgendaLicoes_IdTurma_IdLicao",
+                table: "AgendaLicoes",
+                columns: new[] { "IdTurma", "IdLicao" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -470,6 +565,28 @@ namespace EnsinoApp.Data.Migrations
                 column: "IdCampus");
 
             migrationBuilder.CreateIndex(
+                name: "IX_InscricoesOnline_EmailEsposa",
+                table: "InscricoesOnline",
+                column: "EmailEsposa",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_InscricoesOnline_EmailMarido",
+                table: "InscricoesOnline",
+                column: "EmailMarido",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_InscricoesOnline_IdCampus",
+                table: "InscricoesOnline",
+                column: "IdCampus");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_InscricoesOnline_IdCurso",
+                table: "InscricoesOnline",
+                column: "IdCurso");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Licoes_IdCurso",
                 table: "Licoes",
                 column: "IdCurso");
@@ -525,6 +642,9 @@ namespace EnsinoApp.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "AgendaLicoes");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
             migrationBuilder.DropTable(
@@ -538,6 +658,9 @@ namespace EnsinoApp.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "InscricoesOnline");
 
             migrationBuilder.DropTable(
                 name: "RelatoriosSemanais");

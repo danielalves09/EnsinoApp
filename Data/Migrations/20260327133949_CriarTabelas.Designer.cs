@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EnsinoApp.Data.Migrations
 {
     [DbContext(typeof(EnsinoAppContext))]
-    [Migration("20260214182905_camposMatricula")]
-    partial class camposMatricula
+    [Migration("20260327133949_CriarTabelas")]
+    partial class CriarTabelas
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,51 @@ namespace EnsinoApp.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("EnsinoApp.Models.Entities.AgendaLicao", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DataAula")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DiaSemana")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdLicao")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdTurma")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("LembreteEnviado")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Local")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("Observacoes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdLicao");
+
+                    b.HasIndex("DataAula", "LembreteEnviado");
+
+                    b.HasIndex("IdTurma", "IdLicao")
+                        .IsUnique();
+
+                    b.ToTable("AgendaLicoes", (string)null);
+                });
 
             modelBuilder.Entity("EnsinoApp.Models.Entities.Campus", b =>
                 {
@@ -93,7 +138,6 @@ namespace EnsinoApp.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Complemento")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("EmailConjuge1")
@@ -321,6 +365,9 @@ namespace EnsinoApp.Data.Migrations
                     b.Property<bool>("CertificadoEmitido")
                         .HasColumnType("bit");
 
+                    b.Property<string>("CodigoValidacao")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("DataConclusao")
                         .HasColumnType("datetime2");
 
@@ -427,6 +474,9 @@ namespace EnsinoApp.Data.Migrations
                     b.Property<DateTime>("DataInicio")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("DiaSemana")
+                        .HasColumnType("int");
+
                     b.Property<int>("IdCampus")
                         .HasColumnType("int");
 
@@ -481,6 +531,9 @@ namespace EnsinoApp.Data.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("FotoPerfil")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("IdCampus")
                         .HasColumnType("int");
@@ -677,6 +730,25 @@ namespace EnsinoApp.Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("EnsinoApp.Models.Entities.AgendaLicao", b =>
+                {
+                    b.HasOne("EnsinoApp.Models.Entities.Licao", "Licao")
+                        .WithMany()
+                        .HasForeignKey("IdLicao")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("EnsinoApp.Models.Entities.Turma", "Turma")
+                        .WithMany("Agenda")
+                        .HasForeignKey("IdTurma")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Licao");
+
+                    b.Navigation("Turma");
                 });
 
             modelBuilder.Entity("EnsinoApp.Models.Entities.Casal", b =>
@@ -926,6 +998,8 @@ namespace EnsinoApp.Data.Migrations
 
             modelBuilder.Entity("EnsinoApp.Models.Entities.Turma", b =>
                 {
+                    b.Navigation("Agenda");
+
                     b.Navigation("Matriculas");
                 });
 

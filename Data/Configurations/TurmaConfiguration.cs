@@ -31,6 +31,9 @@ public class TurmaConfiguration : IEntityTypeConfiguration<Turma>
                      .HasForeignKey(t => t.IdLider)
                      .OnDelete(DeleteBehavior.Restrict);
 
-
+              builder.HasMany(t => t.Agenda)
+              .WithOne(a => a.Turma)
+              .HasForeignKey(a => a.IdTurma)
+              .OnDelete(DeleteBehavior.Cascade);
        }
 }

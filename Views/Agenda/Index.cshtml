@@ -1,0 +1,272 @@
+@model IEnumerable<EnsinoApp.ViewModels.Agenda.AgendaLicaoViewModel>
+@{
+    ViewData["Title"] = "Agenda da Turma";
+    var idTurma = ViewBag.IdTurma as int? ?? 0;
+    var hoje = DateTime.Today;
+    var proxima = Model.FirstOrDefault(a => a.DataAula.Date >= hoje);
+}
+
+<section class="content-header" style="padding-bottom:0">
+    <div class="container-fluid">
+        <a asp-controller="Lider" asp-action="Turma" asp-route-id="@idTurma" class="ea-btn-back">
+            <i class="fas fa-arrow-left"></i> Voltar para a Turma
+        </a>
+        <div class="ea-welcome">
+            <div class="ea-welcome-text">
+                <h1><i class="fas fa-calendar-alt" style="margin-right:8px;opacity:.85"></i>Agenda da Turma</h1>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px">
+                    <span style="display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.15);border-radius:20px;padding:3px 10px;font-size:.75rem;color:rgba(255,255,255,.9);font-weight:600">
+                        <i class="fas fa-graduation-cap"></i>@ViewBag.NomeCurso
+                    </span>
+                    <span style="display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.15);border-radius:20px;padding:3px 10px;font-size:.75rem;color:rgba(255,255,255,.9);font-weight:600">
+                        <i class="fas fa-map-marker-alt"></i>@ViewBag.NomeCampus
+                    </span>
+                    <span style="display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.15);border-radius:20px;padding:3px 10px;font-size:.75rem;color:rgba(255,255,255,.9);font-weight:600">
+                        <i class="fas fa-clock"></i>Todo @ViewBag.DiaSemana
+                    </span>
+                </div>
+            </div>
+            <div class="ea-welcome-icon"><i class="fas fa-calendar-check"></i></div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+
+        @* ── Cards de resumo ──────────────────────────────────────── *@
+        <div class="ea-stat-grid" style="margin-bottom:20px">
+            <div class="ea-stat-card ea-fade ea-fade-1">
+                <div class="ea-stat-icon blue"><i class="fas fa-book-open"></i></div>
+                <div>
+                    <p class="ea-stat-label">Total de Lições</p>
+                    <p class="ea-stat-number">@Model.Count()</p>
+                </div>
+            </div>
+            <div class="ea-stat-card ea-fade ea-fade-2">
+                <div class="ea-stat-icon green"><i class="fas fa-check-circle"></i></div>
+                <div>
+                    <p class="ea-stat-label">Realizadas</p>
+                    <p class="ea-stat-number">@Model.Count(a => a.StatusAula == EnsinoApp.ViewModels.Agenda.StatusAula.Realizada)</p>
+                </div>
+            </div>
+            <div class="ea-stat-card ea-fade ea-fade-3">
+                <div class="ea-stat-icon yellow"><i class="fas fa-hourglass-half"></i></div>
+                <div>
+                    <p class="ea-stat-label">Futuras</p>
+                    <p class="ea-stat-number">@Model.Count(a => a.StatusAula == EnsinoApp.ViewModels.Agenda.StatusAula.Futura)</p>
+                </div>
+            </div>
+            <div class="ea-stat-card ea-fade ea-fade-4">
+                <div class="ea-stat-icon" style="background:var(--success-light);color:var(--success)"><i class="fas fa-map-marker-alt"></i></div>
+                <div>
+                    <p class="ea-stat-label">Com local definido</p>
+                    <p class="ea-stat-number">@Model.Count(a => !string.IsNullOrWhiteSpace(a.Local))</p>
+                </div>
+            </div>
+        </div>
+
+        @* ── Próxima aula ─────────────────────────────────────────── *@
+        @if (proxima != null)
+        {
+            <div style="background:linear-gradient(135deg,#eff6ff,#dbeafe);border:1px solid #bfdbfe;border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:16px" class="ea-fade">
+                <div style="width:48px;height:48px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <div style="flex:1">
+                    <p style="font-size:.7rem;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.4px;margin:0 0 2px">Próxima aula</p>
+                    <p style="font-family:var(--font);font-size:.95rem;font-weight:800;color:var(--gray-800);margin:0">
+                        @proxima.NumeroLicao. @proxima.TituloLicao
+                        <span style="font-weight:400;color:var(--gray-500);margin-left:8px">— @proxima.DataAula.ToString("dddd, dd/MM/yyyy")</span>
+                    </p>
+                    @if (!string.IsNullOrWhiteSpace(proxima.Local))
+                    {
+                        <p style="font-size:.78rem;color:var(--gray-500);margin:3px 0 0">
+                            <i class="fas fa-map-marker-alt" style="color:var(--primary);margin-right:4px"></i>@proxima.Local
+                        </p>
+                    }
+                    else
+                    {
+                        <p style="font-size:.78rem;color:#f59e0b;margin:3px 0 0">
+                            <i class="fas fa-exclamation-triangle" style="margin-right:4px"></i>Local ainda não informado
+                        </p>
+                    }
+                </div>
+                <a asp-action="Editar" asp-route-id="@proxima.Id"
+                   style="display:inline-flex;align-items:center;gap:6px;background:var(--primary);color:#fff;border-radius:var(--radius-sm);padding:8px 14px;font-size:.8rem;font-weight:700;text-decoration:none;white-space:nowrap">
+                    <i class="fas fa-edit"></i> Editar local
+                </a>
+            </div>
+        }
+
+        @* ── Abas ─────────────────────────────────────────────────── *@
+        <div style="background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden" class="ea-fade">
+
+            <div style="display:flex;border-bottom:1px solid var(--gray-200);background:var(--gray-50);padding:0 4px">
+                <button class="agenda-tab-btn active" data-tab="lista">
+                    <i class="fas fa-list"></i> Lista
+                </button>
+                <button class="agenda-tab-btn" data-tab="calendario">
+                    <i class="fas fa-calendar-alt"></i> Calendário
+                </button>
+            </div>
+
+            @* ── Aba Lista ────────────────────────────────────── *@
+            <div id="tab-lista" class="agenda-tab-pane active">
+                <div style="overflow-x:auto">
+                    <table class="ea-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Lição</th>
+                                <th>Data</th>
+                                <th>Local</th>
+                                <th>Status</th>
+                                <th>Lembrete</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr style="@(item.StatusAula == EnsinoApp.ViewModels.Agenda.StatusAula.Hoje ? "background:var(--purple-light)" : "")">
+                                    <td style="font-weight:700;color:var(--gray-500);width:40px">@item.NumeroLicao</td>
+                                    <td style="font-weight:700;color:var(--gray-800);max-width:220px;white-space:normal;line-height:1.3">
+                                        @item.TituloLicao
+                                    </td>
+                                    <td style="white-space:nowrap">
+                                        <span class="ea-date-pill">
+                                            <i class="fas fa-calendar-alt"></i>
+                                            @item.DataAula.ToString("dd/MM/yyyy")
+                                        </span>
+                                    </td>
+                                    <td style="font-size:.8rem;color:var(--gray-600);max-width:180px;white-space:normal">
+                                        @if (!string.IsNullOrWhiteSpace(item.Local))
+                                        {
+                                            <span><i class="fas fa-map-marker-alt" style="color:var(--success);margin-right:4px"></i>@item.Local</span>
+                                        }
+                                        else
+                                        {
+                                            <span style="color:var(--gray-300);font-style:italic">Não informado</span>
+                                        }
+                                    </td>
+                                    <td><span class="ea-badge @item.StatusBadge">@item.StatusLabel</span></td>
+                                    <td>
+                                        @if (item.LembreteEnviado)
+                                        {
+                                            <span style="display:inline-flex;align-items:center;gap:4px;font-size:.72rem;font-weight:700;color:var(--success)">
+                                                <i class="fas fa-check-circle"></i> Enviado
+                                            </span>
+                                        }
+                                        else if (item.StatusAula != EnsinoApp.ViewModels.Agenda.StatusAula.Realizada)
+                                        {
+                                            <span style="display:inline-flex;align-items:center;gap:4px;font-size:.72rem;font-weight:700;color:var(--gray-400)">
+                                                <i class="fas fa-clock"></i> Pendente
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span style="color:var(--gray-300);font-size:.72rem">—</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (item.StatusAula != EnsinoApp.ViewModels.Agenda.StatusAula.Realizada)
+                                        {
+                                            <a asp-action="Editar" asp-route-id="@item.Id" class="ea-action-btn primary" title="Editar local">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            @* ── Aba Calendário ───────────────────────────────── *@
+            <div id="tab-calendario" class="agenda-tab-pane" style="display:none">
+                <div style="padding:20px">
+                    <div id="fullcalendar"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<style>
+    .agenda-tab-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 13px 18px;
+        font-size: .83rem;
+        font-weight: 700;
+        color: var(--gray-400);
+        background: none;
+        border: none;
+        border-bottom: 2px solid transparent;
+        cursor: pointer;
+        font-family: var(--font);
+        transition: color .18s, border-color .18s;
+    }
+    .agenda-tab-btn:hover { color: var(--primary); }
+    .agenda-tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+    .agenda-tab-pane { display: block; }
+</style>
+
+@section Scripts {
+    <!-- FullCalendar -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.11/index.global.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.11/index.global.min.js"></script>
+    <!-- Locale pt-br -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.11/locales/pt-br.global.min.js"></script>
+
+    <script>
+        // ── Tabs ──────────────────────────────────────────────────────────────
+        let calendarIniciado = false;
+        let calendar;
+
+        document.querySelectorAll('.agenda-tab-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.agenda-tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.agenda-tab-pane').forEach(p => p.style.display = 'none');
+                this.classList.add('active');
+                document.getElementById('tab-' + this.dataset.tab).style.display = 'block';
+
+                // Inicializa o FullCalendar apenas quando a aba é aberta pela 1ª vez
+                if (this.dataset.tab === 'calendario' && !calendarIniciado) {
+                    iniciarCalendario();
+                    calendarIniciado = true;
+                } else if (this.dataset.tab === 'calendario' && calendar) {
+                    calendar.updateSize();
+                }
+            });
+        });
+
+        // ── FullCalendar ──────────────────────────────────────────────────────
+        function iniciarCalendario() {
+            const el = document.getElementById('fullcalendar');
+            calendar = new FullCalendar.Calendar(el, {
+                locale: 'pt-br',
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,listMonth'
+                },
+                events: '@Url.Action("Eventos", "Agenda", new { idTurma })',
+                eventClick: function (info) {
+                    info.jsEvent.preventDefault();
+                    if (info.event.url) window.location.href = info.event.url;
+                },
+                height: 600,
+                eventDisplay: 'block',
+                dayMaxEvents: 3,
+                nowIndicator: true
+            });
+            calendar.render();
+        }
+    </script>
+}

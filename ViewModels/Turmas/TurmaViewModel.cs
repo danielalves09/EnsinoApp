@@ -31,4 +31,11 @@ public class TurmaViewModel
     public DateTime DataFim { get; set; }
 
     public StatusTurma Status { get; set; } = StatusTurma.Acomecar;
+
+    /// <summary>
+    /// Dia da semana em que a turma se reúne.
+    /// Usado para gerar automaticamente a agenda ao criar a turma.
+    /// </summary>
+    [Required]
+    public DayOfWeek DiaSemana { get; set; } = DayOfWeek.Saturday;
 }

@@ -47,7 +47,7 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
-//builder.Host.UseSerilog();
+builder.Host.UseSerilog();
 
 // ================= CARREGAR DLLS NATIVAS DINKTOPDF ==================
 string nativeLibPath;
@@ -61,7 +61,7 @@ else
     throw new PlatformNotSupportedException("Sistema operacional não suportado para DinkToPdf");
 
 var context = new CustomAssemblyLoadContext();
-//context.LoadUnmanagedLibrary(nativeLibPath);
+context.LoadUnmanagedLibrary(nativeLibPath);
 
 
 // ==================== DATA PROTECTION - IIS =====================
@@ -88,6 +88,10 @@ builder.Services.AddDbContextPool<EnsinoAppContext>(options =>
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 builder.Services.AddHttpContextAccessor();
 
+// Configuração SMTP
+builder.Services.Configure<EnsinoApp.Services.Email.SmtpSettings>(
+    builder.Configuration.GetSection("SmtpSettings"));
+
 
 // [ADICIONADO] Compressão de resposta — reduz o tamanho dos dados enviados ao cliente externo
 builder.Services.AddResponseCompression(options =>
@@ -106,6 +110,8 @@ builder.Services.AddScoped<IInscricaoOnlineRepository, InscricaoOnlineRepository
 builder.Services.AddScoped<ICasalRepository, CasalRepository>();
 builder.Services.AddScoped<ILicaoRepository, LicaoRepository>();
 builder.Services.AddScoped<IRelatorioSemanalRepository, RelatorioSemanalRepository>();
+builder.Services.AddScoped<EnsinoApp.Repositories.Agenda.IAgendaRepository,
+                            EnsinoApp.Repositories.Agenda.AgendaRepository>();
 
 // Services
 builder.Services.AddScoped<ICampusService, CampusService>();
@@ -123,6 +129,13 @@ builder.Services.AddScoped<IPdfService, PdfService>();
 builder.Services.AddScoped<IRazorViewToStringRenderer, RazorViewToStringRenderer>();
 builder.Services.AddScoped<IUtilService, UtilService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<EnsinoApp.Services.Email.IEmailService,
+                            EnsinoApp.Services.Email.SmtpEmailService>();
+builder.Services.AddScoped<EnsinoApp.Services.Agenda.IAgendaService,
+EnsinoApp.Services.Agenda.AgendaService>();
+
+// Background Service (singleton gerenciado pelo host) - Disparo dos Lembretes de Agenda
+builder.Services.AddHostedService<EnsinoApp.Services.Lembrete.LembreteBackgroundService>();
 
 // Identity
 builder.Services.AddIdentity<Usuario, IdentityRole<int>>(options =>
