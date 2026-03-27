@@ -99,13 +99,6 @@ Controller → Service → Repository → DbContext (EF Core)
 - **NotificationService** — centraliza mensagens de feedback ao usuário via TempData (Toastr)
 - **ExceptionMiddleware** — captura exceções não tratadas, loga via Serilog e retorna resposta padronizada
 
-### Decisões de design relevantes
-
-- `DbContext` é `Scoped` (uma instância por request). Não use `Task.WhenAll` com múltiplas queries no mesmo contexto — use `await` sequencial.
-- Consultas de leitura sempre usam `.AsNoTracking()` para evitar overhead de change tracking.
-- Métodos de contagem e consulta assíncrona usam `CountAsync()` / `FirstOrDefaultAsync()` para não bloquear threads do servidor.
-- A geração de PDF com DinkToPdf usa `SynchronizedConverter` registrado como `Singleton` (thread-safe requerido pela biblioteca nativa).
-
 ---
 
 ## 📁 Estrutura do Projeto
@@ -395,10 +388,4 @@ Projeto desenvolvido para a **CCVideira**
 🚧 Em desenvolvimento contínuo
 
 ### Melhorias planejadas
-
-- [ ] Paginação server-side em todos os listagens (atualmente feita em memória)
-- [ ] Converter métodos de contagem síncronos para `async` (`ContarTotal`, `ContarAtivas`)
-- [ ] Remover acesso direto ao `DbContext` no `InscricaoOnlineService`
-- [ ] Corrigir N+1 queries em `CasalService.ObterResumoCasais`
-- [ ] Adicionar índice em `Matricula.CodigoValidacao`
 - [ ] Testes unitários nas camadas de Service e Repository
