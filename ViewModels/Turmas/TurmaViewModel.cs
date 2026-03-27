@@ -20,7 +20,7 @@ public class TurmaViewModel
     public int IdLider { get; set; }
     public string NomeLider { get; set; } = string.Empty;
 
-    public string imgLider { get; set; } = null!;
+    public string? imgLider { get; set; } = null!;
 
     [Required]
     [DataType(DataType.Date)]
