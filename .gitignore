@@ -371,3 +371,4 @@ docker-compose.yml
 DockerFile
 logs/
 Certificados/
+appsettings.json
