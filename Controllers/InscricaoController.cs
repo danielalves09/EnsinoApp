@@ -1,6 +1,7 @@
 using EnsinoApp.Models.Entities;
 using EnsinoApp.Services.Campus;
 using EnsinoApp.Services.Cursos;
+using EnsinoApp.Services.Email;
 using EnsinoApp.Services.Inscricao;
 using EnsinoApp.ViewModels.Inscricao;
 using Microsoft.AspNetCore.Authorization;
@@ -15,12 +16,14 @@ public class InscricaoController : Controller
     private readonly IInscricaoOnlineService _service;
     private readonly ICampusService _campusService;
     private readonly ICursoService _cursoService;
+    private readonly IEmailService _emailService;
 
-    public InscricaoController(IInscricaoOnlineService service, ICampusService campusService, ICursoService cursoService)
+    public InscricaoController(IInscricaoOnlineService service, ICampusService campusService, ICursoService cursoService, IEmailService emailService)
     {
         _service = service;
         _campusService = campusService;
         _cursoService = cursoService;
+        _emailService = emailService;
     }
 
     public IActionResult Index()
@@ -60,24 +63,40 @@ public class InscricaoController : Controller
             IdCampus = model.IdCampus,
             IdCurso = model.IdCurso,
             ParticipaGC = model.ParticipaGC,
-            NomeGC = model.NomeGC
+            NomeGC = model.NomeGC,
+            DataInscricao = DateTime.Now
         };
 
-        var inscricaoConfirmada = await _service.CreateAsync(inscricao);
+        var inscricaoSalva = await _service.CreateAsync(inscricao);
 
+        // Se o repositório retornou null por algum motivo, usa o objeto local
+        var dadosEmail = inscricaoSalva ?? inscricao;
 
-        // Redirecionar para a página de confirmação
+        var nomeCampus = _campusService.FindById(dadosEmail.IdCampus)?.Nome ?? string.Empty;
+        var nomeCurso = _cursoService.FindById(dadosEmail.IdCurso)?.Nome ?? string.Empty;
+
         var confirmacaoVM = new ConfirmacaoInscricaoViewModel
         {
-            NomeMarido = inscricaoConfirmada.NomeMarido,
-            NomeEsposa = inscricaoConfirmada.NomeEsposa,
-            NomeCampus = _campusService.FindById(inscricaoConfirmada.IdCampus)?.Nome ?? string.Empty,
-            NomeCurso = _cursoService.FindById(inscricaoConfirmada.IdCurso)?.Nome ?? string.Empty,
-            ParticipaGC = inscricaoConfirmada.ParticipaGC,
-            NomeGC = inscricaoConfirmada.NomeGC,
-            DataInscricao = inscricaoConfirmada.DataInscricao
+            NomeMarido = dadosEmail.NomeMarido,
+            NomeEsposa = dadosEmail.NomeEsposa,
+            NomeCampus = nomeCampus,
+            NomeCurso = nomeCurso,
+            ParticipaGC = dadosEmail.ParticipaGC,
+            NomeGC = dadosEmail.NomeGC,
+            DataInscricao = dadosEmail.DataInscricao
         };
 
+        // Dispara o email em background — falha não bloqueia o fluxo
+        _ = _emailService.SendInscricaoConfirmadaAsync(
+            dadosEmail.EmailMarido,
+            dadosEmail.EmailEsposa,
+            dadosEmail.NomeMarido,
+            dadosEmail.NomeEsposa,
+            nomeCurso,
+            nomeCampus,
+            dadosEmail.ParticipaGC,
+            dadosEmail.NomeGC,
+            dadosEmail.DataInscricao);
 
         return View("Confirmacao", confirmacaoVM);
     }

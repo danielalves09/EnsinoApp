@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 
 namespace EnsinoApp.Services.Email;
 
-public class SmtpEmailService : IEmailService
+public class SmtpEmailService : IEmailLembreteService
 {
     private readonly SmtpSettings _settings;
     private readonly ILogger<SmtpEmailService> _logger;

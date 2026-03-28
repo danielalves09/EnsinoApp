@@ -14,7 +14,7 @@ public class UtilService : IUtilService
         return $"{GetPrimeiroNome(nome1)} {GetSobrenome(nome1)} e {GetPrimeiroNome(nome2)} {GetSobrenome(nome2)}";
     }
 
-    private string GetPrimeiroNome(string nomeCompleto)
+    public string GetPrimeiroNome(string nomeCompleto)
     {
         if (string.IsNullOrEmpty(nomeCompleto)) return string.Empty;
         var partes = nomeCompleto.Split(' ');

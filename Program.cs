@@ -19,6 +19,7 @@ using EnsinoApp.Services.Campus;
 using EnsinoApp.Services.Casal;
 using EnsinoApp.Services.Certificado;
 using EnsinoApp.Services.Cursos;
+using EnsinoApp.Services.Email;
 using EnsinoApp.Services.Inscricao;
 using EnsinoApp.Services.Licao;
 using EnsinoApp.Services.Lider;
@@ -88,11 +89,6 @@ builder.Services.AddDbContextPool<EnsinoAppContext>(options =>
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 builder.Services.AddHttpContextAccessor();
 
-// Configuração SMTP
-builder.Services.Configure<EnsinoApp.Services.Email.SmtpSettings>(
-    builder.Configuration.GetSection("SmtpSettings"));
-
-
 // [ADICIONADO] Compressão de resposta — reduz o tamanho dos dados enviados ao cliente externo
 builder.Services.AddResponseCompression(options =>
 {
@@ -129,10 +125,20 @@ builder.Services.AddScoped<IPdfService, PdfService>();
 builder.Services.AddScoped<IRazorViewToStringRenderer, RazorViewToStringRenderer>();
 builder.Services.AddScoped<IUtilService, UtilService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
-builder.Services.AddScoped<EnsinoApp.Services.Email.IEmailService,
+builder.Services.AddScoped<EnsinoApp.Services.Email.IEmailLembreteService,
                             EnsinoApp.Services.Email.SmtpEmailService>();
 builder.Services.AddScoped<EnsinoApp.Services.Agenda.IAgendaService,
 EnsinoApp.Services.Agenda.AgendaService>();
+
+
+
+// =================== EMAIL =====================
+builder.Services.Configure<EnsinoApp.Services.Email.SmtpSettings>(
+    builder.Configuration.GetSection("SmtpSettings"));
+builder.Services.Configure<EmailSettings>(
+builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IEmailTemplateService, EmailTemplateService>();
 
 // Background Service (singleton gerenciado pelo host) - Disparo dos Lembretes de Agenda
 builder.Services.AddHostedService<EnsinoApp.Services.Lembrete.LembreteBackgroundService>();

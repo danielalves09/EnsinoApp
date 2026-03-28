@@ -1,5 +1,6 @@
 using EnsinoApp.Models.Entities;
 using EnsinoApp.Services.Campus;
+using EnsinoApp.Services.Email;
 using EnsinoApp.Services.Notifications;
 using EnsinoApp.Services.Usuarios;
 using EnsinoApp.Services.Util;
@@ -19,11 +20,12 @@ public class UsuariosController : Controller
     private readonly RoleManager<IdentityRole<int>> _roleManager;
     private readonly IWebHostEnvironment _env;
     private readonly INotificationService _notification;
+    private readonly IEmailService _emailService;
 
     private readonly IUtilService _utilService;
     private const int TAMANHO_PAGINA = 10;
 
-    public UsuariosController(UserManager<Usuario> userManager, RoleManager<IdentityRole<int>> roleManager, IUsuariosService usuarioService, IWebHostEnvironment env, INotificationService notification, SignInManager<Usuario> signInManager, IUtilService utilService)
+    public UsuariosController(UserManager<Usuario> userManager, RoleManager<IdentityRole<int>> roleManager, IUsuariosService usuarioService, IWebHostEnvironment env, INotificationService notification, SignInManager<Usuario> signInManager, IUtilService utilService, IEmailService emailService)
     {
         _userManager = userManager;
         _roleManager = roleManager;
@@ -32,6 +34,7 @@ public class UsuariosController : Controller
         _notification = notification;
         _signInManager = signInManager;
         _utilService = utilService;
+        _emailService = emailService;
     }
 
     [Authorize(Roles = "Admin,Pastor,Coordenador,Supervisor")]
@@ -108,6 +111,17 @@ public class UsuariosController : Controller
         }
 
         await _userManager.AddToRoleAsync(usuario, model.Role);
+
+
+
+        // Enviar Confirmação por Email
+        _ = _emailService.SendNovoUsuarioAsync(
+            model.Email,
+            _utilService.GetPrimeiroNome(model.NomeMarido) ?? string.Empty,
+            _utilService.GetPrimeiroNome(model.NomeEsposa) ?? string.Empty,
+            model.Senha);
+
+        _notification.Success("Usuário criado com sucesso.");
 
         return RedirectToAction(nameof(Index));
     }

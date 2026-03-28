@@ -9,13 +9,13 @@ namespace EnsinoApp.Services.Agenda;
 public class AgendaService : IAgendaService
 {
   private readonly IAgendaRepository _repository;
-  private readonly IEmailService _emailService;
+  private readonly IEmailLembreteService _emailService;
 
   private readonly ILogger<AgendaService> _logger;
 
   public AgendaService(
       IAgendaRepository repository,
-      IEmailService emailService,
+      IEmailLembreteService emailService,
       ILogger<AgendaService> logger)
   {
     _repository = repository;
