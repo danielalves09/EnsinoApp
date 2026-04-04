@@ -59,11 +59,11 @@ public class AgendaController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Editar(EditarAgendaViewModel model)
     {
-        if (!ModelState.IsValid) return View(model);
+        //if (!ModelState.IsValid) return View(model);
 
-        await _agendaService.AtualizarLocalAsync(model.Id, model.Local, model.Observacoes);
+        await _agendaService.AtualizarLocalAsync(model.Id, model.DataAula, model.Local, model.Observacoes);
 
-        TempData["ToastrSuccess"] = "Local da aula atualizado com sucesso!";
+        TempData["ToastrSuccess"] = "Local / Data da aula atualizado com sucesso!";
         return RedirectToAction(nameof(Index), new { idTurma = model.IdTurma });
     }
 

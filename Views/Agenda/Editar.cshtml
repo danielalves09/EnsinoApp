@@ -9,7 +9,8 @@
             <i class="fas fa-arrow-left"></i> Voltar para a Agenda
         </a>
         <div class="ea-page-title">
-            <h1><i class="fas fa-map-marker-alt" style="color:var(--primary);margin-right:8px"></i>Editar Local da Aula
+            <h1><i class="fas fa-map-marker-alt" style="color:var(--primary);margin-right:8px"></i>Editar Local / Data
+                da Aula
             </h1>
             <p>Informe o local onde a aula será realizada para que os casais recebam no lembrete</p>
         </div>
@@ -45,54 +46,70 @@
                     </div>
 
                     @* ── Formulário ── *@
+
                     <div class="ea-form-card ea-fade ea-fade-2">
                         <div class="ea-form-card-header">
-                            <div class="ea-form-header-icon" style="background:var(--primary-light);color:var(--primary)">
-                                <i class="fas fa-map-marker-alt"></i>
+                            <div class="ea-form-header-icon" style="background:var(--success-light);color:var(--success)"><i
+                                class="fas fa-calendar-alt"></i></div>
+                                <h3 class="ea-form-card-title">Data da Lição</h3>
                             </div>
-                            <h3 class="ea-form-card-title">Localização da Aula</h3>
-                        </div>
-                        <div class="ea-form-card-body">
-
-                            <div class="ea-field-group">
-                                <label asp-for="Local" class="ea-field-label">
-                                    Local <span style="color:var(--gray-300);font-weight:400;text-transform:none">(ex: Salão
-                                    principal, Rua X, 123 – Bairro)</span>
-                                </label>
-                                <input asp-for="Local" class="ea-field-control"
-                                       placeholder="Informe o endereço ou nome do local da aula" />
-                                <span asp-validation-for="Local" class="ea-field-error"></span>
-                            </div>
-
-                            <div class="ea-field-group">
-                                <label asp-for="Observacoes" class="ea-field-label">
-                                    Observações <span
-                                    style="color:var(--gray-300);font-weight:400;text-transform:none">(opcional)</span>
-                                </label>
-                                <textarea asp-for="Observacoes" class="ea-field-control" rows="4"
-                                          placeholder="Ex: Trazer caderno, chegar às 19h30, estacionamento na rua..."></textarea>
-                                <span asp-validation-for="Observacoes" class="ea-field-error"></span>
-                            </div>
-
-                            <div
-                                style="display:flex;align-items:center;gap:8px;background:#fffbeb;border:1px solid #fde68a;border-radius:var(--radius);padding:10px 14px;font-size:.78rem;color:#92400e;font-weight:600;margin-top:4px">
-                                <i class="fas fa-bell"></i>
-                                O lembrete por email será enviado automaticamente 1 dia antes da aula com estas informações.
+                            <div class="ea-form-card-body">
+                                <div class="ea-field-group" style="max-width:240px">
+                                    <label asp-for="DataAula" class="ea-field-label">Data</label>
+                                    <input asp-for="DataAula" type="date" class="ea-field-control" />
+                                    <span asp-validation-for="DataAula" class="ea-field-error"></span>
+                                </div>
                             </div>
                         </div>
-                        <div class="ea-form-footer">
-                            <a asp-action="Index" asp-route-idTurma="@Model.IdTurma" class="ea-btn-action cancel">
-                                <i class="fas fa-times"></i> Cancelar
-                            </a>
-                            <button type="submit" class="ea-btn-action save">
-                                <i class="fas fa-save"></i> Salvar
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </section>
 
-        @section Scripts {
-            <partial name="_ValidationScriptsPartial" />
-        }
+                        <div class="ea-form-card ea-fade ea-fade-2">
+                            <div class="ea-form-card-header">
+                                <div class="ea-form-header-icon" style="background:var(--primary-light);color:var(--primary)">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <h3 class="ea-form-card-title">Localização da Aula</h3>
+                            </div>
+                            <div class="ea-form-card-body">
+
+                                <div class="ea-field-group">
+                                    <label asp-for="Local" class="ea-field-label">
+                                        Local <span style="color:var(--gray-300);font-weight:400;text-transform:none">(ex: Salão
+                                        principal, Rua X, 123 – Bairro)</span>
+                                    </label>
+                                    <input asp-for="Local" class="ea-field-control"
+                                           placeholder="Informe o endereço ou nome do local da aula" />
+                                    <span asp-validation-for="Local" class="ea-field-error"></span>
+                                </div>
+
+                                <div class="ea-field-group">
+                                    <label asp-for="Observacoes" class="ea-field-label">
+                                        Observações <span
+                                        style="color:var(--gray-300);font-weight:400;text-transform:none">(opcional)</span>
+                                    </label>
+                                    <textarea asp-for="Observacoes" class="ea-field-control" rows="4"
+                                              placeholder="Ex: Trazer caderno, chegar às 19h30, estacionamento na rua..."></textarea>
+                                    <span asp-validation-for="Observacoes" class="ea-field-error"></span>
+                                </div>
+
+                                <div
+                                    style="display:flex;align-items:center;gap:8px;background:#fffbeb;border:1px solid #fde68a;border-radius:var(--radius);padding:10px 14px;font-size:.78rem;color:#92400e;font-weight:600;margin-top:4px">
+                                    <i class="fas fa-bell"></i>
+                                    O lembrete por email será enviado automaticamente 1 dia antes da aula com estas informações.
+                                </div>
+                            </div>
+                            <div class="ea-form-footer">
+                                <a asp-action="Index" asp-route-idTurma="@Model.IdTurma" class="ea-btn-action cancel">
+                                    <i class="fas fa-times"></i> Cancelar
+                                </a>
+                                <button type="submit" class="ea-btn-action save">
+                                    <i class="fas fa-save"></i> Salvar
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            @section Scripts {
+                <partial name="_ValidationScriptsPartial" />
+            }

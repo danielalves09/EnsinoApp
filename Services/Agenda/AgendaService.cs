@@ -85,11 +85,12 @@ public class AgendaService : IAgendaService
   public async Task<AgendaLicao?> FindByIdAsync(int id)
       => await _repository.FindByIdAsync(id);
 
-  public async Task AtualizarLocalAsync(int id, string? local, string? observacoes)
+  public async Task AtualizarLocalAsync(int id, DateTime dataAula, string? local, string? observacoes)
   {
     var agenda = await _repository.FindByIdAsync(id)
         ?? throw new KeyNotFoundException($"AgendaLicao {id} não encontrada.");
 
+    agenda.DataAula = dataAula;
     agenda.Local = local?.Trim();
     agenda.Observacoes = observacoes?.Trim();
 

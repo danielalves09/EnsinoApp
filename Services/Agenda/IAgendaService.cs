@@ -18,7 +18,7 @@ public interface IAgendaService
     Task<AgendaLicao?> FindByIdAsync(int id);
 
     /// <summary>Atualiza local e observações de um item da agenda.</summary>
-    Task AtualizarLocalAsync(int id, string? local, string? observacoes);
+    Task AtualizarLocalAsync(int id, DateTime dataAula, string? local, string? observacoes);
 
     /// <summary>Processa e envia os lembretes do dia (chamado pelo BackgroundService).</summary>
     Task ProcessarLembretesAsync();
