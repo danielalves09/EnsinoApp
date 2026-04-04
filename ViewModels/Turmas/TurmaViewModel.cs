@@ -38,4 +38,6 @@ public class TurmaViewModel
     /// </summary>
     [Required]
     public DayOfWeek DiaSemana { get; set; } = DayOfWeek.Saturday;
+
+    public string DiaSemanaLabel { get; set; } = string.Empty;
 }

@@ -31,4 +31,24 @@ public class UtilService : IUtilService
             return $"{partes[partes.Length - 1]}"; // Sobrenome
         return partes[0];
     }
+
+    public string DiaSemanaLabel(string diaSemana)
+    {
+        if (Enum.TryParse<DayOfWeek>(diaSemana, true, out var d))
+        {
+            return d switch
+            {
+                DayOfWeek.Sunday => "Domingo",
+                DayOfWeek.Monday => "Segunda-feira",
+                DayOfWeek.Tuesday => "Terça-feira",
+                DayOfWeek.Wednesday => "Quarta-feira",
+                DayOfWeek.Thursday => "Quinta-feira",
+                DayOfWeek.Friday => "Sexta-feira",
+                DayOfWeek.Saturday => "Sábado",
+                _ => "-"
+            };
+        }
+
+        return "-";
+    }
 }

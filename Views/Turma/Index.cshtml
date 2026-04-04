@@ -72,6 +72,14 @@
                                         <span><span style="color:var(--gray-400);font-size:.72rem;margin-right:2px">Campus
                                         </span>@t.NomeCampus</span>
                                     </div>
+                                    <div style="display:flex;align-items:center;gap:7px;font-size:.78rem;color:var(--gray-500)">
+                                        <div
+                                            style="width:22px;height:22px;border-radius:var(--radius-sm);background:var(--gray-100);display:flex;align-items:center;justify-content:center;color:var(--primary);font-size:.65rem">
+                                            <i class="fas fa-calendar"></i>
+                                        </div>
+                                        <span><span style="color:var(--gray-400);font-size:.72rem;margin-right:2px">Dia da Semana
+                                        </span><span class="ea-badge @badge">@t.DiaSemanaLabel</span>
+                                    </div>
                                     @if (!string.IsNullOrWhiteSpace(t.NomeLider))
                                     {
                                         <div style="display:flex;align-items:center;gap:7px;font-size:.78rem;color:var(--gray-500)">
@@ -82,7 +90,7 @@
                                                 style="width:22px;height:22px;border-radius:var(--radius-sm);background:var(--gray-100);display:flex;align-items:center;justify-content:center;color:var(--primary);font-size:.65rem">
                                                 <i class="fas fa-user-tie"></i>
                                             </div>
-                                            <span><span style="color:var(--gray-400);font-size:.72rem;margin-right:2px">Líder
+                                            <span><span style="color:var(--gray-400);font-size:.72rem;margin-right:2px">Líderes
                                             </span>@t.NomeLider</span>
                                         </div>
                                     }

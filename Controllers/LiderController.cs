@@ -9,6 +9,7 @@ using EnsinoApp.Services.Lider;
 using EnsinoApp.Services.Matricula;
 using EnsinoApp.Services.Notifications;
 using EnsinoApp.Services.Turmas;
+using EnsinoApp.Services.Util;
 using EnsinoApp.ViewModels.Certificado;
 using EnsinoApp.ViewModels.Lider;
 using EnsinoApp.ViewModels.Matricula;
@@ -37,8 +38,10 @@ public class LiderController : Controller
     private readonly AppSettings _appSettings;
     private readonly INotificationService _notification;
 
+    private readonly IUtilService _utilService;
 
-    public LiderController(ILiderService service, ILicaoService licaoService, ITurmaService turmaService, IMatriculaService matriculaService, UserManager<Usuario> userManager, ICertificadoService certificadoService, IWebHostEnvironment env, IOptions<AppSettings> options, INotificationService notification)
+
+    public LiderController(ILiderService service, ILicaoService licaoService, ITurmaService turmaService, IMatriculaService matriculaService, UserManager<Usuario> userManager, ICertificadoService certificadoService, IWebHostEnvironment env, IOptions<AppSettings> options, INotificationService notification, IUtilService utilService)
     {
         _service = service;
         _licaoService = licaoService;
@@ -49,6 +52,7 @@ public class LiderController : Controller
         _env = env;
         _appSettings = options.Value;
         _notification = notification;
+        _utilService = utilService;
     }
 
     public async Task<IActionResult> Index()
@@ -110,6 +114,7 @@ public class LiderController : Controller
             imgLider = turma.Lider.FotoPerfil,
             DataInicio = turma.DataInicio,
             DataFim = turma.DataFim,
+            DiaSemanaLabel = _utilService.DiaSemanaLabel(turma.DiaSemana.ToString()),
             TotalLicoes = turma.Curso.Licoes.Count(),
             LicoesConcluidas = turma.Matriculas.Sum(m => m.Relatorios.Count) / (turma.Matriculas.Count == 0 ? 1 : turma.Matriculas.Count),
             Status = turma.Status,

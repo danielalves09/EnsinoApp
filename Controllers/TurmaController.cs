@@ -69,6 +69,7 @@ public class TurmaController : Controller
             imgLider = t.Lider.FotoPerfil,
             DataInicio = t.DataInicio,
             DataFim = t.DataFim,
+            DiaSemanaLabel = _utilService.DiaSemanaLabel(t.DiaSemana.ToString()),
             Status = t.Status
         }).ToList();
 
@@ -97,6 +98,7 @@ public class TurmaController : Controller
             imgLider = turma.Lider.FotoPerfil,
             DataInicio = turma.DataInicio,
             DataFim = turma.DataFim,
+            DiaSemanaLabel = _utilService.DiaSemanaLabel(turma.DiaSemana.ToString()),
             TotalLicoes = turma.Curso.Licoes.Count(),
             LicoesConcluidas = turma.Matriculas.Sum(m => m.Relatorios.Count) / (turma.Matriculas.Count == 0 ? 1 : turma.Matriculas.Count),
             Status = turma.Status,
