@@ -124,6 +124,13 @@
                                 </a>
                             </li>
                             <li class="nav-item">
+                                <a href="/Casal"
+                                       class="nav-link @(Context.Request.Path.StartsWithSegments("/Casal") ? "active" : "")">
+                                    <i class="nav-icon fas fa-users"></i>
+                                    <p>Casais</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
                                 <a href="/Usuarios"
                                        class="nav-link @(Context.Request.Path.StartsWithSegments("/Usuarios") ? "active" : "")">
                                     <i class="nav-icon fas fa-user-cog"></i>
@@ -141,7 +148,7 @@
                                     <i class="nav-icon fas fa-tachometer-alt"></i>
                                     <p>Início</p>
                                 </a>
-                            </li>                            
+                            </li>
                             <li class="nav-item">
                                 <a href="/Usuarios/Perfil/"
                                        class="nav-link @(Context.Request.Path.StartsWithSegments("/Usuarios/Perfil") ? "active" : "")">
