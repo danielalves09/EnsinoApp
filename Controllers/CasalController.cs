@@ -165,10 +165,6 @@ public class CasalController : Controller
     }
 
 
-    /// <summary>
-    /// Retorna os dados completos de um casal em JSON para o modal da tela de matrículas.
-    /// GET /Casal/Detalhes/{id}
-    /// </summary>
     [HttpGet]
     public async Task<IActionResult> Detalhes(int id)
     {

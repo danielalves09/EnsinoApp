@@ -6,6 +6,7 @@ using EnsinoApp.Services.Cursos;
 using EnsinoApp.Services.Inscricao;
 using EnsinoApp.Services.Matricula;
 using EnsinoApp.Services.Turmas;
+using EnsinoApp.ViewModels.Inscricao;
 using EnsinoApp.ViewModels.Matricula;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,6 +24,8 @@ public class MatriculaController : Controller
 
     private readonly ICursoService _cursoService;
     private readonly ICampusService _campusService;
+
+    private const int TAMANHO_PAGINA = 10;
     public MatriculaController(
             ICasalService casalService,
             IInscricaoOnlineService inscricaoService,
@@ -39,12 +42,8 @@ public class MatriculaController : Controller
         _campusService = campusService;
     }
 
-    public async Task<IActionResult> Index(int? idCurso, int? idCampus)
+    public async Task<IActionResult> Index(int? idCurso, int? idCampus, int pagina = 1)
     {
-
-        ViewBag.Cursos = new SelectList(_cursoService.FindAll(), "Id", "Nome", idCurso);
-        ViewBag.Campuses = new SelectList(_campusService.FindAll(), "Id", "Nome", idCampus);
-
         var listaInscricoesPendentes = _inscricaoService.ObterPendentesResumo();
 
         if (idCurso.HasValue)
@@ -63,9 +62,15 @@ public class MatriculaController : Controller
             TurmasAtivas = _turmaService.ContarAtivas(),
 
             InscricoesPendentesLista = listaInscricoesPendentes,
-            Casais = _casalService.ObterResumoCasais(),
             Turmas = _turmaService.ObterResumoTurmasAtivas()
         };
+
+        ViewBag.Cursos = new SelectList(_cursoService.FindAll(), "Id", "Nome", idCurso);
+        ViewBag.Campuses = new SelectList(_campusService.FindAll(), "Id", "Nome", idCampus);
+        ViewBag.NumeroPagina = pagina;
+        ViewBag.TotalPaginas = (int)Math.Ceiling((decimal)listaInscricoesPendentes.Count / TAMANHO_PAGINA);
+
+        dashboard.InscricoesPendentesLista = listaInscricoesPendentes.Skip((pagina - 1) * TAMANHO_PAGINA).Take(TAMANHO_PAGINA).ToList();
 
         return View(dashboard);
     }
@@ -145,6 +150,36 @@ public class MatriculaController : Controller
         return RedirectToAction("Index");
     }
 
+    [HttpGet]
+    public async Task<IActionResult> Detalhes(int id)
+    {
+        var casal = await _inscricaoService.FindByIdAsync(id);
+
+        if (casal is null)
+            return NotFound(new { mensagem = "Casal não encontrado." });
+
+        var vm = new InscricaoDetalheViewModel
+        {
+            Id = casal.Id,
+            NomeConjuge1 = casal.NomeMarido,
+            NomeConjuge2 = casal.NomeEsposa,
+            EmailConjuge1 = casal.EmailMarido,
+            EmailConjuge2 = casal.EmailEsposa,
+            TelefoneConjuge1 = casal.TelefoneMarido,
+            TelefoneConjuge2 = casal.TelefoneEsposa,
+            Rua = casal.Rua,
+            Numero = casal.Numero,
+            Complemento = casal.Complemento,
+            Bairro = casal.Bairro,
+            Cidade = casal.Cidade,
+            Estado = casal.Estado,
+            Cep = casal.Cep,
+            NomeCampus = casal.Campus?.Nome ?? string.Empty,
+            GC = casal.NomeGC ?? string.Empty
+        };
+
+        return Json(vm);
+    }
 
 
 

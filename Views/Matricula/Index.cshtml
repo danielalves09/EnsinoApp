@@ -89,6 +89,7 @@
                         <table class="ea-table">
                             <thead>
                                 <tr>
+                                    <th></th>
                                     <th>Casal</th>
                                     <th>Curso</th>
                                     <th>Campus</th>
@@ -102,6 +103,12 @@
                                     @foreach (var item in Model.InscricoesPendentesLista)
                                     {
                                         <tr>
+                                            <td>
+                                                            <button type="button" class="btn-ver-casal" data-id="@item.Id"
+                                                                    title="Ver detalhes do casal">
+                                                                <i class="fas fa-eye"></i> Detalhes
+                                                            </button>
+                                                        </td>
                                             <td>
                                                 <div style="display:flex;align-items:center;gap:9px">
                                                     <div
@@ -138,175 +145,112 @@
                         </div>
                     </div>
 
-                    <div class="ea-table-card ea-fade">
-                        <div class="ea-table-card-header">
-                            <div class="ea-table-header-icon" style="background:var(--success-light);color:var(--success)"><i
-                                class="fas fa-users"></i></div>
-                                <h3 class="ea-table-card-title">Casais Cadastrados</h3>
-                                @if (Model.Casais?.Any() == true)
+                     <!-- Paginação -->
+                        @if (ViewBag.TotalPaginas > 1)
+                        {
+                            <div class="ea-pagination">
+                                @if (ViewBag.NumeroPagina > 1)
                                 {
-                                    <span class="ea-count-badge"
-                                          style="background:var(--success-light);color:var(--success);border-color:#bbf7d0">@Model.Casais.Count()
-                                        casais</span>
-                                    }
-                                </div>
-                                <div style="overflow-x:auto">
-                                    <table class="ea-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Casal</th>
-                                                <th>Status</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @if (Model.Casais?.Any() == true)
-                                            {
-                                                @foreach (var casal in Model.Casais)
-                                                {
-                                                    <tr>
-                                                        <td>
-                                                            <div style="display:flex;align-items:center;gap:9px">
-                                                                <div
-                                                                    style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#fff0f0,#fecaca);color:#f87171;display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0">
-                                                                    <i class="fas fa-heart"></i>
-                                                                </div>
-                                                                <span style="font-weight:700;color:var(--gray-800)">@casal.NomeCasal</span>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            @if (casal.PossuiMatriculaAtiva)
-                                                            {
-                                                                <span class="ea-badge ativo">Matriculado</span>
-                                                            }
-                                                            else
-                                                            {
-
-                                                                <span class="ea-badge inativo">Sem matrícula</span>
-                                                            }
-                                                        </td>
-                                                        <td>
-                                                            <button type="button" class="btn-ver-casal" data-id="@casal.Id"
-                                                                    title="Ver detalhes do casal">
-                                                                <i class="fas fa-eye"></i> Detalhes
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                }
-                                            }
-                                            else
-                                            {
-                                                <tr>
-                                                    <td colspan="2"
-                                                        style="text-align:center;padding:32px 16px;color:var(--gray-400);font-style:italic">
-                                                        Nenhum casal cadastrado.</td>
-                                                    </tr>
-                                                }
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-
+                                    <a class="ea-page-btn" href="@Url.Action("Index","Matricula",new{Filtro=ViewBag.Filtro,Pagina=ViewBag.NumeroPagina-1})">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </a>
+                                }
+                                <span class="ea-page-info">Página @ViewBag.NumeroPagina de @ViewBag.TotalPaginas</span>
+                                @if (ViewBag.NumeroPagina < ViewBag.TotalPaginas)
+                                {
+                                    <a class="ea-page-btn" href="@Url.Action("Index","Matricula",new{Filtro=ViewBag.Filtro,Pagina=ViewBag.NumeroPagina+1})">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                }
                             </div>
-                        </section>
+                        }
 
-                        @* {{-- ══ MODAL DETALHES DO CASAL ══════════════════════════════════ --}} *@
-                        <div class="modal fade" id="modalCasal" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog modal-lg modal-dialog-centered">
-                                <div class="modal-content" style="border:none;border-radius:var(--radius-lg);overflow:hidden">
 
-                                    @* {{-- Header --}} *@
-                                    <div class="modal-header"
-                                         style="background:linear-gradient(135deg,#1e40af,#2563eb);border:none;padding:20px 24px">
-                                        <div style="display:flex;align-items:center;gap:12px">
-                                            <div
-                                                style="width:40px;height:40px;background:rgba(255,255,255,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.9rem;flex-shrink:0">
-                                                <i class="fas fa-heart"></i>
-                                            </div>
-                                            <div>
-                                                <h5 class="modal-title" id="modalCasalNome"
-                                                    style="font-family:var(--font);font-size:1rem;font-weight:800;color:#fff;margin:0"></h5>
-                                                <p id="modalCasalCampus" style="font-size:.75rem;color:rgba(255,255,255,.7);margin:0"></p>
-                                            </div>
-                                        </div>
-                                        <button type="button" class="close" data-dismiss="modal"
-                                                style="color:#fff;opacity:.7;font-size:1.4rem;padding:0;margin:0">
-                                            <span>&times;</span>
-                                        </button>
-                                    </div>
 
-                                    @* {{-- Body --}} *@
-                                    <div class="modal-body" style="padding:0">
 
-                                        @* {{-- Loading --}} *@
-                                        <div id="modalCasalLoading"
-                                             style="display:flex;align-items:center;justify-content:center;padding:48px;gap:10px;color:var(--gray-400)">
-                                            <i class="fas fa-circle-notch fa-spin"></i>
-                                            <span style="font-size:.85rem">Carregando...</span>
-                                        </div>
 
-                                        @* {{-- Conteúdo (oculto até carregar) --}} *@
-                                        <div id="modalCasalConteudo" style="display:none">
+                   
 
-                                            @* {{-- Grid principal: contato + endereço --}} *@
-                                            <div
-                                                style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid var(--gray-100)">
+    </div>
+</section>
 
-                                                @* {{-- Cônjuge 1 --}} *@
-                                                <div style="padding:20px 24px;border-right:1px solid var(--gray-100)">
-                                                    <p
-                                                        style="font-size:.68rem;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.4px;margin:0 0 12px">
-                                                        Homem</p>
-                                                        <p id="mc-nome1"
-                                                               style="font-family:var(--font);font-size:.9rem;font-weight:800;color:var(--gray-800);margin:0 0 8px">
-                                                        </p>
-                                                        <div style="display:flex;flex-direction:column;gap:5px">
-                                                            <span id="mc-email1" style="font-size:.78rem;color:var(--gray-500)"></span>
-                                                            <span id="mc-fone1" style="font-size:.78rem;color:var(--gray-500)"></span>
-                                                        </div>
-                                                    </div>
 
-                                                    @* {{-- Cônjuge 2 --}} *@
-                                                    <div style="padding:20px 24px">
-                                                        <p
-                                                            style="font-size:.68rem;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.4px;margin:0 0 12px">
-                                                            Mulher</p>
-                                                            <p id="mc-nome2"
-                                                                   style="font-family:var(--font);font-size:.9rem;font-weight:800;color:var(--gray-800);margin:0 0 8px">
-                                                            </p>
-                                                            <div style="display:flex;flex-direction:column;gap:5px">
-                                                                <span id="mc-email2" style="font-size:.78rem;color:var(--gray-500)"></span>
-                                                                <span id="mc-fone2" style="font-size:.78rem;color:var(--gray-500)"></span>
-                                                            </div>
-                                                        </div>
+<div class="modal fade" id="modalCasal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="border:none;border-radius:var(--radius-lg);overflow:hidden">
 
-                                                    </div>
+            
+            <div class="modal-header" style="background:linear-gradient(135deg,#1e40af,#2563eb);border:none;padding:20px 24px">
+                <div style="display:flex;align-items:center;gap:12px">
+                    <div style="width:40px;height:40px;background:rgba(255,255,255,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.9rem;flex-shrink:0">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title" id="modalCasalNome" style="font-family:var(--font);font-size:1rem;font-weight:800;color:#fff;margin:0"></h5>
+                        <p id="modalCasalCampus" style="font-size:.75rem;color:rgba(255,255,255,.7);margin:0"></p>
+                    </div>
+                </div>
+                <button type="button" class="close" data-dismiss="modal" style="color:#fff;opacity:.7;font-size:1.4rem;padding:0;margin:0">
+                    <span>&times;</span>
+                </button>
+            </div>
 
-                                                    @* {{-- Endereço --}} *@
-                                                    <div
-                                                        style="padding:16px 24px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;gap:10px">
-                                                        <div
-                                                            style="width:28px;height:28px;background:var(--primary-light);color:var(--primary);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0">
-                                                            <i class="fas fa-map-marker-alt"></i>
-                                                        </div>
-                                                        <span id="mc-endereco" style="font-size:.82rem;color:var(--gray-600)"></span>
-                                                    </div>
+           
+            <div class="modal-body" style="padding:0">
 
-                                                    @* {{-- Histórico de matrículas --}} *@
-                                                    <div style="padding:16px 24px 4px">
-                                                        <p
-                                                            style="font-size:.68rem;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.4px;margin:0 0 10px">
-                                                            Histórico de matrículas</p>
-                                                            <div id="mc-matriculas"></div>
-                                                        </div>
+                @* {{-- Loading --}} *@
+                <div id="modalCasalLoading" style="display:flex;align-items:center;justify-content:center;padding:48px;gap:10px;color:var(--gray-400)">
+                    <i class="fas fa-circle-notch fa-spin"></i>
+                    <span style="font-size:.85rem">Carregando...</span>
+                </div>
 
-                                                    </div>
-                                                </div>
+                @* {{-- Conteúdo (oculto até carregar) --}} *@
+                <div id="modalCasalConteudo" style="display:none">
 
-                                            </div>
-                                        </div>
-                                    </div>
+                    
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid var(--gray-100)">
 
-                                    @section Scripts {
+                        
+                        <div style="padding:20px 24px;border-right:1px solid var(--gray-100)">
+                            <p style="font-size:.68rem;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.4px;margin:0 0 12px">Homem</p>
+                            <p id="mc-nome1" style="font-family:var(--font);font-size:.9rem;font-weight:800;color:var(--gray-800);margin:0 0 8px"></p>
+                            <div style="display:flex;flex-direction:column;gap:5px">
+                                <span id="mc-email1" style="font-size:.78rem;color:var(--gray-500)"></span>
+                                <span id="mc-fone1"  style="font-size:.78rem;color:var(--gray-500)"></span>
+                            </div>
+                        </div>
+
+                        
+                        <div style="padding:20px 24px">
+                            <p style="font-size:.68rem;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.4px;margin:0 0 12px">Mulher</p>
+                            <p id="mc-nome2" style="font-family:var(--font);font-size:.9rem;font-weight:800;color:var(--gray-800);margin:0 0 8px"></p>
+                            <div style="display:flex;flex-direction:column;gap:5px">
+                                <span id="mc-email2" style="font-size:.78rem;color:var(--gray-500)"></span>
+                                <span id="mc-fone2"  style="font-size:.78rem;color:var(--gray-500)"></span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    
+                    <div style="padding:16px 24px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;gap:10px">
+                        <div style="width:28px;height:28px;background:var(--primary-light);color:var(--primary);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <span id="mc-endereco" style="font-size:.82rem;color:var(--gray-600)"></span>
+                    </div>                  
+                    
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+                     
+
+@section Scripts {
 <style>
     .btn-ver-casal {
         display: inline-flex;
@@ -378,7 +322,7 @@
             $('#modalCasal').modal('show');
 
             // Busca os dados do endpoint JSON
-            $.getJSON('/Casal/Detalhes/' + id)
+            $.getJSON('/Matricula/Detalhes/' + id)
                 .done(function (d) {
                     preencherModal(d);
                 })
@@ -397,7 +341,7 @@
             $('#modalCasalNome').text(d.nomeConjuge1 + ' e ' + d.nomeConjuge2);
             $('#modalCasalCampus').html(
                 '<i class="fas fa-map-marker-alt" style="margin-right:4px"></i>' +
-                d.nomeCampus + ' &nbsp;·&nbsp; ' + traduzirStatus(d.status)
+                d.nomeCampus + (d.gc ? ' - GC: ' + d.gc : 'Nome GC não informado')
             );
 
             // Cônjuges
@@ -412,47 +356,7 @@
             // Endereço
             var partes = [d.rua, d.numero, d.complemento, d.bairro, d.cidade + ' - ' + d.estado, d.cep]
                 .filter(function (p) { return p && p.trim() !== ''; });
-            $('#mc-endereco').text(partes.join(', '));
-
-            // Histórico de matrículas
-            var $container = $('#mc-matriculas');
-            $container.empty();
-
-            if (!d.matriculas || d.matriculas.length === 0) {
-                $container.html(
-                    '<p style="font-size:.8rem;color:var(--gray-400);font-style:italic;padding:8px 0 16px">' +
-                    'Nenhuma matrícula registrada.</p>'
-                );
-            } else {
-                d.matriculas.forEach(function (m) {
-                    var badgeClass = m.status.toLowerCase() === 'ativa' ? 'ativa'
-                        : m.status.toLowerCase().includes('conclu') ? 'concluida'
-                        : 'desistente';
-
-                    var certificadoHtml = m.certificadoEmitido
-                        ? '<span style="font-size:.7rem;color:var(--success);margin-left:6px">' +
-                          '<i class="fas fa-certificate"></i> Certificado</span>'
-                        : '';
-
-                    var dataHtml = '<span style="font-size:.75rem;color:var(--gray-400);margin-left:6px">' +
-                        formatarData(m.dataMatricula) +
-                        (m.dataConclusao ? ' → ' + formatarData(m.dataConclusao) : '') +
-                        '</span>';
-
-                    $container.append(
-                        '<div class="mc-matricula-item">' +
-                            '<div class="mc-curso-icon"><i class="fas fa-graduation-cap"></i></div>' +
-                            '<div style="flex:1;min-width:0">' +
-                                '<span style="font-weight:700;color:var(--gray-800)">' + m.nomeCurso + '</span>' +
-                                certificadoHtml +
-                                '<br>' + dataHtml +
-                            '</div>' +
-                            '<span class="mc-badge ' + badgeClass + '">' + traduzirStatus(m.status) + '</span>' +
-                        '</div>'
-                    );
-                });
-                $container.css('padding-bottom', '8px');
-            }
+            $('#mc-endereco').text(partes.join(', '));         
 
             // Exibe o conteúdo
             $('#modalCasalLoading').hide();

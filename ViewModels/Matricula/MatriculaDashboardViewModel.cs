@@ -15,7 +15,6 @@ namespace EnsinoApp.ViewModels.Matricula
 
         // Listagens principais
         public List<InscricaoOnlineResumoViewModel> InscricoesPendentesLista { get; set; } = new();
-        public List<CasalResumoViewModel> Casais { get; set; } = new();
         public List<TurmaResumoViewModel> Turmas { get; set; } = new();
     }
 }
