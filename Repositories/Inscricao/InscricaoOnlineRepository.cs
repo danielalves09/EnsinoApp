@@ -79,7 +79,7 @@ public class InscricaoOnlineRepository : IInscricaoOnlineRepository
                 Campus = i.Campus.Nome,
                 IdCampus = i.IdCampus,
                 DataInscricao = i.DataInscricao
-            })
+            }).AsNoTracking()
             .ToList();
     }
 

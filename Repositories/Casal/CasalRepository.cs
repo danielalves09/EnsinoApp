@@ -90,4 +90,15 @@ public class CasalRepository : ICasalRepository
             .ToList();
     }
 
+    public async Task<Models.Entities.Casal?> FindByIdComMatriculasAsync(int id)
+    {
+        return await _context.Casais
+            .Include(c => c.Campus)
+            .Include(c => c.Matriculas)
+                .ThenInclude(m => m.Turma)
+                    .ThenInclude(t => t.Curso)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Id == id);
+    }
+
 }

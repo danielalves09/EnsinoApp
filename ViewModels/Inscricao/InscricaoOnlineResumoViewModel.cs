@@ -1,3 +1,5 @@
+using EnsinoApp.Models.Entities;
+
 namespace EnsinoApp.ViewModels.Inscricao;
 
 public class InscricaoOnlineResumoViewModel
@@ -9,4 +11,5 @@ public class InscricaoOnlineResumoViewModel
     public string Campus { get; set; } = string.Empty;
     public int IdCampus { get; set; }
     public DateTime DataInscricao { get; set; }
+
 }

@@ -41,5 +41,8 @@ public class CasalService : ICasalService
     {
         return await _casalRepository.GetCasaisPorCampusAsync();
     }
+
+    public Task<Models.Entities.Casal?> FindByIdComMatriculasAsync(int id) =>
+       _casalRepository.FindByIdComMatriculasAsync(id);
 }
 

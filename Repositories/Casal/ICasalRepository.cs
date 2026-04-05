@@ -17,4 +17,6 @@ public interface ICasalRepository
     Task<IEnumerable<(string Campus, int Total)>> GetCasaisPorCampusAsync();
 
     public List<CasalResumoViewModel> ObterResumoCasais();
+
+    Task<Models.Entities.Casal?> FindByIdComMatriculasAsync(int id);
 }
