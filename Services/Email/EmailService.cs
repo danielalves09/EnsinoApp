@@ -77,4 +77,31 @@ public class EmailService : IEmailService
             SendAsync(toEmailEsposa, nomeEsposa, subject, html)
         );
     }
+
+    public async Task SendResetPasswordAsync(string destinatario, string assunto, string corpo)
+    {
+        try
+        {
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress(_settings.FromName, _settings.FromEmail));
+            message.To.Add(new MailboxAddress("", destinatario));
+            message.Subject = assunto;
+
+            message.Body = new TextPart("html") { Text = corpo };
+
+            using var client = new SmtpClient();
+            await client.ConnectAsync(_settings.Host, _settings.Port,
+                _settings.UseSsl ? SecureSocketOptions.StartTls : SecureSocketOptions.None);
+            await client.AuthenticateAsync(_settings.Username, _settings.Password);
+            await client.SendAsync(message);
+            await client.DisconnectAsync(true);
+
+            _logger.LogInformation("Email enviado para {Email} | Assunto: {Subject}", destinatario, assunto);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao enviar email para {Email}", destinatario);
+
+        }
+    }
 }

@@ -196,4 +196,45 @@ public class EmailTemplateService : IEmailTemplateService
 
     return Wrap("Inscrição Recebida — " + nomeCurso, body);
   }
+
+  private static string MontarEmailCodigo(string nome, string codigo) => $"""
+        <!DOCTYPE html>
+        <html lang="pt-br">
+        <head><meta charset="utf-8"/></head>
+        <body style="font-family:'Nunito','Segoe UI',sans-serif;background:#f8fafc;margin:0;padding:32px 16px">
+          <div style="max-width:480px;margin:0 auto;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.08)">
+
+            <div style="background:linear-gradient(135deg,#1e40af,#2563eb);padding:28px 32px;text-align:center">
+              <h1 style="color:#fff;font-size:1.4rem;font-weight:800;margin:0">🔐 Redefinição de Senha</h1>
+              <p style="color:rgba(255,255,255,.75);font-size:.85rem;margin:6px 0 0">EnsinoApp · CCVideira</p>
+            </div>
+
+            <div style="padding:32px">
+              <p style="color:#334155;font-size:.95rem;margin:0 0 16px">Olá, <strong>{nome}</strong>!</p>
+              <p style="color:#64748b;font-size:.88rem;line-height:1.6;margin:0 0 24px">
+                Recebemos uma solicitação para redefinir a senha da sua conta. Use o código abaixo. Ele é válido por <strong>15 minutos</strong>.
+              </p>
+
+              <div style="background:#eff6ff;border:2px dashed #93c5fd;border-radius:12px;padding:20px;text-align:center;margin-bottom:24px">
+                <p style="font-size:.72rem;font-weight:700;color:#3b82f6;text-transform:uppercase;letter-spacing:.5px;margin:0 0 8px">Seu código</p>
+                <p style="font-size:2.2rem;font-weight:900;color:#1e40af;letter-spacing:8px;margin:0;font-family:monospace">{codigo}</p>
+              </div>
+
+              <p style="color:#94a3b8;font-size:.78rem;line-height:1.6;margin:0">
+                Se você não solicitou esta redefinição, ignore este e-mail. Sua senha permanece inalterada.
+              </p>
+            </div>
+
+            <div style="background:#f8fafc;padding:16px 32px;text-align:center;border-top:1px solid #e2e8f0">
+              <p style="color:#cbd5e1;font-size:.72rem;margin:0">© {DateTime.Now.Year} EnsinoApp · CCVideira</p>
+            </div>
+          </div>
+        </body>
+        </html>
+        """;
+
+  public string ResetPasswordEmail(string nome, string codigo)
+  {
+    return MontarEmailCodigo(nome, codigo);
+  }
 }

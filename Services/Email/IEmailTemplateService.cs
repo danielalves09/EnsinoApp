@@ -6,4 +6,6 @@ public interface IEmailTemplateService
     string InscricaoConfirmada(string nomeMarido, string nomeEsposa,
         string nomeCurso, string nomeCampus,
         bool participaGC, string? nomeGC, DateTime dataInscricao);
+
+    string ResetPasswordEmail(string nome, string codigo);
 }
