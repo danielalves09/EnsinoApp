@@ -7,7 +7,11 @@
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 [![Status](https://img.shields.io/badge/Status-Em_Desenvolvimento-yellow)]()
 
-Sistema web de gestão acadêmica e administrativa dos cursos de casais da **CCVideira**, desenvolvido em **ASP.NET Core 9 MVC**. Permite gerenciar campus, turmas, matrículas, relatórios semanais de líderes e emissão de certificados com validação pública por QR Code.
+## 📌 Descrição do Repositório
+
+**EnsinoApp** é um sistema web de gestão acadêmica e administrativa dos cursos de casais da **CCVideira**, desenvolvido em **ASP.NET Core MVC (.NET 9)**, com autenticação baseada em **ASP.NET Identity**, layout administrativo com **AdminLTE**, página de entrada pública (Landing Page) e infraestrutura preparada para **Docker**.
+
+Permite gerenciar campus, turmas, matrículas, relatórios semanais de turmas e emissão de certificados com validação pública por QR Code.
 
 ---
 
@@ -31,6 +35,17 @@ Sistema web de gestão acadêmica e administrativa dos cursos de casais da **CCV
 
 ## ✨ Funcionalidades
 
+### 👤 Autenticação e Usuários
+
+- Login e logout com redirecionamento configurável
+- Controle de acesso por **roles**
+- Lockout automático após tentativas inválidas (5 minutos)
+- Área do usuário:
+  - Atualização de dados pessoais
+  - Alteração de senha
+  - Upload e crop de foto de perfil
+- Nome e foto do usuário exibidos no navbar em todas as páginas
+
 ### Área Pública (sem login)
 
 - Landing page com apresentação dos cursos disponíveis
@@ -45,8 +60,10 @@ Sistema web de gestão acadêmica e administrativa dos cursos de casais da **CCV
 - **Turmas** — abertura de turmas por curso/campus/líder, controle de status
 - **Matrículas** — processamento de inscrições online e matrícula manual de casais
 - **Casais** — cadastro completo com dados de contato e endereço
+- **Lições** — controle de lições por turma
 - **Líderes (Usuários)** — cadastro de usuários com roles e foto de perfil
 - **Dashboard principal** — KPIs, gráficos de inscrições/matrículas/casais por campus
+- **Inscrições Online** — portal de inscrição pública
 
 ### Área do Líder
 
@@ -56,11 +73,33 @@ Sistema web de gestão acadêmica e administrativa dos cursos de casais da **CCV
 - Geração e download em lote de certificados PDF (com QR Code)
 - Visualização de certificados emitidos
 
-### Conta do Usuário
+### 📄 Certificados
 
-- Atualização de nome e e-mail
-- Alteração de senha
-- Upload e crop de foto de perfil
+- Geração de certificados em **PDF** (DinkToPdf + QuestPDF)
+- QR Code para validação
+- Download em lote (ZIP)
+- Validação pública via formulário ou URL
+
+### 📊 Relatórios
+
+- Relatórios semanais
+- Controle de certificados emitidos
+- Dashboard com gráficos via **Chart.js**
+
+### 🌐 Landing Page
+
+- Página inicial pública como rota padrão (`/Landing/Index`)
+- Portal de inscrições online acessível sem autenticação
+
+---
+
+## 🖥️ Interface
+
+- **AdminLTE** — tema administrativo responsivo
+- Layout responsivo
+- Sidebar adaptável para mobile
+- Notificações com **Toastr**
+- Suporte a **ViewComponents** para componentes reutilizáveis
 
 ---
 
@@ -77,6 +116,7 @@ Sistema web de gestão acadêmica e administrativa dos cursos de casais da **CCV
 | Logs               | Serilog (console + arquivo diário rotacionado)        |
 | Frontend           | AdminLTE 3 + Bootstrap 4 + jQuery                     |
 | Notificações UI    | Toastr.js                                             |
+| Email              | MailKit 4.7.1                                         |
 | Gráficos           | Chart.js                                              |
 | Crop de imagem     | Cropper.js                                            |
 | Infraestrutura     | Docker + Docker Compose                               |
@@ -86,7 +126,7 @@ Sistema web de gestão acadêmica e administrativa dos cursos de casais da **CCV
 
 ## 🏛 Arquitetura
 
-O projeto segue o padrão **Repository + Service Layer** com injeção de dependência via `AddScoped`.
+O projeto segue o padrão **MVC** com separação clara de responsabilidades via **Repository Pattern** e **Service Layer**:
 
 ```
 Controller → Service → Repository → DbContext (EF Core)
@@ -134,7 +174,7 @@ EnsinoApp/
 ├── Views/                       # Razor Views (.cshtml)
 ├── ViewComponents/              # UserMenuViewComponent
 │
-├── Repositories/                # Acesso a dados por entidade
+├── Repositories/                # Acesso a dados por entidade - Camada de acesso a dados (Repository Pattern)
 │   ├── ICrudRepository.cs       # Interface genérica (FindAll, FindById, Create, Update, Delete)
 │   ├── Campus/
 │   ├── Casal/
@@ -147,7 +187,7 @@ EnsinoApp/
 │   ├── Turmas/
 │   └── Usuarios/
 │
-├── Services/                    # Lógica de negócio por domínio
+├── Services/                    # Lógica de negócio por domínio - Camada de negócio (Service Layer)
 │   ├── Campus/
 │   ├── Casal/
 │   ├── Certificado/             # CertificadoService, PdfService, RazorViewToStringRenderer
@@ -251,6 +291,16 @@ environment:
   AppSettings__CertificadosFolder: "Certificados"
 ```
 
+### Suporte multiplataforma para DinkToPdf
+
+As DLLs nativas são carregadas automaticamente conforme o sistema operacional:
+
+| SO      | Biblioteca           |
+| ------- | -------------------- |
+| Windows | `libwkhtmltox.dll`   |
+| Linux   | `libwkhtmltox.so`    |
+| macOS   | `libwkhtmltox.dylib` |
+
 ---
 
 ## 🔧 Variáveis de Ambiente
@@ -352,12 +402,10 @@ Os certificados são gerados em PDF via **DinkToPdf** (wkhtmltopdf). O fluxo é:
 
 ## 🧾 Logs
 
-Logs estruturados com **Serilog**. Em produção, apenas erros são registrados.
-
-```
-Logs/
-└── erros-YYYYMMDD.log   # Rotação diária, retém 30 arquivos
-```
+- Logs estruturados com **Serilog**
+- Saída para console e arquivos diários em `/Logs`
+- Retenção de **30 dias** de histórico (`erros-YYYYMMDD.log`)
+- Nível mínimo configurado: `Error`
 
 Para alterar o nível mínimo, edite `Program.cs`:
 
@@ -371,7 +419,37 @@ Log.Logger = new LoggerConfiguration()
 
 ## 🖼 Upload de Imagens
 
-Fotos de perfil são salvas em `wwwroot/uploads/perfis/` com o nome `usuario_{id}.{ext}`. O crop é feito no front-end via **Cropper.js** antes do upload.
+- Upload com extensão automática
+- Fotos de perfil são salvas em `wwwroot/uploads/perfis/` com o nome `usuario_{id}.{ext}`.
+- O crop é feito no front-end via **Cropper.js** antes do upload.
+
+---
+
+## 📧 E-mail
+
+- Envio de e-mails via **MailKit**
+- Utilizado para notificações de inscrição e confirmações
+
+---
+
+## 🔔 Notificações
+
+- Sistema de notificações interno via `INotificationService`
+- Exibição no frontend via **Toastr**
+
+---
+
+## 🔐 Segurança
+
+- **ASP.NET Identity** com políticas de senha:
+  - Mínimo 6 caracteres
+  - Exige letra maiúscula, minúscula e dígito
+- Controle de acesso por roles
+- Proteção CSRF nativa do ASP.NET Core
+- **Data Protection** com persistência de chaves em disco (`PersistKeysToFileSystem`)
+- Lockout automático após falhas de login
+- Validação pública de certificados por QR Code
+- recuperação de senha com codigo enciado por email
 
 ---
 
@@ -388,4 +466,5 @@ Projeto desenvolvido para a **CCVideira**
 🚧 Em desenvolvimento contínuo
 
 ### Melhorias planejadas
-- [ ] Testes unitários nas camadas de Service e Repository
+
+- [ ] -
