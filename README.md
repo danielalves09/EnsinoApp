@@ -4,7 +4,6 @@
 [![ASP.NET Core MVC](https://img.shields.io/badge/ASP.NET_Core-MVC-blue)](https://learn.microsoft.com/aspnet/core/mvc)
 [![SQL Server](https://img.shields.io/badge/SQL_Server-2019+-red)](https://www.microsoft.com/sql-server)
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue)](https://www.docker.com/)
-[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 [![Status](https://img.shields.io/badge/Status-Em_Desenvolvimento-yellow)]()
 
 ## 📌 Descrição do Repositório
