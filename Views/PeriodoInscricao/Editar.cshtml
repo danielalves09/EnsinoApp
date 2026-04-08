@@ -1,0 +1,142 @@
+@model EnsinoApp.ViewModels.PeriodoInscricao.PeriodoInscricaoFormViewModel
+@{
+    ViewData["Title"] = "Editar Período de Inscrição";
+    var campuses = ViewBag.Campuses as IEnumerable<EnsinoApp.Models.Entities.Campus> ?? [];
+}
+
+<section class="content-header" style="padding-bottom:0">
+    <div class="container-fluid">
+        <a asp-action="Gerenciar"
+           asp-route-idCurso="@Model.IdCurso"
+           asp-route-nomeCurso="@Model.NomeCurso"
+           class="ea-btn-back">
+            <i class="fas fa-arrow-left"></i> Voltar para Períodos
+        </a>
+        <div class="ea-page-title">
+            <h1>
+                <i class="fas fa-calendar-edit" style="color:var(--primary);margin-right:8px"></i>
+                Editar Período de Inscrição
+            </h1>
+            <p>Ajuste as configurações do período para <strong>@Model.NomeCurso</strong> — @Model.NomeCampus</p>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <form asp-action="Editar" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"
+                 style="font-size:.8rem;margin-bottom:12px"></div>
+
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="IdCurso" />
+            <input type="hidden" asp-for="NomeCurso" />
+
+            <!-- Campus e Vagas -->
+            <div class="ea-form-card ea-fade ea-fade-1">
+                <div class="ea-form-card-header">
+                    <div class="ea-form-header-icon" style="background:var(--primary-light);color:var(--primary)">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <h3 class="ea-form-card-title">Campus e Vagas</h3>
+                </div>
+                <div class="ea-form-card-body">
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <div class="ea-field-group">
+                                <label asp-for="IdCampus" class="ea-field-label"></label>
+                                <select asp-for="IdCampus" class="ea-field-control">
+                                    <option value="">— Selecione o campus —</option>
+                                    @foreach (var c in campuses)
+                                    {
+                                        <option value="@c.Id" selected="@(c.Id == Model.IdCampus)">@c.Nome</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="IdCampus" class="ea-field-error"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="ea-field-group">
+                                <label asp-for="VagasTotal" class="ea-field-label"></label>
+                                <input asp-for="VagasTotal" type="number" min="1" class="ea-field-control" />
+                                <span asp-validation-for="VagasTotal" class="ea-field-error"></span>
+                                <p style="font-size:.72rem;color:var(--gray-400);margin-top:4px">
+                                    <i class="fas fa-info-circle"></i>
+                                    Você pode aumentar o total de vagas, mas não reduzi-lo abaixo das já ocupadas.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Datas -->
+            <div class="ea-form-card ea-fade ea-fade-2">
+                <div class="ea-form-card-header">
+                    <div class="ea-form-header-icon" style="background:var(--success-light);color:var(--success)">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <h3 class="ea-form-card-title">Período</h3>
+                </div>
+                <div class="ea-form-card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="ea-field-group">
+                                <label asp-for="DataAbertura" class="ea-field-label"></label>
+                                <input asp-for="DataAbertura" type="datetime-local" class="ea-field-control" />
+                                <span asp-validation-for="DataAbertura" class="ea-field-error"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="ea-field-group">
+                                <label asp-for="DataEncerramento" class="ea-field-label"></label>
+                                <input asp-for="DataEncerramento" type="datetime-local" class="ea-field-control" />
+                                <span asp-validation-for="DataEncerramento" class="ea-field-error"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ativar -->
+            <div class="ea-form-card ea-fade ea-fade-3">
+                <div class="ea-form-card-header">
+                    <div class="ea-form-header-icon" style="background:var(--warning-light);color:var(--warning)">
+                        <i class="fas fa-power-off"></i>
+                    </div>
+                    <h3 class="ea-form-card-title">Ativação</h3>
+                </div>
+                <div class="ea-form-card-body">
+                    <div class="ea-toggle-row">
+                        <label class="ea-toggle">
+                            <input asp-for="Ativo" type="checkbox" />
+                            <span class="ea-toggle-slider"></span>
+                        </label>
+                        <div>
+                            <div class="ea-toggle-label">Período ativo</div>
+                            <div class="ea-toggle-desc">
+                                Quando ativo, o formulário de inscrição fica disponível para o público
+                                dentro do intervalo de datas e enquanto houver vagas.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ea-form-footer">
+                    <a asp-action="Gerenciar"
+                       asp-route-idCurso="@Model.IdCurso"
+                       asp-route-nomeCurso="@Model.NomeCurso"
+                       class="ea-btn-action cancel">
+                        <i class="fas fa-times"></i> Cancelar
+                    </a>
+                    <button type="submit" class="ea-btn-action save">
+                        <i class="fas fa-save"></i> Salvar Alterações
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

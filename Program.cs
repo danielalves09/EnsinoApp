@@ -11,6 +11,7 @@ using EnsinoApp.Repositories.Cursos;
 using EnsinoApp.Repositories.Inscricao;
 using EnsinoApp.Repositories.Licao;
 using EnsinoApp.Repositories.Matricula;
+using EnsinoApp.Repositories.PeriodoInscricao;
 using EnsinoApp.Repositories.RelatorioSemanal;
 using EnsinoApp.Repositories.Supervisao;
 using EnsinoApp.Repositories.Turmas;
@@ -25,6 +26,7 @@ using EnsinoApp.Services.Licao;
 using EnsinoApp.Services.Lider;
 using EnsinoApp.Services.Matricula;
 using EnsinoApp.Services.Notifications;
+using EnsinoApp.Services.PeriodoInscricao;
 using EnsinoApp.Services.Supervisao;
 using EnsinoApp.Services.Turmas;
 using EnsinoApp.Services.Usuarios;
@@ -48,7 +50,7 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Host.UseSerilog();
+//builder.Host.UseSerilog();
 
 // ================= CARREGAR DLLS NATIVAS DINKTOPDF ==================
 string nativeLibPath;
@@ -62,7 +64,7 @@ else
     throw new PlatformNotSupportedException("Sistema operacional não suportado para DinkToPdf");
 
 var context = new CustomAssemblyLoadContext();
-context.LoadUnmanagedLibrary(nativeLibPath);
+//context.LoadUnmanagedLibrary(nativeLibPath);
 
 
 // ==================== DATA PROTECTION - IIS =====================
@@ -108,6 +110,7 @@ builder.Services.AddScoped<ILicaoRepository, LicaoRepository>();
 builder.Services.AddScoped<IRelatorioSemanalRepository, RelatorioSemanalRepository>();
 builder.Services.AddScoped<EnsinoApp.Repositories.Agenda.IAgendaRepository,
                             EnsinoApp.Repositories.Agenda.AgendaRepository>();
+builder.Services.AddScoped<IPeriodoInscricaoRepository, PeriodoInscricaoRepository>();
 
 // Services
 builder.Services.AddScoped<ICampusService, CampusService>();
@@ -129,6 +132,7 @@ builder.Services.AddScoped<EnsinoApp.Services.Email.IEmailLembreteService,
                             EnsinoApp.Services.Email.SmtpEmailService>();
 builder.Services.AddScoped<EnsinoApp.Services.Agenda.IAgendaService,
 EnsinoApp.Services.Agenda.AgendaService>();
+builder.Services.AddScoped<IPeriodoInscricaoService, PeriodoInscricaoService>();
 
 
 
@@ -193,10 +197,10 @@ app.UseMiddleware<ExceptionMiddleware>();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // app.UseHsts(); — mantido comentado, reativar quando tiver domínio com HTTPS
+    app.UseHsts(); //— mantido comentado, reativar quando tiver domínio com HTTPS
 }
 
-// app.UseHttpsRedirection(); — mantido comentado, reativar quando tiver domínio com HTTPS
+app.UseHttpsRedirection(); //— mantido comentado, reativar quando tiver domínio com HTTPS
 
 
 app.UseResponseCompression();

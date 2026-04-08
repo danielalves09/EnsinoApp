@@ -3,6 +3,7 @@ using EnsinoApp.Services.Campus;
 using EnsinoApp.Services.Cursos;
 using EnsinoApp.Services.Email;
 using EnsinoApp.Services.Inscricao;
+using EnsinoApp.Services.PeriodoInscricao;
 using EnsinoApp.ViewModels.Inscricao;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,18 +19,43 @@ public class InscricaoController : Controller
     private readonly ICursoService _cursoService;
     private readonly IEmailService _emailService;
 
-    public InscricaoController(IInscricaoOnlineService service, ICampusService campusService, ICursoService cursoService, IEmailService emailService)
+    private readonly IPeriodoInscricaoService _periodoService;
+
+    public InscricaoController(IInscricaoOnlineService service, ICampusService campusService, ICursoService cursoService, IEmailService emailService, IPeriodoInscricaoService periodoService)
     {
         _service = service;
         _campusService = campusService;
         _cursoService = cursoService;
         _emailService = emailService;
+        _periodoService = periodoService;
     }
 
-    public IActionResult Index()
+    /*   public IActionResult Index()
+      {
+          ViewBag.Campuses = new SelectList(_campusService.FindAll(), "Id", "Nome");
+          ViewBag.Cursos = new SelectList(_cursoService.FindAll(), "Id", "Nome");
+          return View(new InscricaoOnlineViewModel());
+      } */
+
+    public async Task<IActionResult> Index()
     {
-        ViewBag.Campuses = new SelectList(_campusService.FindAll(), "Id", "Nome");
-        ViewBag.Cursos = new SelectList(_cursoService.FindAll(), "Id", "Nome");
+        // Busca apenas os períodos que estão com inscrições abertas
+        var periodosAbertos = await _periodoService.FindTodosAbertosAsync();
+
+        if (!periodosAbertos.Any())
+        {
+            // Sem nenhum período aberto: exibe tela de "inscrições fechadas"
+            return View("InscricoesFechadas");
+        }
+
+        // Monta SelectList apenas com os campus que têm período aberto
+        var campusIds = periodosAbertos.Select(p => p.IdCampus).Distinct().ToList();
+        var campuses = _campusService.FindAll()
+            .Where(c => campusIds.Contains(c.Id))
+            .ToList();
+
+        ViewBag.Campuses = new SelectList(campuses, "Id", "Nome");
+        ViewBag.PeriodosAbertos = periodosAbertos; // usado pelo JS para filtrar cursos
         return View(new InscricaoOnlineViewModel());
     }
 
@@ -38,8 +64,20 @@ public class InscricaoController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Cadastrar(InscricaoOnlineViewModel model)
     {
-        if (!ModelState.IsValid)
+        /*  if (!ModelState.IsValid)
+         {
+             ViewBag.Campuses = new SelectList(_campusService.FindAll(), "Id", "Nome");
+             ViewBag.Cursos = new SelectList(_cursoService.FindAll(), "Id", "Nome");
+             return View(model);
+         } */
+
+        try
         {
+            await _periodoService.ReservarVagaAsync(model.IdCurso, model.IdCampus);
+        }
+        catch (InvalidOperationException ex)
+        {
+            ModelState.AddModelError("", ex.Message);
             ViewBag.Campuses = new SelectList(_campusService.FindAll(), "Id", "Nome");
             ViewBag.Cursos = new SelectList(_cursoService.FindAll(), "Id", "Nome");
             return View(model);
@@ -106,11 +144,30 @@ public class InscricaoController : Controller
         return View();
     }
 
+    /*  [HttpGet]
+     public IActionResult GetCursosPorCampus(int campusId)
+     {
+         var cursos = _cursoService.FindAll()
+             .Where(c => c.IdCampus == campusId)
+             .Select(c => new { c.Id, c.Nome })
+             .ToList();
+
+         return Json(cursos);
+     } */
+
     [HttpGet]
-    public IActionResult GetCursosPorCampus(int campusId)
+    public async Task<IActionResult> GetCursosPorCampus(int campusId)
     {
+        var periodosAbertos = await _periodoService.FindTodosAbertosAsync();
+
+        var cursoIdsAbertos = periodosAbertos
+            .Where(p => p.IdCampus == campusId)
+            .Select(p => p.IdCurso)
+            .Distinct()
+            .ToList();
+
         var cursos = _cursoService.FindAll()
-            .Where(c => c.IdCampus == campusId)
+            .Where(c => c.IdCampus == campusId && cursoIdsAbertos.Contains(c.Id))
             .Select(c => new { c.Id, c.Nome })
             .ToList();
 

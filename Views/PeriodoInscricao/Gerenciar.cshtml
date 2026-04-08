@@ -1,0 +1,182 @@
+@model IEnumerable<EnsinoApp.ViewModels.PeriodoInscricao.PeriodoInscricaoViewModel>
+@{
+    ViewData["Title"] = "Períodos de Inscrição";
+    int idCurso = ViewBag.IdCurso;
+    string nomeCurso = ViewBag.NomeCurso ?? "Curso";
+}
+
+<section class="content-header" style="padding-bottom:0">
+    <div class="container-fluid">
+        <a asp-controller="Curso" asp-action="Index" class="ea-btn-back">
+            <i class="fas fa-arrow-left"></i> Voltar para Cursos
+        </a>
+        <div class="ea-page-title">
+            <h1>
+                <i class="fas fa-calendar-check" style="color:var(--primary);margin-right:8px"></i>
+                Inscrições — @nomeCurso
+            </h1>
+            <p>Gerencie os períodos, campus e vagas disponíveis para inscrição neste curso</p>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <div class="ea-toolbar">
+            <div style="flex:1"></div>
+            <a asp-action="Adicionar"
+               asp-route-idCurso="@idCurso"
+               asp-route-nomeCurso="@nomeCurso"
+               class="ea-btn-new">
+                <i class="fas fa-plus"></i> Novo Período
+            </a>
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="ea-table-card ea-fade">
+                <div class="ea-table-card-header">
+                    <div class="ea-table-header-icon" style="background:var(--primary-light);color:var(--primary)">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <h3 class="ea-table-card-title">Períodos cadastrados</h3>
+                    <span class="ea-count-badge">@Model.Count() período(s)</span>
+                </div>
+
+                <div style="overflow-x:auto">
+                    <table class="ea-table">
+                        <thead>
+                            <tr>
+                                <th>Campus</th>
+                                <th>Abertura</th>
+                                <th>Encerramento</th>
+                                <th>Vagas</th>
+                                <th>Status</th>
+                                <th style="text-align:right">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var p in Model)
+                            {
+                                <tr>
+                                    <!-- Campus -->
+                                    <td>
+                                        <span style="font-weight:700;color:var(--gray-800)">
+                                            <i class="fas fa-map-marker-alt"
+                                               style="color:var(--gray-300);margin-right:5px;font-size:.7rem"></i>
+                                            @p.NomeCampus
+                                        </span>
+                                    </td>
+
+                                    <!-- Datas -->
+                                    <td>
+                                        <span class="ea-date-pill">
+                                            <i class="fas fa-calendar-alt"></i>
+                                            @p.DataAbertura.ToString("dd/MM/yyyy HH:mm")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="ea-date-pill">
+                                            <i class="fas fa-calendar-alt"></i>
+                                            @p.DataEncerramento.ToString("dd/MM/yyyy HH:mm")
+                                        </span>
+                                    </td>
+
+                                    <!-- Vagas -->
+                                    <td>
+                                        <div style="display:flex;flex-direction:column;gap:4px;min-width:120px">
+                                            <div style="display:flex;justify-content:space-between;font-size:.72rem;font-weight:700;color:var(--gray-500)">
+                                                <span>@p.VagasOcupadas usadas</span>
+                                                <span>@p.VagasTotal total</span>
+                                            </div>
+                                            <div style="height:6px;background:var(--gray-100);border-radius:20px;overflow:hidden">
+                                                @{
+                                                    int pct = p.VagasTotal == 0 ? 0
+                                                        : (int)((p.VagasOcupadas / (double)p.VagasTotal) * 100);
+                                                    string barColor = pct >= 100 ? "#dc2626"
+                                                        : pct >= 75 ? "#d97706"
+                                                        : "#16a34a";
+                                                }
+                                                <div style="height:100%;width:@(Math.Min(pct,100))%;background:@barColor;border-radius:20px;transition:width .4s"></div>
+                                            </div>
+                                            <span style="font-size:.68rem;color:var(--gray-400)">
+                                                @p.VagasRestantes vaga(s) restante(s)
+                                            </span>
+                                        </div>
+                                    </td>
+
+                                    <!-- Status badge -->
+                                    <td>
+                                        <span class="ea-badge @p.StatusBadge">@p.StatusLabel</span>
+                                    </td>
+
+                                    <!-- Ações -->
+                                    <td>
+                                        <div style="display:flex;gap:6px;justify-content:flex-end">
+
+                                            <!-- Toggle ativo/inativo -->
+                                            <form asp-action="ToggleAtivo" method="post" style="display:inline">
+                                                <input type="hidden" name="id" value="@p.Id" />
+                                                <input type="hidden" name="idCurso" value="@idCurso" />
+                                                <input type="hidden" name="nomeCurso" value="@nomeCurso" />
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit"
+                                                        class="ea-action-btn @(p.Ativo ? "danger" : "success")"
+                                                        title="@(p.Ativo ? "Desativar" : "Ativar")">
+                                                    <i class="fas @(p.Ativo ? "fa-toggle-on" : "fa-toggle-off")"></i>
+                                                </button>
+                                            </form>
+
+                                            <!-- Editar -->
+                                            <a asp-action="Editar" asp-route-id="@p.Id"
+                                               class="ea-action-btn primary" title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+
+                                            <!-- Excluir -->
+                                            <form asp-action="Excluir" method="post" style="display:inline"
+                                                  onsubmit="return confirm('Excluir este período?')">
+                                                <input type="hidden" name="id" value="@p.Id" />
+                                                <input type="hidden" name="idCurso" value="@idCurso" />
+                                                <input type="hidden" name="nomeCurso" value="@nomeCurso" />
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="ea-action-btn danger" title="Excluir">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Legenda de status -->
+            <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;font-size:.75rem;color:var(--gray-400)">
+                <span><span class="ea-badge ativo" style="font-size:.68rem">Aberto</span> — período vigente com vagas</span>
+                <span><span class="ea-badge acomecar" style="font-size:.68rem">Agendado</span> — ainda não iniciou</span>
+                <span><span class="ea-badge pendente" style="font-size:.68rem">Sem vagas</span> — esgotado</span>
+                <span><span class="ea-badge cancelada" style="font-size:.68rem">Encerrado</span> — prazo expirado</span>
+                <span><span class="ea-badge inativo" style="font-size:.68rem">Inativo</span> — desabilitado manualmente</span>
+            </div>
+        }
+        else
+        {
+            <div class="ea-empty">
+                <i class="fas fa-calendar-times"></i>
+                <h3>Nenhum período cadastrado</h3>
+                <p>Crie um período para habilitar as inscrições online para este curso.</p>
+                <a asp-action="Adicionar"
+                   asp-route-idCurso="@idCurso"
+                   asp-route-nomeCurso="@nomeCurso"
+                   class="ea-btn-new" style="margin-top:12px">
+                    <i class="fas fa-plus"></i> Criar primeiro período
+                </a>
+            </div>
+        }
+
+    </div>
+</section>
