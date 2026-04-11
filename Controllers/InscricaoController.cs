@@ -3,6 +3,7 @@ using EnsinoApp.Services.Campus;
 using EnsinoApp.Services.Cursos;
 using EnsinoApp.Services.Email;
 using EnsinoApp.Services.Inscricao;
+using EnsinoApp.Services.Licao;
 using EnsinoApp.Services.PeriodoInscricao;
 using EnsinoApp.ViewModels.Inscricao;
 using Microsoft.AspNetCore.Authorization;
@@ -17,72 +18,141 @@ public class InscricaoController : Controller
     private readonly IInscricaoOnlineService _service;
     private readonly ICampusService _campusService;
     private readonly ICursoService _cursoService;
+    private readonly IPeriodoInscricaoService _periodoService;
+    private readonly ILicaoService _licaoService;
+
     private readonly IEmailService _emailService;
 
-    private readonly IPeriodoInscricaoService _periodoService;
-
-    public InscricaoController(IInscricaoOnlineService service, ICampusService campusService, ICursoService cursoService, IEmailService emailService, IPeriodoInscricaoService periodoService)
+    public InscricaoController(
+        IInscricaoOnlineService service,
+        ICampusService campusService,
+        ICursoService cursoService,
+        IPeriodoInscricaoService periodoService,
+        ILicaoService licaoService,
+        IEmailService emailService)
     {
         _service = service;
         _campusService = campusService;
         _cursoService = cursoService;
-        _emailService = emailService;
         _periodoService = periodoService;
+        _licaoService = licaoService;
+        _emailService = emailService;
     }
 
-    /*   public IActionResult Index()
-      {
-          ViewBag.Campuses = new SelectList(_campusService.FindAll(), "Id", "Nome");
-          ViewBag.Cursos = new SelectList(_cursoService.FindAll(), "Id", "Nome");
-          return View(new InscricaoOnlineViewModel());
-      } */
-
-    public async Task<IActionResult> Index()
+    // ── GET /Inscricao ───────────────────────────────────────────
+    // Exibe a página do wizard. A verificação de períodos abertos
+    // é feita pelo próprio JS ao chamar GetCampusAbertos().
+    public IActionResult Index()
     {
-        // Busca apenas os períodos que estão com inscrições abertas
-        var periodosAbertos = await _periodoService.FindTodosAbertosAsync();
-
-        if (!periodosAbertos.Any())
-        {
-            // Sem nenhum período aberto: exibe tela de "inscrições fechadas"
-            return View("InscricoesFechadas");
-        }
-
-        // Monta SelectList apenas com os campus que têm período aberto
-        var campusIds = periodosAbertos.Select(p => p.IdCampus).Distinct().ToList();
-        var campuses = _campusService.FindAll()
-            .Where(c => campusIds.Contains(c.Id))
-            .ToList();
-
-        ViewBag.Campuses = new SelectList(campuses, "Id", "Nome");
-        ViewBag.PeriodosAbertos = periodosAbertos; // usado pelo JS para filtrar cursos
         return View(new InscricaoOnlineViewModel());
     }
 
+    // ── API: campus com pelo menos um período aberto ─────────────
+    [HttpGet]
+    public async Task<IActionResult> GetCampusAbertos()
+    {
+        var periodos = await _periodoService.FindTodosAbertosAsync();
 
+        // Agrupa por campus e soma vagas restantes
+        var resultado = periodos
+            .GroupBy(p => new { p.IdCampus, NomeCampus = p.Campus.Nome })
+            .Select(g => new
+            {
+                id = g.Key.IdCampus,
+                nome = g.Key.NomeCampus,
+                vagasRestantes = g.Sum(p => p.VagasTotal - p.VagasOcupadas)
+            })
+            .OrderBy(x => x.nome)
+            .ToList();
+
+        return Json(resultado);
+    }
+
+    // ── API: cursos abertos para um campus específico ────────────
+    [HttpGet]
+    public async Task<IActionResult> GetCursosAbertos(int campusId)
+    {
+        var periodos = await _periodoService.FindTodosAbertosAsync();
+
+        var periodosNoCampus = periodos
+            .Where(p => p.IdCampus == campusId)
+            .ToList();
+
+        if (!periodosNoCampus.Any())
+            return Json(new List<object>());
+
+        var cursoIds = periodosNoCampus.Select(p => p.IdCurso).Distinct().ToList();
+
+        // Carrega cursos com suas lições
+        var resultado = new List<object>();
+
+        foreach (var periodo in periodosNoCampus)
+        {
+            var curso = _cursoService.FindById(periodo.IdCurso);
+            if (curso == null) continue;
+
+            // Busca lições do curso para exibir na listagem
+            var licoes = await _licaoService.FindByCursoAsync(curso.Id);
+            var nomesLicoes = licoes
+                .OrderBy(l => l.NumeroSemana)
+                .Select(l => l.Titulo)
+                .ToList();
+
+            resultado.Add(new
+            {
+                id = curso.Id,
+                nome = curso.Nome,
+                descricao = curso.Descricao,
+                licoes = nomesLicoes,
+                vagasRestantes = periodo.VagasTotal - periodo.VagasOcupadas
+            });
+        }
+
+        return Json(resultado.OrderBy(x => ((dynamic)x).nome));
+    }
+
+    // ── POST /Inscricao/Cadastrar ────────────────────────────────
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Cadastrar(InscricaoOnlineViewModel model)
     {
-        /*  if (!ModelState.IsValid)
-         {
-             ViewBag.Campuses = new SelectList(_campusService.FindAll(), "Id", "Nome");
-             ViewBag.Cursos = new SelectList(_cursoService.FindAll(), "Id", "Nome");
-             return View(model);
-         } */
+        if (!ModelState.IsValid)
+        {
+            // Devolve ao passo 3 com os dados preservados
+            ViewBag.ErroValidacao = true;
+            ViewBag.IdCampus = model.IdCampus;
+            ViewBag.IdCurso = model.IdCurso;
 
+            // Recupera nomes para reexibir no breadcrumb
+            var campus = _campusService.FindById(model.IdCampus);
+            var curso = _cursoService.FindById(model.IdCurso);
+            ViewBag.NomeCampus = campus?.Nome ?? string.Empty;
+            ViewBag.NomeCurso = curso?.Nome ?? string.Empty;
+
+            return View("Index", model);
+        }
+
+        // ── Valida período e reserva vaga ────────────────────────
         try
         {
             await _periodoService.ReservarVagaAsync(model.IdCurso, model.IdCampus);
         }
         catch (InvalidOperationException ex)
         {
-            ModelState.AddModelError("", ex.Message);
-            ViewBag.Campuses = new SelectList(_campusService.FindAll(), "Id", "Nome");
-            ViewBag.Cursos = new SelectList(_cursoService.FindAll(), "Id", "Nome");
-            return View(model);
+            ModelState.AddModelError(string.Empty, ex.Message);
+            ViewBag.ErroValidacao = true;
+            ViewBag.IdCampus = model.IdCampus;
+            ViewBag.IdCurso = model.IdCurso;
+
+            var campus = _campusService.FindById(model.IdCampus);
+            var curso = _cursoService.FindById(model.IdCurso);
+            ViewBag.NomeCampus = campus?.Nome ?? string.Empty;
+            ViewBag.NomeCurso = curso?.Nome ?? string.Empty;
+
+            return View("Index", model);
         }
 
+        // ── Cria a inscrição ─────────────────────────────────────
         var inscricao = new InscricaoOnline
         {
             NomeMarido = model.NomeMarido,
@@ -101,27 +171,26 @@ public class InscricaoController : Controller
             IdCampus = model.IdCampus,
             IdCurso = model.IdCurso,
             ParticipaGC = model.ParticipaGC,
-            NomeGC = model.NomeGC,
-            DataInscricao = DateTime.Now
+            NomeGC = model.NomeGC
         };
 
-        var inscricaoSalva = await _service.CreateAsync(inscricao);
+        var inscricaoConfirmada = await _service.CreateAsync(inscricao);
 
         // Se o repositório retornou null por algum motivo, usa o objeto local
-        var dadosEmail = inscricaoSalva ?? inscricao;
+        var dadosEmail = inscricaoConfirmada; //?? inscricao;
 
-        var nomeCampus = _campusService.FindById(dadosEmail.IdCampus)?.Nome ?? string.Empty;
+        var nomeCampus = _campusService.FindById(dadosEmail!.IdCampus)?.Nome ?? string.Empty;
         var nomeCurso = _cursoService.FindById(dadosEmail.IdCurso)?.Nome ?? string.Empty;
 
         var confirmacaoVM = new ConfirmacaoInscricaoViewModel
         {
-            NomeMarido = dadosEmail.NomeMarido,
-            NomeEsposa = dadosEmail.NomeEsposa,
-            NomeCampus = nomeCampus,
-            NomeCurso = nomeCurso,
-            ParticipaGC = dadosEmail.ParticipaGC,
-            NomeGC = dadosEmail.NomeGC,
-            DataInscricao = dadosEmail.DataInscricao
+            NomeMarido = inscricaoConfirmada.NomeMarido,
+            NomeEsposa = inscricaoConfirmada.NomeEsposa,
+            NomeCampus = _campusService.FindById(inscricaoConfirmada.IdCampus)?.Nome ?? string.Empty,
+            NomeCurso = _cursoService.FindById(inscricaoConfirmada.IdCurso)?.Nome ?? string.Empty,
+            ParticipaGC = inscricaoConfirmada.ParticipaGC,
+            NomeGC = inscricaoConfirmada.NomeGC,
+            DataInscricao = inscricaoConfirmada.DataInscricao
         };
 
         // Dispara o email em background — falha não bloqueia o fluxo
@@ -139,41 +208,13 @@ public class InscricaoController : Controller
         return View("Confirmacao", confirmacaoVM);
     }
 
+    // ── Confirmação (GET direto — mantido para compatibilidade) ──
     public IActionResult Confirmacao()
     {
         return View();
     }
 
-    /*  [HttpGet]
-     public IActionResult GetCursosPorCampus(int campusId)
-     {
-         var cursos = _cursoService.FindAll()
-             .Where(c => c.IdCampus == campusId)
-             .Select(c => new { c.Id, c.Nome })
-             .ToList();
-
-         return Json(cursos);
-     } */
-
-    [HttpGet]
-    public async Task<IActionResult> GetCursosPorCampus(int campusId)
-    {
-        var periodosAbertos = await _periodoService.FindTodosAbertosAsync();
-
-        var cursoIdsAbertos = periodosAbertos
-            .Where(p => p.IdCampus == campusId)
-            .Select(p => p.IdCurso)
-            .Distinct()
-            .ToList();
-
-        var cursos = _cursoService.FindAll()
-            .Where(c => c.IdCampus == campusId && cursoIdsAbertos.Contains(c.Id))
-            .Select(c => new { c.Id, c.Nome })
-            .ToList();
-
-        return Json(cursos);
-    }
-
+    // ── Processar inscrição (admin) ──────────────────────────────
     public async Task<IActionResult> Processar(int id)
     {
         await _service.ProcessarAsync(id);
