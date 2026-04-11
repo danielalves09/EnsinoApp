@@ -151,14 +151,14 @@
                             <div class="ea-pagination">
                                 @if (ViewBag.NumeroPagina > 1)
                                 {
-                                    <a class="ea-page-btn" href="@Url.Action("Index","Matricula",new{Filtro=ViewBag.Filtro,Pagina=ViewBag.NumeroPagina-1})">
+                                    <a class="ea-page-btn" href="@Url.Action("Index","Matricula",new{idCurso=ViewBag.IdCursoSelecionado,idCampus=ViewBag.IdCampusSelecionado,Pagina=ViewBag.NumeroPagina-1})">
                                         <i class="fas fa-chevron-left"></i>
                                     </a>
                                 }
                                 <span class="ea-page-info">Página @ViewBag.NumeroPagina de @ViewBag.TotalPaginas</span>
                                 @if (ViewBag.NumeroPagina < ViewBag.TotalPaginas)
                                 {
-                                    <a class="ea-page-btn" href="@Url.Action("Index","Matricula",new{Filtro=ViewBag.Filtro,Pagina=ViewBag.NumeroPagina+1})">
+                                    <a class="ea-page-btn" href="@Url.Action("Index","Matricula",new{idCurso=ViewBag.IdCursoSelecionado,idCampus=ViewBag.IdCampusSelecionado,Pagina=ViewBag.NumeroPagina+1})">
                                         <i class="fas fa-chevron-right"></i>
                                     </a>
                                 }

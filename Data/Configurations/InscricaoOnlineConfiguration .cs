@@ -49,7 +49,7 @@ public class InscricaoOnlineConfiguration : IEntityTypeConfiguration<InscricaoOn
         builder.Property(i => i.DataInscricao)
             .IsRequired();
 
-        // 🔗 Relacionamento com Campus
+        // Relacionamento com Campus
         builder.HasOne(i => i.Campus)
             .WithMany()
             .HasForeignKey(i => i.IdCampus)

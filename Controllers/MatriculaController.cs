@@ -65,6 +65,8 @@ public class MatriculaController : Controller
             Turmas = _turmaService.ObterResumoTurmasAtivas()
         };
 
+        ViewBag.IdCursoSelecionado = idCurso;
+        ViewBag.IdCampusSelecionado = idCampus;
         ViewBag.Cursos = new SelectList(_cursoService.FindAll(), "Id", "Nome", idCurso);
         ViewBag.Campuses = new SelectList(_campusService.FindAll(), "Id", "Nome", idCampus);
         ViewBag.NumeroPagina = pagina;
