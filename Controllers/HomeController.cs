@@ -56,7 +56,19 @@ namespace EnsinoApp.Controllers
             // Dados do usuário logado 
             var user = await _userManager.GetUserAsync(User);
 
-            ViewBag.NomeUsuario = user?.NomeMarido ?? "Visitante";
+            if (user.NomeMarido == null || user.NomeMarido == string.Empty)
+            {
+                ViewBag.NomeUsuario = user?.NomeEsposa ?? "Visitante";
+            }
+            else if (user.NomeEsposa == null || user.NomeEsposa == string.Empty)
+            {
+                ViewBag.NomeUsuario = user?.NomeMarido ?? "Visitante";
+            }
+            else
+            {
+                ViewBag.NomeUsuario = $"{user?.NomeMarido} e {user?.NomeEsposa}";
+            }
+            //ViewBag.NomeUsuario = user?.NomeMarido ?? "Visitante";
             ViewBag.FotoPerfil = user?.FotoPerfil;
 
 

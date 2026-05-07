@@ -61,6 +61,7 @@ public class UsuariosController : Controller
             NomeEsposa = u.NomeEsposa,
             Campus = u.Campus.Nome,
             Supervisao = u.Supervisao?.Nome ?? "-",
+            TipoUsuario = _userManager.GetRolesAsync(u).Result.FirstOrDefault() ?? "Não definido",
             Ativo = u.Ativo
         });
 

@@ -3,7 +3,7 @@ namespace EnsinoApp.Services.Email;
 public class EmailTemplateService : IEmailTemplateService
 {
 
-  private static string dominio = "http://189.124.212.152";
+  private static string dominio = "https://dtasoft.com.br";
   // ── Layout base compartilhado ──────────────────────────────────────
   private static string Wrap(string title, string bodyContent) => $@"
 <!DOCTYPE html>

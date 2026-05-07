@@ -1,5 +1,6 @@
 using EnsinoApp.Models.Entities;
 using EnsinoApp.Services.Usuarios;
+using EnsinoApp.Services.Util;
 using EnsinoApp.ViewModels.Menu;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,10 +13,13 @@ namespace EnsinoApp.ViewComponents
         private readonly IUsuariosService _usuariosService;
         private readonly UserManager<Usuario> _userManager;
 
-        public UserMenuViewComponent(IUsuariosService usuariosService, UserManager<Usuario> userManager)
+        private readonly IUtilService _utilService;
+
+        public UserMenuViewComponent(IUsuariosService usuariosService, UserManager<Usuario> userManager, IUtilService utilService)
         {
             _usuariosService = usuariosService;
             _userManager = userManager;
+            _utilService = utilService;
         }
 
         public async Task<IViewComponentResult> InvokeAsync()
@@ -27,7 +31,7 @@ namespace EnsinoApp.ViewComponents
 
             var model = new UserMenuViewModel
             {
-                Nome = _usuariosService.GetNomeReduzido(user!.NomeMarido, user.NomeEsposa),
+                Nome = _utilService.GetNomeReduzido(user!.NomeMarido, user.NomeEsposa),
                 FotoUrl = string.IsNullOrEmpty(user.FotoPerfil) ? "/images/avatar-default.jpg" : user.FotoPerfil
             };
 

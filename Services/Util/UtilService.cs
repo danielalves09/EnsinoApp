@@ -5,12 +5,27 @@ public class UtilService : IUtilService
 {
     public string GetNomeReduzido(string nome1, string nome2)
     {
-
+        if (nome1 == null || nome1 == string.Empty)
+        {
+            return GetPrimeiroNome(nome2);
+        }
+        if (nome2 == null || nome2 == string.Empty)
+        {
+            return GetPrimeiroNome(nome1);
+        }
         return $"{GetPrimeiroNome(nome1)} e {GetPrimeiroNome(nome2)}";
     }
 
     public string GetNomeSobrenome(string nome1, string nome2)
     {
+        if (nome1 == null || nome1 == string.Empty)
+        {
+            return GetPrimeiroNome(nome2) + " " + GetSobrenome(nome2);
+        }
+        if (nome2 == null || nome2 == string.Empty)
+        {
+            return GetPrimeiroNome(nome1) + " " + GetSobrenome(nome1);
+        }
         return $"{GetPrimeiroNome(nome1)} {GetSobrenome(nome1)} e {GetPrimeiroNome(nome2)} {GetSobrenome(nome2)}";
     }
 
