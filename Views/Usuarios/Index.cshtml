@@ -43,6 +43,7 @@
                             <tr>
                                 <th>Usuário</th>
                                 <th>Email</th>
+                                <th>Tipo Usuário</th>
                                 <th>Campus</th>
                                 <th>Supervisão</th>
                                 <th>Status</th>
@@ -57,13 +58,26 @@
                                 <tr>
                                     <td>
                                         <div style="display:flex;align-items:center;gap:10px">
-                                            <div      style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--primary-light),var(--primary-mid));color:var(--primary);font-size:.75rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--font)">
+                                            <div
+                                                style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--primary-light),var(--primary-mid));color:var(--primary);font-size:.75rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--font)">
                                                 @iniciais.ToUpper()</div>
                                                 <span style="font-weight:700;color:var(--gray-800)">@item.NomeCompleto</span>
                                             </div>
                                         </td>
                                         <td style="color:var(--gray-500);font-size:.78rem"><i class="fas fa-envelope"
                                                                                                   style="margin-right:4px;color:var(--gray-300)"></i>@item.Email</td>
+                                           
+                                            <td>
+                                                @if (!string.IsNullOrWhiteSpace(item.TipoUsuario))
+                                                {
+                                                    <span class="ea-meta-pill"><i class="fas fa-user"></i>@item.TipoUsuario</span>
+                                                }
+                                                else
+                                                {
+
+                                                    <span style="color:var(--gray-300);font-size:.75rem">—</span>
+                                                }
+                                            </td>
                                             <td>
                                                 @if (!string.IsNullOrWhiteSpace(item.Campus))
                                                 {
@@ -87,7 +101,7 @@
                                                 }
                                             </td>
                                             <td><span class="ea-badge @(item.Ativo ? "ativo" : "inativo")">@(item.Ativo ? "Ativo" :
-                                                                                                                                    "Inativo")</span></td>
+                                                                                                                                                                                                                                                                                                                                    "Inativo")</span></td>
                                                 <td>
                                                     <div style="display:flex;gap:6px">
                                                         <a href="/usuarios/editar/@item.Id" class="ea-action-btn primary" title="Editar"><i

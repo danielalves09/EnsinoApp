@@ -2,58 +2,77 @@
 @{
     ViewData["Title"] = "Editar Lição";
 }
-<section class="content-header">
+
+<section class="content-header" style="padding-bottom:0">
     <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6">
-                <h3 class="mb-4">✏️ Editar Lição</h3>
-            </div>
+        <a asp-action="Index" asp-route-cursoId="@Model.IdCurso" class="ea-btn-back">
+            <i class="fas fa-arrow-left"></i> Voltar para Lições
+        </a>
+        <div class="ea-page-title">
+            <h1>
+                <i class="fas fa-book-open" style="color:var(--primary);margin-right:8px"></i>
+                Editar Lição
+            </h1>
+            <p>Atualize os dados da lição selecionada</p>
         </div>
     </div>
 </section>
 
-<section class=content>
-    <div class=row>
-        <div class=col-12>
-            <div class="card shadow">
-                <div class="card-body">
-                    <form asp-action="Editar" method="post">
-                        <input type="hidden" asp-for="Id" />
-                        <input type="hidden" asp-for="IdCurso" />
+<section class="content">
+    <div class="container-fluid">
+        <form asp-action="Editar" method="post">
+            <div asp-validation-summary="All" class="text-danger" style="font-size:.8rem;margin-bottom:12px"></div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="IdCurso" />
 
-                        <div class="mb-3">
-                            <label asp-for="Numero" class="form-label"></label>
-                            <input asp-for="Numero" class="form-control" />
-                            <span asp-validation-for="Numero" class="text-danger"></span>
+            <div class="ea-form-card ea-fade ea-fade-1">
+                <div class="ea-form-card-header">
+                    <div class="ea-form-header-icon" style="background:var(--primary-light);color:var(--primary)">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <h3 class="ea-form-card-title">Dados da Lição</h3>
+                </div>
+                <div class="ea-form-card-body">
+                    <div class="row g-3">
+                        <div class="col-md-2">
+                            <div class="ea-field-group">
+                                <label asp-for="Numero" class="ea-field-label">Número da Semana</label>
+                                <input asp-for="Numero" type="number" min="1" max="100" class="ea-field-control"
+                                       placeholder="Ex: 1" />
+                                <span asp-validation-for="Numero" class="ea-field-error"></span>
+                            </div>
                         </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Titulo" class="form-label"></label>
-                            <input asp-for="Titulo" class="form-control" />
-                            <span asp-validation-for="Titulo" class="text-danger"></span>
+                        <div class="col-md-10">
+                            <div class="ea-field-group">
+                                <label asp-for="Titulo" class="ea-field-label">Título</label>
+                                <input asp-for="Titulo" class="ea-field-control" placeholder="Título da lição" />
+                                <span asp-validation-for="Titulo" class="ea-field-error"></span>
+                            </div>
                         </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Descricao" class="form-label"></label>
-                            <textarea asp-for="Descricao" class="form-control" rows="3"></textarea>
-                            <span asp-validation-for="Descricao" class="text-danger"></span>
+                        <div class="col-12">
+                            <div class="ea-field-group">
+                                <label asp-for="Descricao" class="ea-field-label">Descrição</label>
+                                <textarea asp-for="Descricao" class="ea-field-control" rows="4"
+                                          placeholder="Descreva o conteúdo abordado nesta lição..."></textarea>
+                                <span asp-validation-for="Descricao" class="ea-field-error"></span>
+                            </div>
                         </div>
-
-                        <div class="d-flex justify-content-between mt-4">
-                            <a asp-action="Index" asp-route-cursoId="@Model.IdCurso" class="btn btn-secondary">
-                                <i class="fas fa-arrow-left"></i> Voltar
-                            </a>
-                            <button type="submit" class="btn btn-warning">
-                                <i class="fas fa-save"></i> Atualizar
-                            </button>
-
-                        </div>
-                    </form>
+                    </div>
+                </div>
+                <div class="ea-form-footer">
+                    <a asp-action="Index" asp-route-cursoId="@Model.IdCurso" class="ea-btn-action cancel">
+                        <i class="fas fa-times"></i> Cancelar
+                    </a>
+                    <button type="submit" class="ea-btn-action save">
+                        <i class="fas fa-save"></i> Salvar Alterações
+                    </button>
                 </div>
             </div>
-        </div>
+
+        </form>
     </div>
 </section>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
