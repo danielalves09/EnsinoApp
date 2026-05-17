@@ -1,12 +1,20 @@
+// ── Arquivo: Controllers/CursoController.cs ──────────────────────────────────
+// Alterações em relação ao original:
+//   1. Injetar ILayoutCertificadoService
+//   2. Preencher LayoutsDisponiveis no Adicionar e Editar
+//   3. Mapear IdLayoutCertificado no Create/Update
+//   4. Incluir LayoutCertificado no FindByIdDashboard
+
 using EnsinoApp.Models.Entities;
-using EnsinoApp.Services.Cursos;
 using EnsinoApp.Services.Campus;
+using EnsinoApp.Services.Cursos;
+using EnsinoApp.Services.LayoutCertificado;
+using EnsinoApp.Services.Util;
 using EnsinoApp.ViewModels.Cursos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using EnsinoApp.Models.Enums;
-using Microsoft.AspNetCore.Authorization;
-using EnsinoApp.Services.Util;
 
 namespace EnsinoApp.Controllers;
 
@@ -15,16 +23,24 @@ public class CursoController : Controller
 {
     private readonly ICursoService _cursoService;
     private readonly ICampusService _campusService;
-
     private readonly IUtilService _utilService;
+    private readonly ILayoutCertificadoService _layoutService;
+
 
     private const int TAMANHO_PAGINA = 10;
-    public CursoController(ICursoService cursoService, ICampusService campusService, IUtilService utilService)
+
+    public CursoController(
+        ICursoService cursoService,
+        ICampusService campusService,
+        IUtilService utilService,
+        ILayoutCertificadoService layoutService)
     {
         _cursoService = cursoService;
         _campusService = campusService;
         _utilService = utilService;
+        _layoutService = layoutService;
     }
+
 
     public IActionResult Index(string filtro, int pagina = 1)
     {
@@ -36,7 +52,9 @@ public class CursoController : Controller
             Descricao = c.Descricao,
             Ativo = c.Ativo,
             IdCampus = c.IdCampus,
-            NomeCampus = c.Campus?.Nome ?? string.Empty
+            NomeCampus = c.Campus?.Nome ?? string.Empty,
+            IdLayoutCertificado = c.IdLayoutCertificado,
+            NomeLayoutCertificado = c.LayoutCertificado?.Nome
         });
 
         ViewBag.Filtro = filtro;
@@ -44,20 +62,24 @@ public class CursoController : Controller
         ViewBag.TotalPaginas = Math.Ceiling((decimal)viewModel.Count() / TAMANHO_PAGINA);
 
         return View(viewModel.Skip((pagina - 1) * TAMANHO_PAGINA).Take(TAMANHO_PAGINA));
-
     }
 
-    public IActionResult Adicionar()
+
+    public async Task<IActionResult> Adicionar()
     {
-        return View(new CursoViewModel());
+        var vm = new CursoViewModel();
+        await PreencherSelectLists(vm);
+        return View(vm);
     }
+
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Adicionar(CursoViewModel model)
+    public async Task<IActionResult> Adicionar(CursoViewModel model)
     {
         if (!ModelState.IsValid)
         {
+            await PreencherSelectLists(model);
             return View(model);
         }
 
@@ -66,14 +88,16 @@ public class CursoController : Controller
             Nome = model.Nome,
             Descricao = model.Descricao,
             Ativo = model.Ativo,
-            IdCampus = model.IdCampus
+            IdCampus = model.IdCampus,
+            IdLayoutCertificado = model.IdLayoutCertificado
         };
 
         _cursoService.Create(curso);
         return RedirectToAction(nameof(Index));
     }
 
-    public IActionResult Editar(int id)
+
+    public async Task<IActionResult> Editar(int id)
     {
         var curso = _cursoService.FindById(id);
         if (curso == null) return NotFound();
@@ -85,20 +109,23 @@ public class CursoController : Controller
             Descricao = curso.Descricao,
             Ativo = curso.Ativo,
             IdCampus = curso.IdCampus,
-            NomeCampus = curso.Campus?.Nome ?? string.Empty
+            NomeCampus = curso.Campus?.Nome ?? string.Empty,
+            IdLayoutCertificado = curso.IdLayoutCertificado,
+            NomeLayoutCertificado = curso.LayoutCertificado?.Nome
         };
 
-        ViewBag.Campuses = new SelectList(_campusService.FindAll(), "Id", "Nome", model.IdCampus);
+        await PreencherSelectLists(model);
         return View(model);
     }
 
+
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Editar(CursoViewModel model)
+    public async Task<IActionResult> Editar(CursoViewModel model)
     {
         if (!ModelState.IsValid)
         {
-            ViewBag.Campuses = new SelectList(_campusService.FindAll(), "Id", "Nome", model.IdCampus);
+            await PreencherSelectLists(model);
             return View(model);
         }
 
@@ -109,10 +136,12 @@ public class CursoController : Controller
         curso.Descricao = model.Descricao;
         curso.Ativo = model.Ativo;
         curso.IdCampus = model.IdCampus;
+        curso.IdLayoutCertificado = model.IdLayoutCertificado;
 
         _cursoService.Update(curso);
         return RedirectToAction(nameof(Index));
     }
+
 
     public IActionResult Deletar(int id)
     {
@@ -120,10 +149,10 @@ public class CursoController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+
     public IActionResult Dashboard(int id)
     {
         var curso = _cursoService.FindByIdDashboard(id);
-
         if (curso == null) return NotFound();
 
         var turmas = curso.Turmas.Select(t => new CursoDashboardViewModel.TurmaInfo
@@ -139,8 +168,8 @@ public class CursoController : Controller
                 Id = m.Casal.Id,
                 NomeMarido = m.Casal.NomeConjuge1,
                 NomeEsposa = m.Casal.NomeConjuge2,
-                StatusCasal = (Models.Enums.StatusCasal)m.Casal.Status,
-                StatusPresenca = (Models.Enums.StatusPresenca)m.Casal.Status
+                StatusCasal = (StatusCasal)m.Casal.Status,
+                StatusPresenca = (StatusPresenca)m.Casal.Status
             }).ToList()
         }).ToList();
 
@@ -160,20 +189,24 @@ public class CursoController : Controller
         return View(model);
     }
 
+
     public IActionResult Buscar(string filtro, string campusId)
     {
-        var curso = _cursoService.FindAll().Where(c => c.Nome.ToLower().Contains(filtro.ToLower()) && c.IdCampus == int.Parse(campusId)).Select(c => new
-        {
-            Id = c.Id,
-            Nome = c.Nome,
-            NomeCampus = c.Campus.Nome,
-        });
+        var resultado = _cursoService.FindAll()
+            .Where(c => c.Nome.ToLower().Contains(filtro.ToLower())
+                     && c.IdCampus == int.Parse(campusId))
+            .Select(c => new { Id = c.Id, Nome = c.Nome, NomeCampus = c.Campus.Nome });
 
-        return Json(curso);
-
-
+        return Json(resultado);
     }
 
+    private async Task PreencherSelectLists(CursoViewModel vm)
+    {
+        ViewBag.Campuses = new SelectList(
+            _campusService.FindAll(), "Id", "Nome", vm.IdCampus);
 
-
+        var layouts = await _layoutService.FindAllAtivosAsync();
+        vm.LayoutsDisponiveis = new SelectList(
+            layouts, "Id", "Nome", vm.IdLayoutCertificado);
+    }
 }

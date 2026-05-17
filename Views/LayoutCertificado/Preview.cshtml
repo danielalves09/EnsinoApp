@@ -1,0 +1,103 @@
+@model EnsinoApp.ViewModels.LayoutCertificado.PreviewLayoutViewModel
+@{
+    ViewData["Title"] = $"Preview — {Model.Nome}";
+}
+
+<section class="content-header" style="padding-bottom:0">
+    <div class="container-fluid">
+        <a asp-action="Index" class="ea-btn-back"><i class="fas fa-arrow-left"></i> Voltar para Layouts</a>
+        <div class="ea-page-title">
+            <h1><i class="fas fa-eye" style="color:var(--info);margin-right:8px"></i>Preview — @Model.Nome</h1>
+            <p>Visualização do certificado com dados de exemplo. O resultado final pode variar levemente no PDF.</p>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <!-- Info do layout -->
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px;align-items:center">
+            <span class="ea-meta-pill">
+                <i class="fas fa-@(Model.Orientacao == "Landscape" ? "arrows-alt-h" : "arrows-alt-v")"></i>
+                @Model.Orientacao
+            </span>
+            @if (!string.IsNullOrWhiteSpace(Model.Descricao))
+            {
+                <span style="font-size:.8rem;color:var(--gray-500)">@Model.Descricao</span>
+            }
+            <div style="margin-left:auto;display:flex;gap:8px">
+                <a asp-action="Editar" asp-route-id="@Model.Id" class="ea-btn-action" style="background:var(--primary-light);color:var(--primary);border:1px solid var(--primary-mid)">
+                    <i class="fas fa-edit"></i> Editar Layout
+                </a>
+                <a asp-action="PreviewHtml" asp-route-id="@Model.Id" target="_blank" class="ea-btn-action" style="background:var(--info-light);color:var(--info);border:1px solid #a5f3fc">
+                    <i class="fas fa-external-link-alt"></i> Abrir em nova aba
+                </a>
+            </div>
+        </div>
+
+        <!-- Frame do preview -->
+        <div class="ea-form-card ea-fade" style="overflow:hidden">
+            <div class="ea-form-card-header">
+                <div class="ea-form-header-icon" style="background:var(--info-light);color:var(--info)">
+                    <i class="fas fa-certificate"></i>
+                </div>
+                <h3 class="ea-form-card-title">Pré-visualização com dados de exemplo</h3>
+                <div style="margin-left:auto">
+                    <span style="font-size:.72rem;color:var(--gray-400);font-weight:600">
+                        <i class="fas fa-info-circle" style="margin-right:3px"></i>
+                        Os dados exibidos são fictícios apenas para visualização
+                    </span>
+                </div>
+            </div>
+
+            <!-- iframe para o HTML processado -->
+            <div style="padding:0;background:var(--gray-100);min-height:600px;display:flex;align-items:stretch">
+                <iframe id="certPreviewFrame"
+                        style="width:100%;min-height:600px;border:none;flex:1"
+                        title="Preview do certificado">
+                </iframe>
+            </div>
+        </div>
+
+        <!-- Variáveis utilizadas (referência) -->
+        <div class="ea-form-card ea-fade" style="margin-top:16px">
+            <div class="ea-form-card-header">
+                <div class="ea-form-header-icon" style="background:#f5f3ff;color:#7c3aed">
+                    <i class="fas fa-code"></i>
+                </div>
+                <h3 class="ea-form-card-title">Variáveis Disponíveis</h3>
+            </div>
+            <div style="padding:16px 20px">
+                <div style="display:flex;flex-wrap:wrap;gap:8px">
+                    @foreach (var v in Model.VariaveisDisponiveis)
+                    {
+                        <div style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius);padding:8px 14px;min-width:200px">
+                            <code style="display:block;font-size:.75rem;color:var(--primary);font-weight:700;margin-bottom:3px">@v.Variavel</code>
+                            <span style="font-size:.72rem;color:var(--gray-500)">@v.Descricao</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        // Injeta o HTML processado diretamente no iframe via srcdoc para evitar CSP e navegação
+        const htmlProcessado = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.HtmlProcessado));
+        const iframe = document.getElementById('certPreviewFrame');
+
+        iframe.srcdoc = htmlProcessado;
+
+        // Ajusta a altura do iframe ao conteúdo após carregar
+        iframe.addEventListener('load', function () {
+            try {
+                const height = iframe.contentDocument.documentElement.scrollHeight;
+                if (height > 400) iframe.style.minHeight = height + 'px';
+            } catch (e) { /* cross-origin — ignora */ }
+        });
+    </script>
+}

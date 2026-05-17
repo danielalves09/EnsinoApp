@@ -25,6 +25,7 @@ public class EnsinoAppContext : IdentityDbContext<Usuario, IdentityRole<int>, in
     public DbSet<InscricaoOnline> InscricoesOnline => Set<InscricaoOnline>();
     public DbSet<PeriodoInscricao> PeriodosInscricao => Set<PeriodoInscricao>();
     public DbSet<AgendaLicao> AgendaLicoes => Set<AgendaLicao>();
+    public DbSet<LayoutCertificado> LayoutsCertificado => Set<LayoutCertificado>();
 
 
 
@@ -43,5 +44,6 @@ public class EnsinoAppContext : IdentityDbContext<Usuario, IdentityRole<int>, in
         modelBuilder.ApplyConfiguration(new InscricaoOnlineConfiguration());
         modelBuilder.ApplyConfiguration(new PeriodoInscricaoConfiguration());
         modelBuilder.ApplyConfiguration(new AgendaLicaoConfiguration());
+        modelBuilder.ApplyConfiguration(new LayoutCertificadoConfiguration());
     }
 }

@@ -24,5 +24,13 @@ public class CursoConfiguration : IEntityTypeConfiguration<Curso>
                .WithOne(l => l.Curso)
                .HasForeignKey(l => l.IdCurso)
                .OnDelete(DeleteBehavior.Cascade);
+
+        // ── vínculo com o layout de certificado (opcional) ─────────────
+        builder.Property(c => c.IdLayoutCertificado).IsRequired(false);
+
+        builder.HasOne(c => c.LayoutCertificado)
+               .WithMany(l => l.Cursos)
+               .HasForeignKey(c => c.IdLayoutCertificado)
+               .OnDelete(DeleteBehavior.SetNull);
     }
 }

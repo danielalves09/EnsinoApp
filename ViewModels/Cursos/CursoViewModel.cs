@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace EnsinoApp.ViewModels.Cursos;
 
@@ -19,4 +20,12 @@ public class CursoViewModel
     public string Descricao { get; set; } = null!;
 
     public bool Ativo { get; set; } = true;
+
+    //Layout de certificado (opcional) ───────────────────────────────
+    [Display(Name = "Layout de Certificado")]
+    public int? IdLayoutCertificado { get; set; }
+
+    public string? NomeLayoutCertificado { get; set; }
+    public SelectList? LayoutsDisponiveis { get; set; }
+    // ─────────────────────────────────────────────────────────────────────────
 }

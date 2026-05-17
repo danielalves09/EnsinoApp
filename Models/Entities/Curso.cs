@@ -8,6 +8,11 @@ namespace EnsinoApp.Models.Entities
         public string Descricao { get; set; } = null!;
         public bool Ativo { get; set; }
 
+
+        // Layout do certificado (opcional — usa o padrão se nulo)
+        public int? IdLayoutCertificado { get; set; }
+        public LayoutCertificado? LayoutCertificado { get; set; }
+
         public Campus Campus { get; set; } = null!;
         public ICollection<Licao> Licoes { get; set; } = new List<Licao>();
         public ICollection<Turma> Turmas { get; set; } = new List<Turma>();

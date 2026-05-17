@@ -4,6 +4,7 @@ using EnsinoApp.Data.Configurations;
 using EnsinoApp.Models.Entities;
 using EnsinoApp.Models.Enums;
 using EnsinoApp.Services.Certificado;
+using EnsinoApp.Services.LayoutCertificado;
 using EnsinoApp.Services.Licao;
 using EnsinoApp.Services.Lider;
 using EnsinoApp.Services.Matricula;
@@ -37,11 +38,11 @@ public class LiderController : Controller
     private readonly IWebHostEnvironment _env;
     private readonly AppSettings _appSettings;
     private readonly INotificationService _notification;
-
     private readonly IUtilService _utilService;
 
+    private readonly ILayoutCertificadoService _layoutService;
 
-    public LiderController(ILiderService service, ILicaoService licaoService, ITurmaService turmaService, IMatriculaService matriculaService, UserManager<Usuario> userManager, ICertificadoService certificadoService, IWebHostEnvironment env, IOptions<AppSettings> options, INotificationService notification, IUtilService utilService)
+    public LiderController(ILiderService service, ILicaoService licaoService, ITurmaService turmaService, IMatriculaService matriculaService, UserManager<Usuario> userManager, ICertificadoService certificadoService, IWebHostEnvironment env, IOptions<AppSettings> options, INotificationService notification, IUtilService utilService, ILayoutCertificadoService layoutService)
     {
         _service = service;
         _licaoService = licaoService;
@@ -53,6 +54,7 @@ public class LiderController : Controller
         _appSettings = options.Value;
         _notification = notification;
         _utilService = utilService;
+        _layoutService = layoutService;
     }
 
     public async Task<IActionResult> Index()
@@ -252,6 +254,7 @@ public class LiderController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+
     [HttpGet]
     public async Task<IActionResult> GerarCertificados()
     {
@@ -263,22 +266,36 @@ public class LiderController : Controller
             return RedirectToAction("Index");
         }
 
-
         var certificadosFolder = Path.Combine(_env.WebRootPath, _appSettings.CertificadosFolder);
         if (!Directory.Exists(certificadosFolder))
             Directory.CreateDirectory(certificadosFolder);
 
         var memoryStream = new MemoryStream();
 
-        using (var zip = new System.IO.Compression.ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+        using (var zip = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
         {
             foreach (var mat in matriculas)
             {
+                // ── Identifica o layout do curso ──────────────────────────────
+                var curso = mat.Turma.Curso;
+                int? idLayout = curso.IdLayoutCertificado;
+                string orientacao = "Landscape"; // padrão
+
+                if (idLayout.HasValue)
+                {
+                    // Herda a orientação do layout cadastrado
+                    var layout = await _layoutService.FindByIdAsync(idLayout.Value);
+                    if (layout is not null)
+                        orientacao = layout.Orientacao;
+                }
+                // ─────────────────────────────────────────────────────────────
+
                 string codValidacao = _certificadoService.GerarCodigoValidacao();
+
                 var model = new CertificadoViewModel
                 {
                     NomeCasal = _certificadoService.GerarNomeCasal(mat.Casal.NomeConjuge1, mat.Casal.NomeConjuge2),
-                    NomeCurso = mat.Turma.Curso.Nome,
+                    NomeCurso = curso.Nome,
                     DataConclusao = mat.DataConclusao ?? DateTime.Now,
                     NomeLider = _certificadoService.GerarNomeLideres(mat.Turma.Lider.NomeMarido, mat.Turma.Lider.NomeEsposa),
                     NomeCampus = mat.Turma.Campus.Nome,
@@ -288,19 +305,23 @@ public class LiderController : Controller
                     FontWoffUrl = Path.Combine(_env.WebRootPath, "fonts", "greatvibes-regular.woff").Replace("\\", "/"),
                     FontTtfUrl = Path.Combine(_env.WebRootPath, "fonts", "greatvibes-regular.ttf").Replace("\\", "/"),
                     CodigoValidacao = codValidacao,
-                    QRCodeBase64 = _certificadoService.GerarQRCode(codValidacao)
+                    QRCodeBase64 = _certificadoService.GerarQRCode(codValidacao),
+
+                    // ── NOVOS campos ──────────────────────────────────────────
+                    IdLayoutCertificado = idLayout,
+                    Orientacao = orientacao,
+                    // ─────────────────────────────────────────────────────────
                 };
-                Console.WriteLine(model.FundoUrl);
-                // Gera o PDF
+
                 var pdfBytes = await _certificadoService.GerarCertificadoPdfAsync(model);
                 if (pdfBytes == null || pdfBytes.Length == 0)
                     continue;
 
-                //Salva o arquivo no servidor
+                // Salva no servidor
                 var arquivoCaminho = Path.Combine(certificadosFolder, $"Certificado_{mat.IdCasal}.pdf");
                 await System.IO.File.WriteAllBytesAsync(arquivoCaminho, pdfBytes);
 
-                //Adiciona ao ZIP para download
+                // Adiciona ao ZIP
                 var entry = zip.CreateEntry($"Certificado_{mat.IdCasal}.pdf");
                 using var entryStream = entry.Open();
                 await entryStream.WriteAsync(pdfBytes, 0, pdfBytes.Length);
@@ -316,8 +337,76 @@ public class LiderController : Controller
 
         _notification.Success($"Certificados gerados: {matriculas.Count}");
         return File(memoryStream, "application/zip", "Certificados.zip");
-
     }
+
+
+
+    /*  [HttpGet]
+     public async Task<IActionResult> GerarCertificados()
+     {
+         var matriculas = await _matriculaService.GetConcluidasSemCertificadoAsync();
+
+         if (!matriculas.Any())
+         {
+             _notification.Info("Não há certificados pendentes para gerar.");
+             return RedirectToAction("Index");
+         }
+
+
+         var certificadosFolder = Path.Combine(_env.WebRootPath, _appSettings.CertificadosFolder);
+         if (!Directory.Exists(certificadosFolder))
+             Directory.CreateDirectory(certificadosFolder);
+
+         var memoryStream = new MemoryStream();
+
+         using (var zip = new System.IO.Compression.ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+         {
+             foreach (var mat in matriculas)
+             {
+                 string codValidacao = _certificadoService.GerarCodigoValidacao();
+                 var model = new CertificadoViewModel
+                 {
+                     NomeCasal = _certificadoService.GerarNomeCasal(mat.Casal.NomeConjuge1, mat.Casal.NomeConjuge2),
+                     NomeCurso = mat.Turma.Curso.Nome,
+                     DataConclusao = mat.DataConclusao ?? DateTime.Now,
+                     NomeLider = _certificadoService.GerarNomeLideres(mat.Turma.Lider.NomeMarido, mat.Turma.Lider.NomeEsposa),
+                     NomeCampus = mat.Turma.Campus.Nome,
+                     LogoUrl = Path.Combine(_env.WebRootPath, "images", "logovideira3.png"),
+                     FundoUrl = Path.Combine(_env.WebRootPath, "images", "bordaCertificado4.png").Replace("\\", "/"),
+                     FontWoff2Url = Path.Combine(_env.WebRootPath, "fonts", "greatvibes-regular.woff2").Replace("\\", "/"),
+                     FontWoffUrl = Path.Combine(_env.WebRootPath, "fonts", "greatvibes-regular.woff").Replace("\\", "/"),
+                     FontTtfUrl = Path.Combine(_env.WebRootPath, "fonts", "greatvibes-regular.ttf").Replace("\\", "/"),
+                     CodigoValidacao = codValidacao,
+                     QRCodeBase64 = _certificadoService.GerarQRCode(codValidacao)
+                 };
+                 Console.WriteLine(model.FundoUrl);
+                 // Gera o PDF
+                 var pdfBytes = await _certificadoService.GerarCertificadoPdfAsync(model);
+                 if (pdfBytes == null || pdfBytes.Length == 0)
+                     continue;
+
+                 //Salva o arquivo no servidor
+                 var arquivoCaminho = Path.Combine(certificadosFolder, $"Certificado_{mat.IdCasal}.pdf");
+                 await System.IO.File.WriteAllBytesAsync(arquivoCaminho, pdfBytes);
+
+                 //Adiciona ao ZIP para download
+                 var entry = zip.CreateEntry($"Certificado_{mat.IdCasal}.pdf");
+                 using var entryStream = entry.Open();
+                 await entryStream.WriteAsync(pdfBytes, 0, pdfBytes.Length);
+
+                 mat.CertificadoEmitido = true;
+                 mat.CodigoValidacao = codValidacao;
+                 mat.CaminhoCertificado = $"/{_appSettings.CertificadosFolder}/Certificado_{mat.IdCasal}.pdf";
+                 await _matriculaService.UpdateAsync(mat);
+             }
+         }
+
+         memoryStream.Position = 0;
+
+         _notification.Success($"Certificados gerados: {matriculas.Count}");
+         return File(memoryStream, "application/zip", "Certificados.zip");
+
+     } */
 
 
     [HttpPost]

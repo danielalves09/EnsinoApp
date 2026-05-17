@@ -14,5 +14,15 @@ namespace EnsinoApp.ViewModels.Certificado
         public string FontTtfUrl { get; set; } = String.Empty;
         public string CodigoValidacao { get; set; } = null!;
         public string QRCodeBase64 { get; set; } = null!;
+
+        /// <summary>
+        /// ID do layout dinâmico cadastrado no módulo de layouts de certificado.
+        /// Quando nulo, usa o template Razor padrão (CertificadoTemplate.cshtml).
+        /// </summary>
+        public int? IdLayoutCertificado { get; set; }
+
+        public string Orientacao { get; set; } = "Landscape";
+
+
     }
 }

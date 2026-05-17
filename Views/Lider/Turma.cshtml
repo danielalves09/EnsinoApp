@@ -7,6 +7,7 @@
 <section class="content-header" style="padding-bottom:0">
     <div class="container-fluid">
         <a asp-action="Index" class="ea-btn-back"><i class="fas fa-arrow-left"></i> Voltar para Turmas</a>
+
         <div class="ea-welcome">
             <div class="ea-welcome-text">
                 <h1><i class="fas fa-graduation-cap" style="margin-right:8px;opacity:.85"></i>@Model.NomeCurso</h1>
@@ -93,6 +94,49 @@
                                         </div>
                                     </div>
 
+                                    @if (Model.Status == StatusTurma.Acomecar)
+                                    {
+                                        <div style="background:linear-gradient(90deg,var(--info-light) 0%,#fff 100%);
+                                            border:1.5px solid #93c5fd;border-left:4px solid var(--info);
+                                            border-radius:var(--radius-lg);padding:18px 22px;
+                                            display:flex;align-items:center;gap:16px;margin-bottom:20px;
+                                            flex-wrap:wrap" class="ea-fade">
+                                            <div style="width:50px;height:50px;border-radius:50%;
+                                                background:var(--info-light);display:flex;align-items:center;
+                                                justify-content:center;flex-shrink:0;border:1.5px solid #93c5fd">
+                                                <i class="fas fa-play-circle" style="font-size:1.4rem;color:var(--info)"></i>
+                                            </div>
+                                            <div style="flex:1;min-width:200px">
+                                                <p style="font-family:var(--font);font-size:.95rem;font-weight:800;
+                                                    color:var(--gray-800);margin:0 0 3px">
+                                                    Esta turma ainda não foi iniciada
+                                                </p>
+                                                <p style="font-size:.8rem;color:var(--gray-500);margin:0;line-height:1.5">
+                                                    Clique em <strong>Iniciar Turma</strong> para alterar o status para
+                                                    <span style="background:var(--purple-light);color:var(--purple);
+                                                    border-radius:20px;padding:1px 8px;font-size:.72rem;
+                                                    font-weight:700">Em Andamento</span>
+                                                    e habilitar o lançamento de relatórios semanais.
+                                                </p>
+                                            </div>
+                                            <form asp-action="IniciarTurma" method="post" style="flex-shrink:0;width:100%;display:contents">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@Model.Id" />
+                                                <button type="submit"
+                                                        onclick="return confirm('Deseja realmente iniciar esta turma? O status será alterado para Em Andamento.')"
+                                                        style="display:inline-flex;align-items:center;justify-content:center;
+                                                    gap:8px;background:var(--info);color:#fff;border:none;
+                                                    border-radius:var(--radius);padding:11px 22px;
+                                                    font-size:.85rem;font-weight:700;cursor:pointer;
+                                                    font-family:var(--font);white-space:nowrap;
+                                                    transition:background .18s;flex-shrink:0">
+                                                    <i class="fas fa-play"></i> Iniciar Turma
+                                                </button>
+                                            </form>
+                                        </div>
+                                    }
+
+
                                     <div class="ea-toolbar ea-fade">
                                         <a class="ea-btn-new" href="@Url.Action("GerarCertificados","Lider")" style="background:var(--primary)">
                                             <i class="fas fa-award"></i> Gerar Certificados
@@ -103,11 +147,11 @@
                                             }
                                         </a>
                                         <a asp-action="Relatorios" asp-route-idTurma="@Model.Id"
-                                               style="display:inline-flex;align-items:center;gap:6px;background:var(--info-light);color:var(--info);border:1px solid #a5f3fc;border-radius:var(--radius);padding:9px 16px;font-size:.82rem;font-weight:700;text-decoration:none">
+                                           style="display:inline-flex;align-items:center;gap:6px;background:var(--info-light);color:var(--info);border:1px solid #a5f3fc;border-radius:var(--radius);padding:9px 16px;font-size:.82rem;font-weight:700;text-decoration:none">
                                             <i class="fas fa-search"></i> Ver Relatórios
                                         </a>
                                         <a asp-action="CriarRelatorio" asp-route-idTurma="@Model.Id"
-                                               style="display:inline-flex;align-items:center;gap:6px;background:var(--success-light);color:var(--success);border:1px solid #bbf7d0;border-radius:var(--radius);padding:9px 16px;font-size:.82rem;font-weight:700;text-decoration:none">
+                                           style="display:inline-flex;align-items:center;gap:6px;background:var(--success-light);color:var(--success);border:1px solid #bbf7d0;border-radius:var(--radius);padding:9px 16px;font-size:.82rem;font-weight:700;text-decoration:none">
                                             <i class="fas fa-plus"></i> Novo Relatório Semanal
                                         </a>
                                         <a asp-controller="Agenda" asp-action="Index" asp-route-idTurma="@Model.Id" style="display:inline-flex;align-items:center;gap:6px;
@@ -165,7 +209,7 @@
                                                                     @if (casal.Matricula.Status == StatusMatricula.Ativa)
                                                                     {
                                                                         <a asp-action="ConcluirCurso" asp-route-idMatricula="@casal.Matricula.Id"
-                                                                               style="display:inline-flex;align-items:center;gap:5px;background:var(--success-light);color:var(--success);border:1px solid #bbf7d0;border-radius:var(--radius-sm);padding:5px 10px;font-size:.74rem;font-weight:700;text-decoration:none">
+                                                                           style="display:inline-flex;align-items:center;gap:5px;background:var(--success-light);color:var(--success);border:1px solid #bbf7d0;border-radius:var(--radius-sm);padding:5px 10px;font-size:.74rem;font-weight:700;text-decoration:none">
                                                                             <i class="fas fa-check"></i> Concluir
                                                                         </a>
                                                                     }
@@ -179,9 +223,9 @@
                                                                     @if (casal.Matricula.CertificadoEmitido)
                                                                     {
                                                                         <a asp-action="VerCertificado" asp-controller="Lider"
-                                                                               asp-route-idMatricula="@casal.Matricula.Id"
-                                                                               asp-route-turmaId="@casal.Matricula.IdTurma" target="_blank"
-                                                                               style="display:inline-flex;align-items:center;gap:5px;background:var(--primary-light);color:var(--primary);border:1px solid var(--primary-mid);border-radius:var(--radius-sm);padding:5px 10px;font-size:.74rem;font-weight:700;text-decoration:none">
+                                                                           asp-route-idMatricula="@casal.Matricula.Id"
+                                                                           asp-route-turmaId="@casal.Matricula.IdTurma" target="_blank"
+                                                                           style="display:inline-flex;align-items:center;gap:5px;background:var(--primary-light);color:var(--primary);border:1px solid var(--primary-mid);border-radius:var(--radius-sm);padding:5px 10px;font-size:.74rem;font-weight:700;text-decoration:none">
                                                                             <i class="fas fa-file-pdf"></i> Ver Certificado
                                                                         </a>
                                                                     }

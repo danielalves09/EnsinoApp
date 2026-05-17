@@ -1,0 +1,16 @@
+@model EnsinoApp.ViewModels.LayoutCertificado.LayoutCertificadoFormViewModel
+@{
+    ViewData["Title"] = "Cadastrar Layout de Certificado";
+}
+
+<section class="content-header" style="padding-bottom:0">
+    <div class="container-fluid">
+        <a asp-action="Index" class="ea-btn-back"><i class="fas fa-arrow-left"></i> Voltar para Layouts</a>
+        <div class="ea-page-title">
+            <h1><i class="fas fa-certificate" style="color:var(--primary);margin-right:8px"></i>Cadastrar Layout de Certificado</h1>
+            <p>Defina o template HTML e as configurações visuais do novo layout</p>
+        </div>
+    </div>
+</section>
+
+@await Html.PartialAsync("_FormLayout", Model)

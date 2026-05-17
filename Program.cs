@@ -111,6 +111,8 @@ builder.Services.AddScoped<IRelatorioSemanalRepository, RelatorioSemanalReposito
 builder.Services.AddScoped<EnsinoApp.Repositories.Agenda.IAgendaRepository,
                             EnsinoApp.Repositories.Agenda.AgendaRepository>();
 builder.Services.AddScoped<IPeriodoInscricaoRepository, PeriodoInscricaoRepository>();
+builder.Services.AddScoped<EnsinoApp.Repositories.LayoutCertificado.ILayoutCertificadoRepository,
+                            EnsinoApp.Repositories.LayoutCertificado.LayoutCertificadoRepository>();
 
 // Services
 builder.Services.AddScoped<ICampusService, CampusService>();
@@ -133,6 +135,8 @@ builder.Services.AddScoped<EnsinoApp.Services.Email.IEmailLembreteService,
 builder.Services.AddScoped<EnsinoApp.Services.Agenda.IAgendaService,
 EnsinoApp.Services.Agenda.AgendaService>();
 builder.Services.AddScoped<IPeriodoInscricaoService, PeriodoInscricaoService>();
+builder.Services.AddScoped<EnsinoApp.Services.LayoutCertificado.ILayoutCertificadoService,
+                            EnsinoApp.Services.LayoutCertificado.LayoutCertificadoService>();
 
 
 

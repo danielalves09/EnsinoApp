@@ -1,0 +1,151 @@
+@model IEnumerable<EnsinoApp.ViewModels.LayoutCertificado.ListarLayoutCertificadoViewModel>
+@{
+    ViewData["Title"] = "Layouts de Certificado";
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="ea-page-title">
+            <h1><i class="fas fa-certificate" style="color:var(--primary);margin-right:8px"></i>Layouts de Certificado
+            </h1>
+            <p>Gerencie os modelos visuais utilizados na emissão de certificados</p>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <div class="ea-toolbar">
+            <div style="flex:1"></div>
+            <a asp-action="Adicionar" class="ea-btn-new">
+                <i class="fas fa-plus"></i> Novo Layout
+            </a>
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="ea-table-card ea-fade">
+                <div class="ea-table-card-header">
+                    <div class="ea-table-header-icon" style="background:var(--primary-light);color:var(--primary)">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <h3 class="ea-table-card-title">Layouts Cadastrados</h3>
+                    <span class="ea-count-badge">@Model.Count() layout(s)</span>
+                </div>
+
+                <div style="overflow-x:auto">
+                    <table class="ea-table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Orientação</th>
+                                <th>Cursos vinculados</th>
+                                <th>Criado em</th>
+                                <th>Status</th>
+                                <th style="text-align:right">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var layout in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <div>
+                                            <span style="font-weight:700;color:var(--gray-800)">@layout.Nome</span>
+                                            @if (!string.IsNullOrWhiteSpace(layout.Descricao))
+                                            {
+                                                <p style="font-size:.75rem;color:var(--gray-400);margin:2px 0 0">@layout.Descricao
+                                                </p>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="ea-meta-pill">
+                                            <i
+                                            class="fas fa-@(layout.Orientacao == "Landscape" ? "arrows-alt-h" : "arrows-alt-v")"></i>
+                                            @layout.Orientacao
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (layout.QtdCursosVinculados > 0)
+                                        {
+                                            <span class="ea-badge ativo">@layout.QtdCursosVinculados curso(s)</span>
+                                        }
+                                        else
+                                        {
+                                            <span style="color:var(--gray-300);font-size:.75rem">Nenhum</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="ea-date-pill">
+                                            <i class="fas fa-calendar-alt"></i>
+                                            @layout.DataCriacao.ToString("dd/MM/yyyy")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="ea-badge @(layout.Ativo ? "ativo" : "inativo")">
+                                            @(layout.Ativo ? "Ativo" : "Inativo")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div style="display:flex;gap:6px;justify-content:flex-end">
+                                            <a asp-action="Preview" asp-route-id="@layout.Id" class="ea-action-btn info"
+                                                   title="Pré-visualizar">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a asp-action="Editar" asp-route-id="@layout.Id" class="ea-action-btn primary"
+                                                   title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <form asp-action="ToggleAtivo" method="post" style="display:inline">
+                                                <input type="hidden" name="id" value="@layout.Id" />
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit"
+                                                        class="ea-action-btn @(layout.Ativo ? "warning" : "success")"
+                                                        title="@(layout.Ativo ? "Desativar" : "Ativar")">
+                                                    <i class="fas @(layout.Ativo ? "fa-toggle-on" : "fa-toggle-off")"></i>
+                                                </button>
+                                            </form>
+                                            @if (layout.QtdCursosVinculados == 0)
+                                            {
+                                                <form asp-action="Excluir" method="post" style="display:inline"
+                                                      onsubmit="return confirm('Excluir o layout @layout.Nome?')">
+                                                    <input type="hidden" name="id" value="@layout.Id" />
+                                                    @Html.AntiForgeryToken()
+                                                    <button type="submit" class="ea-action-btn danger" title="Excluir">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            }
+                                            else
+                                            {
+                                                <span class="ea-action-btn"
+                                                      style="opacity:.35;cursor:not-allowed;color:var(--gray-400)"
+                                                      title="Desvincule os cursos antes de excluir">
+                                                    <i class="fas fa-trash"></i>
+                                                </span>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="ea-empty">
+                <i class="fas fa-certificate"></i>
+                <h3>Nenhum layout cadastrado</h3>
+                <p>Crie um layout para personalizar os certificados emitidos em cada curso.</p>
+                <a asp-action="Adicionar" class="ea-btn-new" style="margin-top:12px">
+                    <i class="fas fa-plus"></i> Criar primeiro layout
+                </a>
+            </div>
+        }
+
+    </div>
+</section>
