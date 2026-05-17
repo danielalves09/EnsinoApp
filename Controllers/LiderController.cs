@@ -137,6 +137,26 @@ public class LiderController : Controller
         return View(viewModel);
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult IniciarTurma(int id)
+    {
+        var turma = _turmaService.FindById(id);
+        if (turma == null) return NotFound();
+
+        if (turma.Status != Models.Enums.StatusTurma.Acomecar)
+        {
+            _notification.Warning("Esta turma não pode ser iniciada pois não está com status 'A começar'.");
+            return RedirectToAction(nameof(Turma), new { id });
+        }
+
+        turma.Status = Models.Enums.StatusTurma.EmAndamento;
+        _turmaService.Update(turma);
+
+        _notification.Success("Turma iniciada com sucesso! Status atualizado para Em Andamento.");
+        return RedirectToAction(nameof(Turma), new { id });
+    }
+
     public async Task<IActionResult> Relatorios(int idTurma)
     {
         var relatorios = await _service.ObterRelatoriosAsync(idTurma);
