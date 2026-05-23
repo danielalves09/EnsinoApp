@@ -14,6 +14,11 @@ public class InscricaoOnline
     public string EmailMarido { get; set; } = null!;
     public string EmailEsposa { get; set; } = null!;
 
+    // Datas de Nascimento
+
+    public DateTime? DataNascimentoMarido { get; set; }
+    public DateTime? DataNascimentoEsposa { get; set; }
+
     // Endereço
     public string? Rua { get; set; }
     public string? Numero { get; set; }
@@ -32,6 +37,10 @@ public class InscricaoOnline
     // GC
     public bool ParticipaGC { get; set; } = false;
     public string? NomeGC { get; set; }
+
+    // Convidado por casal formando
+    public bool Convidado { get; set; } = false;
+    public string? NomeCasalConvidador { get; set; }
 
     // Controle da inscrição
     public DateTime DataInscricao { get; set; } = DateTime.Now;

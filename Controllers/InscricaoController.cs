@@ -161,6 +161,8 @@ public class InscricaoController : Controller
             TelefoneEsposa = model.TelefoneEsposa,
             EmailMarido = model.EmailMarido,
             EmailEsposa = model.EmailEsposa,
+            DataNascimentoMarido = model.DataNascimentoMarido,
+            DataNascimentoEsposa = model.DataNascimentoEsposa,
             Rua = model.Rua,
             Numero = model.Numero,
             Complemento = model.Complemento,
@@ -171,7 +173,9 @@ public class InscricaoController : Controller
             IdCampus = model.IdCampus,
             IdCurso = model.IdCurso,
             ParticipaGC = model.ParticipaGC,
-            NomeGC = model.NomeGC
+            NomeGC = model.NomeGC,
+            Convidado = model.Convidado,
+            NomeCasalConvidador = model.Convidado ? model.NomeCasalConvidador : null
         };
 
         var inscricaoConfirmada = await _service.CreateAsync(inscricao);

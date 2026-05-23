@@ -24,6 +24,16 @@ public class InscricaoOnlineViewModel
     [Required(ErrorMessage = "Campo obrigatório")]
     [DisplayName("Email Esposa")]
     public string EmailEsposa { get; set; } = null!;
+
+    [DataType(DataType.Date)]
+    [DisplayName("Data de Nascimento (Homem)")]
+    public DateTime? DataNascimentoMarido { get; set; }
+
+    [DataType(DataType.Date)]
+    [DisplayName("Data de Nascimento (Mulher)")]
+    public DateTime? DataNascimentoEsposa { get; set; }
+
+
     public string Rua { get; set; } = null!;
     public string Numero { get; set; } = null!;
     public string? Complemento { get; set; } = string.Empty;
@@ -38,6 +48,15 @@ public class InscricaoOnlineViewModel
     public bool ParticipaGC { get; set; }
     [DisplayName("Nome do GC")]
     public string? NomeGC { get; set; }
+
+    [DisplayName("Vocês foram convidados por um casal formando?")]
+    public bool Convidado { get; set; }
+
+    [DisplayName("Nome do Casal que os Convidou")]
+    public string? NomeCasalConvidador { get; set; }
+
+
+
     public DateTime DataInscricao { get; set; }
     public bool Processada { get; set; }
 }

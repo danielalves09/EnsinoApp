@@ -42,7 +42,7 @@ public class MatriculaController : Controller
         _campusService = campusService;
     }
 
-    public async Task<IActionResult> Index(int? idCurso, int? idCampus, int pagina = 1)
+    public async Task<IActionResult> Index(int? idCurso, int? idCampus, bool? apenasConvidados, int pagina = 1)
     {
         var listaInscricoesPendentes = _inscricaoService.ObterPendentesResumo();
 
@@ -52,6 +52,14 @@ public class MatriculaController : Controller
         if (idCampus.HasValue)
             listaInscricoesPendentes = listaInscricoesPendentes.Where(i => i.IdCampus == idCampus.Value).ToList();
 
+        if (apenasConvidados == true)
+            listaInscricoesPendentes = listaInscricoesPendentes.Where(i => i.Convidado).ToList();
+
+        // Convidados sempre primeiro
+        listaInscricoesPendentes = listaInscricoesPendentes
+            .OrderByDescending(i => i.Convidado)
+            .ThenBy(i => i.DataInscricao)
+            .ToList();
 
         var dashboard = new MatriculaDashboardViewModel
         {
@@ -60,19 +68,22 @@ public class MatriculaController : Controller
             InscricoesPendentes = _inscricaoService.ContarPendentes(),
             MatriculasAtivas = await _matriculaService.ContarAtivas(),
             TurmasAtivas = _turmaService.ContarAtivas(),
-
             InscricoesPendentesLista = listaInscricoesPendentes,
             Turmas = _turmaService.ObterResumoTurmasAtivas()
         };
 
         ViewBag.IdCursoSelecionado = idCurso;
         ViewBag.IdCampusSelecionado = idCampus;
+        ViewBag.ApenasConvidados = apenasConvidados;
         ViewBag.Cursos = new SelectList(_cursoService.FindAll(), "Id", "Nome", idCurso);
         ViewBag.Campuses = new SelectList(_campusService.FindAll(), "Id", "Nome", idCampus);
         ViewBag.NumeroPagina = pagina;
         ViewBag.TotalPaginas = (int)Math.Ceiling((decimal)listaInscricoesPendentes.Count / TAMANHO_PAGINA);
 
-        dashboard.InscricoesPendentesLista = listaInscricoesPendentes.Skip((pagina - 1) * TAMANHO_PAGINA).Take(TAMANHO_PAGINA).ToList();
+        dashboard.InscricoesPendentesLista = listaInscricoesPendentes
+            .Skip((pagina - 1) * TAMANHO_PAGINA)
+            .Take(TAMANHO_PAGINA)
+            .ToList();
 
         return View(dashboard);
     }
@@ -155,29 +166,33 @@ public class MatriculaController : Controller
     [HttpGet]
     public async Task<IActionResult> Detalhes(int id)
     {
-        var casal = await _inscricaoService.FindByIdAsync(id);
+        var inscricao = await _inscricaoService.FindByIdAsync(id);
 
-        if (casal is null)
-            return NotFound(new { mensagem = "Casal não encontrado." });
+        if (inscricao is null)
+            return NotFound(new { mensagem = "Inscrição não encontrada." });
 
         var vm = new InscricaoDetalheViewModel
         {
-            Id = casal.Id,
-            NomeConjuge1 = casal.NomeMarido,
-            NomeConjuge2 = casal.NomeEsposa,
-            EmailConjuge1 = casal.EmailMarido,
-            EmailConjuge2 = casal.EmailEsposa,
-            TelefoneConjuge1 = casal.TelefoneMarido,
-            TelefoneConjuge2 = casal.TelefoneEsposa,
-            Rua = casal.Rua,
-            Numero = casal.Numero,
-            Complemento = casal.Complemento,
-            Bairro = casal.Bairro,
-            Cidade = casal.Cidade,
-            Estado = casal.Estado,
-            Cep = casal.Cep,
-            NomeCampus = casal.Campus?.Nome ?? string.Empty,
-            GC = casal.NomeGC ?? string.Empty
+            Id = inscricao.Id,
+            NomeConjuge1 = inscricao.NomeMarido,
+            NomeConjuge2 = inscricao.NomeEsposa,
+            EmailConjuge1 = inscricao.EmailMarido,
+            EmailConjuge2 = inscricao.EmailEsposa,
+            TelefoneConjuge1 = inscricao.TelefoneMarido,
+            TelefoneConjuge2 = inscricao.TelefoneEsposa,
+            DataNascimentoMarido = inscricao.DataNascimentoMarido,
+            DataNascimentoEsposa = inscricao.DataNascimentoEsposa,
+            Rua = inscricao.Rua ?? string.Empty,
+            Numero = inscricao.Numero ?? string.Empty,
+            Complemento = inscricao.Complemento,
+            Bairro = inscricao.Bairro ?? string.Empty,
+            Cidade = inscricao.Cidade ?? string.Empty,
+            Estado = inscricao.Estado ?? string.Empty,
+            Cep = inscricao.Cep ?? string.Empty,
+            NomeCampus = inscricao.Campus?.Nome ?? string.Empty,
+            GC = inscricao.NomeGC ?? string.Empty,
+            Convidado = inscricao.Convidado,
+            NomeCasalConvidador = inscricao.NomeCasalConvidador
         };
 
         return Json(vm);

@@ -57,7 +57,7 @@
             </div>
         </div>
 
-        <!-- ══ BREADCRUMB de escolhas anteriores ═══════════════════ -->
+        <!-- ══ BREADCRUMB ═══════════════════════════════════════════ -->
         <div class="insc-breadcrumb" id="breadcrumb">
             <span class="bc-item" id="bc-campus" onclick="goToStep(1)" style="display:none">
                 <i class="fas fa-map-marker-alt"></i>
@@ -75,7 +75,6 @@
         <div class="insc-pane active" id="pane-1">
             <h2 class="insc-section-title">Em qual campus você está?</h2>
             <p class="insc-section-sub">Selecione o campus da CCVideira onde deseja fazer o curso.</p>
-
             <div id="campus-loading" class="insc-loading">
                 <i class="fas fa-circle-notch spin"></i> Carregando campus disponíveis…
             </div>
@@ -90,7 +89,6 @@
         <div class="insc-pane" id="pane-2">
             <h2 class="insc-section-title">Em qual curso você deseja se inscrever?</h2>
             <p class="insc-section-sub" id="pane2-sub">Selecione um dos cursos disponíveis.</p>
-
             <div id="curso-loading" class="insc-loading" style="display:none">
                 <i class="fas fa-circle-notch spin"></i> Carregando cursos…
             </div>
@@ -99,7 +97,6 @@
                 <i class="fas fa-graduation-cap"></i>
                 <p>Nenhum curso disponível para inscrição neste campus.</p>
             </div>
-
             <div style="margin-top:20px">
                 <button class="btn-step-back" onclick="goToStep(1)">
                     <i class="fas fa-arrow-left"></i> Trocar campus
@@ -119,10 +116,10 @@
                      style="font-size:.8rem;margin-bottom:12px;background:#fff;border-radius:var(--radius);padding:12px 16px;border:1px solid #fca5a5;display:none"
                      id="validation-summary"></div>
 
-                <!-- Campos ocultos preenchidos pelo JS -->
                 <input type="hidden" asp-for="IdCampus" id="hid-campus" />
                 <input type="hidden" asp-for="IdCurso" id="hid-curso" />
                 <input type="hidden" name="ParticipaGC" id="hid-participa-gc" value="false" />
+                <input type="hidden" name="Convidado" id="hid-convidado" value="false" />
 
                 <!-- ── Dados do casal ──────────────────────────── -->
                 <div class="insc-form-card">
@@ -146,6 +143,21 @@
                                     <label class="f-label">Mulher — Nome completo</label>
                                     <input asp-for="NomeEsposa" class="f-control" placeholder="Nome completo" />
                                     <span asp-validation-for="NomeEsposa" class="f-error"></span>
+                                </div>
+                            </div>
+                            <!-- Datas de nascimento -->
+                            <div class="col-md-6">
+                                <div class="f-group">
+                                    <label class="f-label">Homem — Data de Nascimento</label>
+                                    <input asp-for="DataNascimentoMarido" type="date" class="f-control" />
+                                    <span asp-validation-for="DataNascimentoMarido" class="f-error"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="f-group">
+                                    <label class="f-label">Mulher — Data de Nascimento</label>
+                                    <input asp-for="DataNascimentoEsposa" type="date" class="f-control" />
+                                    <span asp-validation-for="DataNascimentoEsposa" class="f-error"></span>
                                 </div>
                             </div>
                         </div>
@@ -252,15 +264,13 @@
                                     <label asp-for="Estado" class="f-label"></label>
                                     <select asp-for="Estado" class="f-control" id="Estado">
                                         <option value="">Selecione o Estado</option>
-                                        @foreach (var uf in
-                                                                                                                                                                                                                                                                                                                                new[] { "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS",
-                                  "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP",
-                  "SE", "TO" })
+                                        @foreach (var uf in new[] {
+            "AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS",
+                                            "MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO" })
                                         {
                                             <option value="@uf">@uf</option>
                                         }
                                     </select>
-                                    <span asp-validation-for="Estado" class="f-error"></span>
                                 </div>
                             </div>
                         </div>
@@ -285,397 +295,249 @@
                                         <option value="true">Sim</option>
                                         <option value="false">Não</option>
                                     </select>
-                                    <span asp-validation-for="ParticipaGC" class="f-error"></span>
                                 </div>
                             </div>
                             <div class="col-md-6" id="nomeGCContainer" style="display:none">
                                 <div class="f-group">
                                     <label asp-for="NomeGC" class="f-label"></label>
                                     <input asp-for="NomeGC" class="f-control" placeholder="Nome do seu GC" />
-                                    <span asp-validation-for="NomeGC" class="f-error"></span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- ── Botões ──────────────────────────────────── -->
-                <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:4px">
-                    <button type="button" class="btn-step-back" onclick="goToStep(2)">
-                        <i class="fas fa-arrow-left"></i> Trocar curso
-                    </button>
-                    <div style="flex:1">
-                        <button type="submit" class="btn-submit-insc" id="btn-submit">
-                            <i class="fas fa-paper-plane"></i> Enviar Inscrição
-                        </button>
+                <!-- ── Convidado por casal formando ────────────── -->
+                <div class="insc-form-card">
+                    <div class="insc-form-header">
+                        <div class="insc-form-header-icon" style="background:#fef9c3;color:#ca8a04">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <h3>Indicação</h3>
                     </div>
-                </div>
+                    <div class="insc-form-body">
+                        <div
+                            style="display:flex;align-items:center;gap:8px;background:#fef9c3;border:1px solid #fde68a;border-radius:var(--radius);padding:10px 14px;font-size:.78rem;color:#92400e;font-weight:600;margin-bottom:16px">
+                            <i class="fas fa-info-circle"></i>
+                            Se você é convidado de um casal que esta se formando, marque sim na opção abaixo, e digite o
+                            nome do Casal que os convidou.
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="f-group">
+                                    <label class="f-label">Vocês foram convidados por um casal formando?</label>
+                                    <select id="selectConvidado" class="f-control">
+                                        <option value="">Selecione</option>
+                                        <option value="true">Sim</option>
+                                        <option value="false">Não</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6" id="nomeCasalConvidadorContainer" style="display:none">
+                                <div class="f-group">
+                                    <label asp-for="NomeCasalConvidador" class="f-label">Nome do Casal que os
+                                        Convidou</label>
+                                        <input asp-for="NomeCasalConvidador" class="f-control"
+                                               placeholder="Ex: João e Maria Silva" />
+                                        <span asp-validation-for="NomeCasalConvidador" class="f-error"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-            </form>
+                    <!-- ── Botões ──────────────────────────────────── -->
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:4px">
+                        <button type="button" class="btn-step-back" onclick="goToStep(2)">
+                            <i class="fas fa-arrow-left"></i> Trocar curso
+                        </button>
+                        <div style="flex:1">
+                            <button type="submit" class="btn-submit-insc" id="btn-submit">
+                                <i class="fas fa-paper-plane"></i> Enviar Inscrição
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+
+            <p class="insc-footer-txt">© @DateTime.Now.Year EnsinoApp · CCVideira · Todos os direitos reservados</p>
         </div>
 
-        <p class="insc-footer-txt">© @DateTime.Now.Year EnsinoApp · CCVideira · Todos os direitos reservados</p>
-    </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <partial name="_ValidationScriptsPartial" />
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <partial name="_ValidationScriptsPartial" />
+        <script>
+            const state = { step: 1, campus: null, curso: null };
 
-    <script>
-        // ════════════════════════════════════════════════════════════════
-        //  Estado global do wizard
-        // ════════════════════════════════════════════════════════════════
-        const state = {
-        step: 1,
-        campus: null,   // { id, nome, vagasRestantes }
-        curso: null,   // { id, nome, descricao, licoes, vagasRestantes }
-        };
+            function goToStep(n) {
+            if (n === 2 && !state.campus) return;
+            if (n === 3 && (!state.campus || !state.curso)) return;
+            state.step = n;
+            document.querySelectorAll('.insc-pane').forEach(p => p.classList.remove('active'));
+            document.getElementById('pane-' + n).classList.add('active');
+            for (let i = 1; i <= 3; i++) {
+            const dot = document.getElementById('dot-' + i);
+            dot.classList.remove('active', 'done');
+            if (i < n) dot.classList.add('done');
+            if (i === n) dot.classList.add('active');
+            const num = document.getElementById('dot-num-' + i);
+            num.innerHTML = i < n ? '<i class="fas fa-check" style="font-size:.75rem"></i>' : i;
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            updateBreadcrumb();
+            updateStepValues();
+            }
 
-        // ────────────────────────────────────────────────────────────────
-        //  Navegação entre passos
-        // ────────────────────────────────────────────────────────────────
-        function goToStep(n) {
-        // Só permite avançar se o passo anterior estiver completo
-        if (n === 2 && !state.campus) return;
-        if (n === 3 && (!state.campus || !state.curso)) return;
+            function updateBreadcrumb() {
+            const bc = document.getElementById('breadcrumb');
+            const bcCamp = document.getElementById('bc-campus');
+            const bcCurs = document.getElementById('bc-curso');
+            const sep = document.getElementById('bc-sep-1');
+            const hint = document.getElementById('bc-change-hint');
+            if (state.step === 1) { bc.classList.remove('visible'); return; }
+            bc.classList.add('visible');
+            if (state.campus) { document.getElementById('bc-campus-nome').textContent = state.campus.nome; bcCamp.style.display = 'flex'; }
+            if (state.step === 3 && state.curso) {
+            document.getElementById('bc-curso-nome').textContent = state.curso.nome;
+            bcCurs.style.display = 'flex'; sep.style.display = 'inline';
+            hint.textContent = '← Clique para alterar';
+            } else { bcCurs.style.display = 'none'; sep.style.display = 'none'; hint.textContent = '← Clique para alterar o campus'; }
+            }
 
-        state.step = n;
+            function updateStepValues() {
+            document.getElementById('dot-val-1').textContent = state.campus ? state.campus.nome : 'Escolha o campus';
+            document.getElementById('dot-val-2').textContent = state.curso ? state.curso.nome : 'Escolha o curso';
+            }
 
-        // Panes
-        document.querySelectorAll('.insc-pane').forEach(p => p.classList.remove('active'));
-        document.getElementById('pane-' + n).classList.add('active');
+            function carregarCampus() {
+            const grid = document.getElementById('campus-grid');
+            const loading = document.getElementById('campus-loading');
+            const empty = document.getElementById('campus-empty');
+            loading.style.display = 'flex'; grid.style.display = 'none'; empty.style.display = 'none';
+            $.getJSON('@Url.Action("GetCampusAbertos", "Inscricao")', function (data) {
+            loading.style.display = 'none';
+            if (!data || data.length === 0) { empty.style.display = 'block'; return; }
+            grid.innerHTML = '';
+            data.forEach(function (c) {
+            const card = document.createElement('div');
+            card.className = 'campus-card';
+            card.innerHTML = `<div class="campus-icon"><i class="fas fa-building"></i></div><div><p class="campus-card-name">${c.nome}</p><p class="campus-vagas"><span>${c.vagasRestantes}</span> vaga(s) disponível(is)</p></div>`;
+            card.addEventListener('click', function () { selecionarCampus(c.id, c.nome, c.vagasRestantes); });
+            grid.appendChild(card);
+            });
+            grid.style.display = 'grid';
+            }).fail(function () { loading.style.display = 'none'; empty.style.display = 'block'; });
+            }
 
-        // Dots do stepper
-        for (let i = 1; i <= 3; i++) {
-        const dot = document.getElementById('dot-' + i);
-        dot.classList.remove('active', 'done');
-        if (i < n) dot.classList.add('done');
-        if (i === n) dot.classList.add('active');
+            function selecionarCampus(id, nome, vagasRestantes) {
+            state.campus = { id, nome, vagasRestantes }; state.curso = null;
+            document.querySelectorAll('.campus-card').forEach(c => c.classList.remove('selected'));
+            const sel = document.querySelector(`.campus-card[data-id="${id}"]`);
+            if (sel) sel.classList.add('selected');
+            document.getElementById('hid-campus').value = id;
+            document.getElementById('pane2-sub').textContent = 'Cursos disponíveis em ' + nome + ':';
+            setTimeout(function () { carregarCursos(id); goToStep(2); }, 180);
+            }
 
-        // Ícone de check nos concluídos
-        const num = document.getElementById('dot-num-' + i);
-        num.innerHTML = i < n ? '<i class="fas fa-check" style="font-size:.75rem"></i>' : i;
-        }
+            function carregarCursos(campusId) {
+            const grid = document.getElementById('curso-grid');
+            const loading = document.getElementById('curso-loading');
+            const empty = document.getElementById('curso-empty');
+            loading.style.display = 'flex'; grid.innerHTML = ''; grid.style.display = 'none'; empty.style.display = 'none';
+            $.getJSON('@Url.Action("GetCursosAbertos", "Inscricao")', { campusId: campusId }, function (data) {
+            loading.style.display = 'none';
+            if (!data || data.length === 0) { empty.style.display = 'block'; return; }
+            data.forEach(function (c) {
+            const licoesTags = (c.licoes || []).slice(0, 8).map(l => `<span class="licao-tag">${escapeHtml(l)}</span>`).join('');
+            const maisLicoes = c.licoes && c.licoes.length > 8 ? `<span class="licao-tag">+${c.licoes.length - 8} mais</span>` : '';
+            const card = document.createElement('div');
+            card.className = 'curso-card';
+            card.innerHTML = `<div class="curso-card-top"><div class="curso-card-icon"><i class="fas fa-graduation-cap"></i></div><p class="curso-card-name">${escapeHtml(c.nome)}</p><p class="curso-card-vagas"><i class="fas fa-ticket-alt" style="margin-right:4px"></i>${c.vagasRestantes} vaga(s) restante(s)</p></div><div class="curso-card-body"><p class="curso-desc">${escapeHtml(c.descricao || '')}</p>${licoesTags || maisLicoes ? `<div><p class="curso-licoes-title"><i class="fas fa-list" style="margin-right:4px"></i>Temas abordados</p><div class="curso-licoes-list">${licoesTags}${maisLicoes}</div></div>` : ''}</div><div class="curso-card-footer"><span style="font-size:.75rem;color:var(--gray-400);font-weight:600"><i class="fas fa-book-open" style="margin-right:4px"></i>${(c.licoes || []).length} lição(ões)</span><button class="btn-selecionar">Selecionar <i class="fas fa-arrow-right"></i></button></div>`;
+            card.querySelector('.btn-selecionar').addEventListener('click', function (e) { e.stopPropagation(); selecionarCurso(c.id, c.nome, c.descricao, c.licoes, c.vagasRestantes); });
+            card.addEventListener('click', function () { selecionarCurso(c.id, c.nome, c.descricao, c.licoes, c.vagasRestantes); });
+            grid.appendChild(card);
+            });
+            grid.style.display = 'grid';
+            }).fail(function () { loading.style.display = 'none'; empty.style.display = 'block'; });
+            }
 
-        // Scroll ao topo suave
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+            function selecionarCurso(id, nome, descricao, licoes, vagasRestantes) {
+            state.curso = { id, nome, descricao, licoes, vagasRestantes };
+            document.getElementById('hid-curso').value = id;
+            setTimeout(function () { goToStep(3); }, 180);
+            }
 
-        updateBreadcrumb();
-        updateStepValues();
-        }
+            function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+            }
 
-        // ────────────────────────────────────────────────────────────────
-        //  Breadcrumb de seleções anteriores
-        // ────────────────────────────────────────────────────────────────
-        function updateBreadcrumb() {
-        const bc = document.getElementById('breadcrumb');
-        const bcCamp = document.getElementById('bc-campus');
-        const bcCurs = document.getElementById('bc-curso');
-        const sep = document.getElementById('bc-sep-1');
-        const hint = document.getElementById('bc-change-hint');
+            // GC toggle
+            function toggleGC() {
+            const val = document.getElementById('ParticipaGC').value;
+            document.getElementById('nomeGCContainer').style.display = val === 'true' ? 'block' : 'none';
+            document.getElementById('hid-participa-gc').value = val === 'true' ? 'true' : 'false';
+            if (val !== 'true') document.getElementById('NomeGC').value = '';
+            }
 
-        // Passo 1 — nada para mostrar ainda
-        if (state.step === 1) {
-        bc.classList.remove('visible');
-        return;
-        }
+            // Convidado toggle
+            function toggleConvidado() {
+            const val = document.getElementById('selectConvidado').value;
+            document.getElementById('nomeCasalConvidadorContainer').style.display = val === 'true' ? 'block' : 'none';
+            document.getElementById('hid-convidado').value = val === 'true' ? 'true' : 'false';
+            if (val !== 'true') {
+            const inp = document.getElementById('NomeCasalConvidador');
+            if (inp) inp.value = '';
+            }
+            }
 
-        bc.classList.add('visible');
+            // CEP autocomplete
+            function buscarCep() {
+            var cep = document.getElementById('Cep').value.replace(/\D/g, '');
+            if (cep.length !== 8) return;
+            document.getElementById('cepSpin').style.display = 'block';
+            $.getJSON('https://viacep.com.br/ws/' + cep + '/json/', function (data) {
+            if (!data.erro) {
+            document.getElementById('Rua').value = data.logradouro || '';
+            document.getElementById('Bairro').value = data.bairro || '';
+            document.getElementById('Cidade').value = data.localidade || '';
+            document.getElementById('Estado').value = data.uf || '';
+            }
+            }).always(function () { document.getElementById('cepSpin').style.display = 'none'; });
+            }
 
-        // Campus sempre visível a partir do passo 2
-        if (state.campus) {
-        document.getElementById('bc-campus-nome').textContent = state.campus.nome;
-        bcCamp.style.display = 'flex';
-        }
+            // Submit guard
+            document.getElementById('formInscricao').addEventListener('submit', function (e) {
+            if (!state.campus || !state.curso) {
+            e.preventDefault();
+            alert('Selecione o campus e o curso antes de enviar.');
+            goToStep(1); return;
+            }
+            document.getElementById('hid-campus').value = state.campus.id;
+            document.getElementById('hid-curso').value = state.curso.id;
+            });
 
-        // Curso só no passo 3
-        if (state.step === 3 && state.curso) {
-        document.getElementById('bc-curso-nome').textContent = state.curso.nome;
-        bcCurs.style.display = 'flex';
-        sep.style.display = 'inline';
-        hint.textContent = '← Clique para alterar';
-        } else {
-        bcCurs.style.display = 'none';
-        sep.style.display = 'none';
-        hint.textContent = '← Clique para alterar o campus';
-        }
-        }
+            $(document).ready(function () {
+            $('.telefone').mask('(00) 00000-0000');
+            $('#ParticipaGC').on('change', toggleGC);
+            $('#selectConvidado').on('change', toggleConvidado);
+            $('#Cep').on('blur', buscarCep);
+            carregarCampus();
 
-        function updateStepValues() {
-        const v1 = document.getElementById('dot-val-1');
-        const v2 = document.getElementById('dot-val-2');
-        const v3 = document.getElementById('dot-val-3');
+            @if (ViewBag.ErroValidacao != null)
+            {
+                <text>
+                    state.campus = {id: @(ViewBag.IdCampus ?? 0), nome: '@(ViewBag.NomeCampus ?? "")', vagasRestantes: 0 };
+                    state.curso  = {id: @(ViewBag.IdCurso ?? 0),  nome: '@(ViewBag.NomeCurso ?? "")',  vagasRestantes: 0 };
+                    document.getElementById('hid-campus').value = state.campus.id;
+                    document.getElementById('hid-curso').value  = state.curso.id;
+                    goToStep(3);
+                </text>
+            }
+            });
+        </script>
 
-        v1.textContent = state.campus ? state.campus.nome : 'Escolha o campus';
-        v2.textContent = state.curso ? state.curso.nome : 'Escolha o curso';
-        v3.textContent = state.step === 3 ? 'Seus dados' : 'Seus dados';
-        }
-
-        // ────────────────────────────────────────────────────────────────
-        //  Passo 1 — Carregar campus disponíveis
-        // ────────────────────────────────────────────────────────────────
-        function carregarCampus() {
-        const grid = document.getElementById('campus-grid');
-        const loading = document.getElementById('campus-loading');
-        const empty = document.getElementById('campus-empty');
-
-        loading.style.display = 'flex';
-        grid.style.display = 'none';
-        empty.style.display = 'none';
-
-        $.getJSON('@Url.Action("GetCampusAbertos", "Inscricao")', function (data) {
-        loading.style.display = 'none';
-
-        if (!data || data.length === 0) {
-        empty.style.display = 'block';
-        return;
-        }
-
-        grid.innerHTML = '';
-        data.forEach(function (c) {
-        const card = document.createElement('div');
-        card.className = 'campus-card';
-        card.dataset.id = c.id;
-        card.dataset.nome = c.nome;
-        card.innerHTML = `
-        <div class="campus-icon"><i class="fas fa-building"></i></div>
-        <div>
-        <p class="campus-card-name">${c.nome}</p>
-        <p class="campus-vagas">
-        <span>${c.vagasRestantes}</span> vaga(s) disponível(is)
-        </p>
-        </div>`;
-
-        card.addEventListener('click', function () {
-        selecionarCampus(c.id, c.nome, c.vagasRestantes);
-        });
-
-        grid.appendChild(card);
-        });
-
-        grid.style.display = 'grid';
-        }).fail(function () {
-        loading.style.display = 'none';
-        empty.style.display = 'block';
-        });
-        }
-
-        function selecionarCampus(id, nome, vagasRestantes) {
-        state.campus = { id, nome, vagasRestantes };
-        state.curso = null; // reset curso ao trocar campus
-
-        // Feedback visual no card selecionado
-        document.querySelectorAll('.campus-card').forEach(c => c.classList.remove('selected'));
-        const sel = document.querySelector(`.campus-card[data-id="${id}"]`);
-        if (sel) sel.classList.add('selected');
-
-        // Preenche campo oculto
-        document.getElementById('hid-campus').value = id;
-
-        // Atualiza subtítulo do passo 2
-        document.getElementById('pane2-sub').textContent =
-        'Cursos disponíveis em ' + nome + ':';
-
-        // Avança automaticamente após pequena pausa visual
-        setTimeout(function () {
-        carregarCursos(id);
-        goToStep(2);
-        }, 180);
-        }
-
-        // ────────────────────────────────────────────────────────────────
-        //  Passo 2 — Carregar cursos disponíveis para o campus
-        // ────────────────────────────────────────────────────────────────
-        function carregarCursos(campusId) {
-        const grid = document.getElementById('curso-grid');
-        const loading = document.getElementById('curso-loading');
-        const empty = document.getElementById('curso-empty');
-
-        loading.style.display = 'flex';
-        grid.innerHTML = '';
-        grid.style.display = 'none';
-        empty.style.display = 'none';
-
-        $.getJSON('@Url.Action("GetCursosAbertos", "Inscricao")', { campusId: campusId }, function (data) {
-        loading.style.display = 'none';
-
-        if (!data || data.length === 0) {
-        empty.style.display = 'block';
-        return;
-        }
-
-        data.forEach(function (c, idx) {
-        const licoesTags = (c.licoes || []).slice(0, 8).map(l =>
-        `<span class="licao-tag">${escapeHtml(l)}</span>`
-        ).join('');
-
-        const maisLicoes = c.licoes && c.licoes.length > 8
-        ? `<span class="licao-tag">+${c.licoes.length - 8} mais</span>`
-        : '';
-
-        const card = document.createElement('div');
-        card.className = 'curso-card';
-        card.innerHTML = `
-        <div class="curso-card-top">
-        <div class="curso-card-icon">
-        <i class="fas fa-graduation-cap"></i>
-        </div>
-        <p class="curso-card-name">${escapeHtml(c.nome)}</p>
-        <p class="curso-card-vagas">
-        <i class="fas fa-ticket-alt" style="margin-right:4px"></i>
-        ${c.vagasRestantes} vaga(s) restante(s)
-        </p>
-        </div>
-        <div class="curso-card-body">
-        <p class="curso-desc">${escapeHtml(c.descricao || '')}</p>
-        ${licoesTags || maisLicoes ? `
-        <div>
-        <p class="curso-licoes-title"><i class="fas fa-list" style="margin-right:4px"></i>Temas abordados</p>
-        <div class="curso-licoes-list">${licoesTags}${maisLicoes}</div>
-        </div>` : ''}
-        </div>
-        <div class="curso-card-footer">
-        <span style="font-size:.75rem;color:var(--gray-400);font-weight:600">
-        <i class="fas fa-book-open" style="margin-right:4px"></i>
-        ${(c.licoes || []).length} lição(ões)
-        </span>
-        <button class="btn-selecionar">
-        Selecionar <i class="fas fa-arrow-right"></i>
-        </button>
-        </div>`;
-
-        card.querySelector('.btn-selecionar').addEventListener('click', function (e) {
-        e.stopPropagation();
-        selecionarCurso(c.id, c.nome, c.descricao, c.licoes, c.vagasRestantes);
-        });
-
-        card.addEventListener('click', function () {
-        selecionarCurso(c.id, c.nome, c.descricao, c.licoes, c.vagasRestantes);
-        });
-
-        grid.appendChild(card);
-        });
-
-        grid.style.display = 'grid';
-        }).fail(function () {
-        loading.style.display = 'none';
-        empty.style.display = 'block';
-        });
-        }
-
-        function selecionarCurso(id, nome, descricao, licoes, vagasRestantes) {
-        state.curso = { id, nome, descricao, licoes, vagasRestantes };
-
-        // Feedback visual
-        document.querySelectorAll('.curso-card').forEach(c => c.classList.remove('selected'));
-        // Identifica o card pelo índice que contém o nome (simplificado)
-        document.querySelectorAll('.curso-card').forEach(function (c) {
-        if (c.querySelector('.curso-card-name') &&
-        c.querySelector('.curso-card-name').textContent.trim() === nome) {
-        c.classList.add('selected');
-        }
-        });
-
-        // Preenche campo oculto
-        document.getElementById('hid-curso').value = id;
-
-        setTimeout(function () {
-        goToStep(3);
-        }, 180);
-        }
-
-        // ────────────────────────────────────────────────────────────────
-        //  Utilidades
-        // ────────────────────────────────────────────────────────────────
-        function escapeHtml(str) {
-        if (!str) return '';
-        return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-        }
-
-        // ────────────────────────────────────────────────────────────────
-        //  GC toggle
-        // ────────────────────────────────────────────────────────────────
-        function toggleGC() {
-        const val = document.getElementById('ParticipaGC').value;
-        const container = document.getElementById('nomeGCContainer');
-        const hidGC = document.getElementById('hid-participa-gc');
-
-        container.style.display = val === 'true' ? 'block' : 'none';
-        hidGC.value = val === 'true' ? 'true' : 'false';
-
-        if (val !== 'true') {
-        document.getElementById('NomeGC').value = '';
-        }
-        }
-
-        // ────────────────────────────────────────────────────────────────
-        //  CEP autocomplete
-        // ────────────────────────────────────────────────────────────────
-        function buscarCep() {
-        var cep = document.getElementById('Cep').value.replace(/\D/g, '');
-        if (cep.length !== 8) return;
-
-        document.getElementById('cepSpin').style.display = 'block';
-        $.getJSON('https://viacep.com.br/ws/' + cep + '/json/', function (data) {
-        if (!data.erro) {
-        document.getElementById('Rua').value = data.logradouro || '';
-        document.getElementById('Bairro').value = data.bairro || '';
-        document.getElementById('Cidade').value = data.localidade || '';
-        document.getElementById('Estado').value = data.uf || '';
-        }
-        }).always(function () {
-        document.getElementById('cepSpin').style.display = 'none';
-        });
-        }
-
-        // ────────────────────────────────────────────────────────────────
-        //  Submit — garante hidden fields antes de enviar
-        // ────────────────────────────────────────────────────────────────
-        document.getElementById('formInscricao').addEventListener('submit', function (e) {
-        if (!state.campus || !state.curso) {
-        e.preventDefault();
-        alert('Selecione o campus e o curso antes de enviar.');
-        goToStep(1);
-        return;
-        }
-        document.getElementById('hid-campus').value = state.campus.id;
-        document.getElementById('hid-curso').value = state.curso.id;
-        });
-
-        // ────────────────────────────────────────────────────────────────
-        //  Inicialização
-        // ────────────────────────────────────────────────────────────────
-        $(document).ready(function () {
-        // Máscara telefone
-        $('.telefone').mask('(00) 00000-0000');
-
-        // GC
-        $('#ParticipaGC').on('change', toggleGC);
-
-        // CEP
-        $('#Cep').on('blur', buscarCep);
-
-        // Carrega campus ao iniciar
-        carregarCampus();
-
-        @if (ViewBag.ErroValidacao != null)
-        {
-            // Se o formulário voltou com erro de servidor, vai direto pro passo 3
-            <text>
-                // Recupera o estado salvo na sessão/TempData se disponível
-                state.campus = {id: @(ViewBag.IdCampus ?? 0), nome: '@(ViewBag.NomeCampus ?? "")', vagasRestantes: 0 };
-                state.curso  = {id: @(ViewBag.IdCurso ?? 0), nome: '@(ViewBag.NomeCurso ?? "")', vagasRestantes: 0 };
-                document.getElementById('hid-campus').value = state.campus.id;
-                document.getElementById('hid-curso').value  = state.curso.id;
-                goToStep(3);
-            </text>
-        }
-        });
-    </script>
-
-</body>
+    </body>
 
 </html>

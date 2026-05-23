@@ -12,6 +12,10 @@ public class InscricaoDetalheViewModel
     public string TelefoneConjuge1 { get; set; } = string.Empty;
     public string TelefoneConjuge2 { get; set; } = string.Empty;
 
+    // Datas de nascimento
+    public DateTime? DataNascimentoMarido { get; set; }
+    public DateTime? DataNascimentoEsposa { get; set; }
+
     // Endereço
     public string Rua { get; set; } = string.Empty;
     public string Numero { get; set; } = string.Empty;
@@ -24,5 +28,9 @@ public class InscricaoDetalheViewModel
     // Vínculo
     public string NomeCampus { get; set; } = string.Empty;
     public string GC { get; set; } = string.Empty;
+
+    // Convidado
+    public bool Convidado { get; set; }
+    public string? NomeCasalConvidador { get; set; }
 
 }

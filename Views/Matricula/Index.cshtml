@@ -54,6 +54,30 @@
             </div>
         </div>
 
+        @{
+            var totalConvidados = Model.InscricoesPendentesLista?.Count(i => i.Convidado) ?? 0;
+        }
+
+        @if (totalConvidados > 0)
+        {
+            <div style="display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#fef9c3,#fef3c7);border:1.5px solid #fde68a;border-left:4px solid #f59e0b;border-radius:var(--radius-lg);padding:14px 20px;margin-bottom:16px"
+                 class="ea-fade">
+                <div
+                    style="width:40px;height:40px;background:#fef3c7;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1.5px solid #fde68a">
+                    <i class="fas fa-star" style="color:#f59e0b;font-size:1rem"></i>
+                </div>
+                <div>
+                    <p style="font-family:var(--font);font-size:.88rem;font-weight:800;color:#92400e;margin:0 0 2px">
+                        @totalConvidados casal(is) convidado(s) com prioridade
+                    </p>
+                    <p style="font-size:.78rem;color:#b45309;margin:0">
+                        Estes casais foram indicados por casais formandos e têm prioridade na formação das novas turmas.
+                        Estão marcados com <i class="fas fa-star" style="color:#f59e0b"></i> na listagem abaixo.
+                    </p>
+                </div>
+            </div>
+        }
+
         <div class="ea-toolbar">
             <form method="get" style="flex:1 1 auto">
                 <div class="ea-filter-group">
@@ -65,6 +89,13 @@
                         <label><i class="fas fa-map-marker-alt" style="margin-right:3px"></i>Campus</label>
                         @Html.DropDownList("IdCampus",(SelectList)ViewBag.Campuses,"Todos os campi",new{@class="ea-filter-select"})
                     </div>
+                    <div class="ea-filter-item">
+                        <label><i class="fas fa-star" style="margin-right:3px;color:#f59e0b"></i>Tipo</label>
+                        <select name="apenasConvidados" class="ea-filter-select">
+                            <option value="">Todos</option>
+                            <option value="true" selected="@(ViewBag.ApenasConvidados == true ? "selected" : null)">Apenas convidados</option>
+                        </select>
+                    </div>
                     <div style="display:flex;align-items:flex-end;gap:6px">
                         <button type="submit" class="ea-btn-filter"><i class="fas fa-filter"></i> Filtrar</button>
                         <a asp-action="Index" class="ea-btn-clear"><i class="fas fa-times"></i> Limpar</a>
@@ -75,312 +106,316 @@
 
         <div class="ea-table-card ea-fade">
             <div class="ea-table-card-header">
-                <div class="ea-table-header-icon" style="background:var(--warning-light);color:var(--warning)"><i
-                    class="fas fa-hourglass-half"></i></div>
-                    <h3 class="ea-table-card-title">Inscrições Pendentes</h3>
-                    @if (Model.InscricoesPendentesLista?.Any() == true)
-                    {
-                        <span class="ea-count-badge"
-                              style="background:var(--warning-light);color:var(--warning);border-color:#fde68a">@Model.InscricoesPendentesLista.Count()
-                            pendentes</span>
-                        }
-                    </div>
-                    <div style="overflow-x:auto">
-                        <table class="ea-table">
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>Casal</th>
-                                    <th>Curso</th>
-                                    <th>Campus</th>
-                                    <th>Data Inscrição</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @if (Model.InscricoesPendentesLista?.Any() == true)
-                                {
-                                    @foreach (var item in Model.InscricoesPendentesLista)
-                                    {
-                                        <tr>
-                                            <td>
-                                                            <button type="button" class="btn-ver-casal" data-id="@item.Id"
-                                                                    title="Ver detalhes do casal">
-                                                                <i class="fas fa-eye"></i> Detalhes
-                                                            </button>
-                                                        </td>
-                                            <td>
-                                                <div style="display:flex;align-items:center;gap:9px">
-                                                    <div
-                                                        style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#fff0f0,#fecaca);color:#f87171;display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0">
-                                                        <i class="fas fa-heart"></i>
-                                                    </div>
-                                                    <span style="font-weight:700;color:var(--gray-800)">@item.NomeCasal</span>
-                                                </div>
-                                            </td>
-                                            <td><span class="ea-meta-pill"><i class="fas fa-graduation-cap"></i>@item.Curso</span></td>
-                                            <td><span class="ea-meta-pill"><i class="fas fa-map-marker-alt"></i>@item.Campus</span></td>
-                                            <td><span class="ea-date-pill"><i
-                                                class="fas fa-calendar-alt"></i>@item.DataInscricao.ToShortDateString()</span>
-                                            </td>
-                                            <td>
-                                                <a asp-controller="Matricula" asp-action="Cadastrar" asp-route-id="@item.Id"
-                                                       style="display:inline-flex;align-items:center;gap:5px;background:var(--primary);color:#fff;border:none;border-radius:var(--radius-sm);padding:6px 12px;font-size:.75rem;font-weight:700;text-decoration:none;transition:background .18s">
-                                                    <i class="fas fa-user-plus"></i> Matricular
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    }
-                                }
-                                else
-                                {
-                                    <tr>
-                                        <td colspan="5"
-                                            style="text-align:center;padding:32px 16px;color:var(--gray-400);font-style:italic;font-size:.82rem">
-                                            Nenhuma inscrição pendente.</td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                <div class="ea-table-header-icon" style="background:var(--warning-light);color:var(--warning)">
+                    <i class="fas fa-hourglass-half"></i>
+                </div>
+                <h3 class="ea-table-card-title">Inscrições Pendentes</h3>
+                @if (Model.InscricoesPendentesLista?.Any() == true)
+                {
+                    <span class="ea-count-badge"
+                          style="background:var(--warning-light);color:var(--warning);border-color:#fde68a">
+                        @Model.InscricoesPendentesLista.Count() pendentes
+                    </span>
+                }
+                @if (totalConvidados > 0)
+                {
+                    <span
+                        style="display:inline-flex;align-items:center;gap:5px;background:#fef3c7;color:#92400e;border:1px solid #fde68a;border-radius:20px;padding:3px 10px;font-size:.72rem;font-weight:700;margin-left:6px">
+                        <i class="fas fa-star" style="color:#f59e0b"></i> @totalConvidados com prioridade
+                    </span>
+                }
+            </div>
 
-                     <!-- Paginação -->
-                        @if (ViewBag.TotalPaginas > 1)
+            <div style="overflow-x:auto">
+                <table class="ea-table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Casal</th>
+                            <th>Curso</th>
+                            <th>Campus</th>
+                            <th>Data Inscrição</th>
+                            <th>Indicação</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.InscricoesPendentesLista?.Any() == true)
                         {
-                            <div class="ea-pagination">
-                                @if (ViewBag.NumeroPagina > 1)
-                                {
-                                    <a class="ea-page-btn" href="@Url.Action("Index","Matricula",new{idCurso=ViewBag.IdCursoSelecionado,idCampus=ViewBag.IdCampusSelecionado,Pagina=ViewBag.NumeroPagina-1})">
-                                        <i class="fas fa-chevron-left"></i>
-                                    </a>
-                                }
-                                <span class="ea-page-info">Página @ViewBag.NumeroPagina de @ViewBag.TotalPaginas</span>
-                                @if (ViewBag.NumeroPagina < ViewBag.TotalPaginas)
-                                {
-                                    <a class="ea-page-btn" href="@Url.Action("Index","Matricula",new{idCurso=ViewBag.IdCursoSelecionado,idCampus=ViewBag.IdCampusSelecionado,Pagina=ViewBag.NumeroPagina+1})">
-                                        <i class="fas fa-chevron-right"></i>
-                                    </a>
-                                }
-                            </div>
+                            @foreach (var item in Model.InscricoesPendentesLista.OrderByDescending(i => i.Convidado))
+                            {
+                                <tr
+                                    style="@(item.Convidado ? "background:linear-gradient(90deg,#fefce8 0%,#fff 100%);border-left:3px solid #f59e0b" : "")">
+                                    <td>
+                                        <button type="button" class="btn-ver-casal" data-id="@item.Id" title="Ver detalhes">
+                                            <i class="fas fa-eye"></i> Detalhes
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <div style="display:flex;align-items:center;gap:9px">
+                                            @if (item.Convidado)
+                                            {
+                                                <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#fef3c7,#fde68a);color:#f59e0b;display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0"
+                                                     title="Convidado por casal formando — prioridade na turma">
+                                                    <i class="fas fa-star"></i>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div
+                                                    style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#fff0f0,#fecaca);color:#f87171;display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0">
+                                                    <i class="fas fa-heart"></i>
+                                                </div>
+                                            }
+                                            <div>
+                                                <span style="font-weight:700;color:var(--gray-800)">@item.NomeCasal</span>
+                                                @if (item.Convidado)
+                                                {
+                                                    <div style="font-size:.7rem;color:#92400e;font-weight:600;margin-top:1px">
+                                                        <i class="fas fa-star" style="color:#f59e0b;margin-right:3px"></i>Prioridade
+                                                        — convidado
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="ea-meta-pill"><i class="fas fa-graduation-cap"></i>@item.Curso</span></td>
+                                    <td><span class="ea-meta-pill"><i class="fas fa-map-marker-alt"></i>@item.Campus</span></td>
+                                    <td>
+                                        <span class="ea-date-pill">
+                                            <i class="fas fa-calendar-alt"></i>@item.DataInscricao.ToShortDateString()
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (item.Convidado && !string.IsNullOrWhiteSpace(item.NomeCasalConvidador))
+                                        {
+                                            <div style="display:flex;flex-direction:column;gap:2px">
+                                                <span
+                                                    style="display:inline-flex;align-items:center;gap:4px;background:#fef3c7;color:#92400e;border:1px solid #fde68a;border-radius:20px;padding:3px 9px;font-size:.72rem;font-weight:700;white-space:nowrap">
+                                                    <i class="fas fa-star" style="color:#f59e0b"></i> Convidado
+                                                </span>
+                                                <span style="font-size:.72rem;color:var(--gray-500);padding-left:4px">
+                                                    por @item.NomeCasalConvidador
+                                                </span>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span style="color:var(--gray-300);font-size:.75rem">—</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <a asp-controller="Matricula" asp-action="Cadastrar" asp-route-id="@item.Id"
+                                           style="display:inline-flex;align-items:center;gap:5px;background:var(--primary);color:#fff;border:none;border-radius:var(--radius-sm);padding:6px 12px;font-size:.75rem;font-weight:700;text-decoration:none;transition:background .18s">
+                                            <i class="fas fa-user-plus"></i> Matricular
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
                         }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7"
+                                    style="text-align:center;padding:32px 16px;color:var(--gray-400);font-style:italic;font-size:.82rem">
+                                    Nenhuma inscrição pendente.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-
-
-
-
-                   
+        @if (ViewBag.TotalPaginas > 1)
+        {
+            <div class="ea-pagination">
+                @if (ViewBag.NumeroPagina > 1)
+                {
+                    <a class="ea-page-btn"
+                       href="@Url.Action("Index","Matricula",new{idCurso=ViewBag.IdCursoSelecionado,idCampus=ViewBag.IdCampusSelecionado,Pagina=ViewBag.NumeroPagina-1})">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                }
+                <span class="ea-page-info">Página @ViewBag.NumeroPagina de @ViewBag.TotalPaginas</span>
+                @if (ViewBag.NumeroPagina < ViewBag.TotalPaginas)
+                {
+                    <a class="ea-page-btn"
+                       href="@Url.Action("Index","Matricula",new{idCurso=ViewBag.IdCursoSelecionado,idCampus=ViewBag.IdCampusSelecionado,Pagina=ViewBag.NumeroPagina+1})">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                }
+            </div>
+        }
 
     </div>
 </section>
 
-
+<!-- Modal Detalhes -->
 <div class="modal fade" id="modalCasal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content" style="border:none;border-radius:var(--radius-lg);overflow:hidden">
-
-            
-            <div class="modal-header" style="background:linear-gradient(135deg,#1e40af,#2563eb);border:none;padding:20px 24px">
+            <div class="modal-header"
+                 style="background:linear-gradient(135deg,#1e40af,#2563eb);border:none;padding:20px 24px">
                 <div style="display:flex;align-items:center;gap:12px">
-                    <div style="width:40px;height:40px;background:rgba(255,255,255,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.9rem;flex-shrink:0">
+                    <div
+                        style="width:40px;height:40px;background:rgba(255,255,255,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.9rem;flex-shrink:0">
                         <i class="fas fa-heart"></i>
                     </div>
                     <div>
-                        <h5 class="modal-title" id="modalCasalNome" style="font-family:var(--font);font-size:1rem;font-weight:800;color:#fff;margin:0"></h5>
+                        <h5 class="modal-title" id="modalCasalNome"
+                            style="font-family:var(--font);font-size:1rem;font-weight:800;color:#fff;margin:0"></h5>
                         <p id="modalCasalCampus" style="font-size:.75rem;color:rgba(255,255,255,.7);margin:0"></p>
                     </div>
                 </div>
-                <button type="button" class="close" data-dismiss="modal" style="color:#fff;opacity:.7;font-size:1.4rem;padding:0;margin:0">
+                <button type="button" class="close" data-dismiss="modal"
+                        style="color:#fff;opacity:.7;font-size:1.4rem;padding:0;margin:0">
                     <span>&times;</span>
                 </button>
             </div>
-
-           
             <div class="modal-body" style="padding:0">
-
-                @* {{-- Loading --}} *@
-                <div id="modalCasalLoading" style="display:flex;align-items:center;justify-content:center;padding:48px;gap:10px;color:var(--gray-400)">
+                <div id="modalCasalLoading"
+                     style="display:flex;align-items:center;justify-content:center;padding:48px;gap:10px;color:var(--gray-400)">
                     <i class="fas fa-circle-notch fa-spin"></i>
                     <span style="font-size:.85rem">Carregando...</span>
                 </div>
-
-                @* {{-- Conteúdo (oculto até carregar) --}} *@
                 <div id="modalCasalConteudo" style="display:none">
-
-                    
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid var(--gray-100)">
-
-                        
+                    <div
+                        style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid var(--gray-100)">
                         <div style="padding:20px 24px;border-right:1px solid var(--gray-100)">
-                            <p style="font-size:.68rem;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.4px;margin:0 0 12px">Homem</p>
-                            <p id="mc-nome1" style="font-family:var(--font);font-size:.9rem;font-weight:800;color:var(--gray-800);margin:0 0 8px"></p>
-                            <div style="display:flex;flex-direction:column;gap:5px">
-                                <span id="mc-email1" style="font-size:.78rem;color:var(--gray-500)"></span>
-                                <span id="mc-fone1"  style="font-size:.78rem;color:var(--gray-500)"></span>
+                            <p
+                                style="font-size:.68rem;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.4px;margin:0 0 12px">
+                                Homem</p>
+                                <p id="mc-nome1"
+                                   style="font-family:var(--font);font-size:.9rem;font-weight:800;color:var(--gray-800);margin:0 0 8px">
+                                </p>
+                                <div style="display:flex;flex-direction:column;gap:5px">
+                                    <span id="mc-email1" style="font-size:.78rem;color:var(--gray-500)"></span>
+                                    <span id="mc-fone1" style="font-size:.78rem;color:var(--gray-500)"></span>
+                                    <span id="mc-nasc1" style="font-size:.78rem;color:var(--gray-500)"></span>
+                                </div>
+                            </div>
+                            <div style="padding:20px 24px">
+                                <p
+                                    style="font-size:.68rem;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.4px;margin:0 0 12px">
+                                    Mulher</p>
+                                    <p id="mc-nome2"
+                                       style="font-family:var(--font);font-size:.9rem;font-weight:800;color:var(--gray-800);margin:0 0 8px">
+                                    </p>
+                                    <div style="display:flex;flex-direction:column;gap:5px">
+                                        <span id="mc-email2" style="font-size:.78rem;color:var(--gray-500)"></span>
+                                        <span id="mc-fone2" style="font-size:.78rem;color:var(--gray-500)"></span>
+                                        <span id="mc-nasc2" style="font-size:.78rem;color:var(--gray-500)"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div
+                                style="padding:16px 24px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;gap:10px">
+                                <div
+                                    style="width:28px;height:28px;background:var(--primary-light);color:var(--primary);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <span id="mc-endereco" style="font-size:.82rem;color:var(--gray-600)"></span>
+                            </div>
+                            <div id="mc-convidado-wrap"
+                                 style="display:none;padding:14px 24px;border-bottom:1px solid var(--gray-100);background:#fefce8">
+                                <div style="display:flex;align-items:center;gap:10px">
+                                    <div
+                                        style="width:28px;height:28px;background:#fef3c7;color:#f59e0b;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:.75rem;flex-shrink:0;border:1px solid #fde68a">
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <div>
+                                        <p
+                                            style="font-size:.72rem;font-weight:700;color:#92400e;text-transform:uppercase;letter-spacing:.3px;margin:0 0 2px">
+                                            Convidado com Prioridade</p>
+                                            <p id="mc-convidador" style="font-size:.82rem;color:#b45309;font-weight:600;margin:0">
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-
-                        
-                        <div style="padding:20px 24px">
-                            <p style="font-size:.68rem;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.4px;margin:0 0 12px">Mulher</p>
-                            <p id="mc-nome2" style="font-family:var(--font);font-size:.9rem;font-weight:800;color:var(--gray-800);margin:0 0 8px"></p>
-                            <div style="display:flex;flex-direction:column;gap:5px">
-                                <span id="mc-email2" style="font-size:.78rem;color:var(--gray-500)"></span>
-                                <span id="mc-fone2"  style="font-size:.78rem;color:var(--gray-500)"></span>
-                            </div>
-                        </div>
-
                     </div>
-
-                    
-                    <div style="padding:16px 24px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;gap:10px">
-                        <div style="width:28px;height:28px;background:var(--primary-light);color:var(--primary);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0">
-                            <i class="fas fa-map-marker-alt"></i>
-                        </div>
-                        <span id="mc-endereco" style="font-size:.82rem;color:var(--gray-600)"></span>
-                    </div>                  
-                    
-
                 </div>
             </div>
 
-        </div>
-    </div>
-</div>
+            @section Scripts {
+                <style>
+                    .btn-ver-casal {
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 5px;
+                        background: var(--primary-light);
+                        color: var(--primary);
+                        border: 1px solid var(--primary-mid);
+                        border-radius: var(--radius-sm);
+                        padding: 5px 11px;
+                        font-size: .75rem;
+                        font-weight: 700;
+                        cursor: pointer;
+                        transition: background .18s;
+                        font-family: var(--font);
+                    }
 
-                     
+                    .btn-ver-casal:hover {
+                        background: var(--primary-mid);
+                    }
+                </style>
+                <script>
+                    $(function () {
+                        $(document).on('click', '.btn-ver-casal', function () {
+                            var id = $(this).data('id');
+                            $('#modalCasalNome').text('Carregando...');
+                            $('#modalCasalCampus').text('');
+                            $('#modalCasalLoading').show();
+                            $('#modalCasalConteudo').hide();
+                            $('#modalCasal').modal('show');
 
-@section Scripts {
-<style>
-    .btn-ver-casal {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        background: var(--primary-light);
-        color: var(--primary);
-        border: 1px solid var(--primary-mid);
-        border-radius: var(--radius-sm);
-        padding: 5px 11px;
-        font-size: .75rem;
-        font-weight: 700;
-        cursor: pointer;
-        transition: background .18s;
-        font-family: var(--font);
-    }
-    .btn-ver-casal:hover { background: var(--primary-mid); }
+                            $.getJSON('/Matricula/Detalhes/' + id)
+                                .done(function (d) { preencherModal(d); })
+                                .fail(function () {
+                                    $('#modalCasalLoading').html('<span style="color:var(--danger);font-size:.85rem"><i class="fas fa-exclamation-circle" style="margin-right:6px"></i>Erro ao carregar os dados.</span>');
+                                });
+                        });
 
-    .mc-matricula-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 10px 0;
-        border-bottom: 1px solid var(--gray-100);
-        font-size: .82rem;
-    }
-    .mc-matricula-item:last-child { border-bottom: none; }
+                        function preencherModal(d) {
+                            $('#modalCasalNome').text(d.nomeConjuge1 + ' e ' + d.nomeConjuge2);
+                            $('#modalCasalCampus').html('<i class="fas fa-map-marker-alt" style="margin-right:4px"></i>' + d.nomeCampus + (d.gc ? ' - GC: ' + d.gc : ''));
 
-    .mc-curso-icon {
-        width: 32px;
-        height: 32px;
-        border-radius: var(--radius-sm);
-        background: var(--success-light);
-        color: var(--success);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: .7rem;
-        flex-shrink: 0;
-    }
-    .mc-badge {
-        display: inline-flex;
-        align-items: center;
-        font-size: .68rem;
-        font-weight: 700;
-        border-radius: 20px;
-        padding: 2px 8px;
-        margin-left: auto;
-        white-space: nowrap;
-    }
-    .mc-badge.ativa       { background: var(--success-light); color: var(--success);  border: 1px solid #bbf7d0; }
-    .mc-badge.concluida   { background: var(--primary-light); color: var(--primary);  border: 1px solid var(--primary-mid); }
-    .mc-badge.desistente  { background: var(--danger-light);  color: var(--danger);   border: 1px solid #fca5a5; }
-</style>
+                            $('#mc-nome1').text(d.nomeConjuge1);
+                            $('#mc-email1').html('<i class="fas fa-envelope" style="margin-right:5px;color:var(--gray-300)"></i>' + d.emailConjuge1);
+                            $('#mc-fone1').html('<i class="fas fa-phone" style="margin-right:5px;color:var(--gray-300)"></i>' + d.telefoneConjuge1);
+                            if (d.dataNascimentoMarido) {
+                                $('#mc-nasc1').html('<i class="fas fa-birthday-cake" style="margin-right:5px;color:var(--gray-300)"></i>' + formatarData(d.dataNascimentoMarido));
+                            }
 
-<script>
-    $(function () {
+                            $('#mc-nome2').text(d.nomeConjuge2);
+                            $('#mc-email2').html('<i class="fas fa-envelope" style="margin-right:5px;color:var(--gray-300)"></i>' + d.emailConjuge2);
+                            $('#mc-fone2').html('<i class="fas fa-phone" style="margin-right:5px;color:var(--gray-300)"></i>' + d.telefoneConjuge2);
+                            if (d.dataNascimentoEsposa) {
+                                $('#mc-nasc2').html('<i class="fas fa-birthday-cake" style="margin-right:5px;color:var(--gray-300)"></i>' + formatarData(d.dataNascimentoEsposa));
+                            }
 
-        // ── Abre o modal e busca os dados via fetch ──────────────────────
-        $(document).on('click', '.btn-ver-casal', function () {
-            var id = $(this).data('id');
+                            var partes = [d.rua, d.numero, d.complemento, d.bairro, d.cidade + ' - ' + d.estado, d.cep]
+                                .filter(function (p) { return p && p.trim() !== ''; });
+                            $('#mc-endereco').text(partes.join(', '));
 
-            // Reseta o modal antes de abrir
-            $('#modalCasalNome').text('Carregando...');
-            $('#modalCasalCampus').text('');
-            $('#modalCasalLoading').show();
-            $('#modalCasalConteudo').hide();
+                            if (d.convidado && d.nomeCasalConvidador) {
+                                $('#mc-convidador').text('Indicado por: ' + d.nomeCasalConvidador);
+                                $('#mc-convidado-wrap').show();
+                            } else {
+                                $('#mc-convidado-wrap').hide();
+                            }
 
-            $('#modalCasal').modal('show');
+                            $('#modalCasalLoading').hide();
+                            $('#modalCasalConteudo').show();
+                        }
 
-            // Busca os dados do endpoint JSON
-            $.getJSON('/Matricula/Detalhes/' + id)
-                .done(function (d) {
-                    preencherModal(d);
-                })
-                .fail(function () {
-                    $('#modalCasalLoading').html(
-                        '<span style="color:var(--danger);font-size:.85rem">' +
-                        '<i class="fas fa-exclamation-circle" style="margin-right:6px"></i>' +
-                        'Erro ao carregar os dados. Tente novamente.</span>'
-                    );
-                });
-        });
-
-        // ── Preenche o modal com os dados recebidos ──────────────────────
-        function preencherModal(d) {
-            // Header
-            $('#modalCasalNome').text(d.nomeConjuge1 + ' e ' + d.nomeConjuge2);
-            $('#modalCasalCampus').html(
-                '<i class="fas fa-map-marker-alt" style="margin-right:4px"></i>' +
-                d.nomeCampus + (d.gc ? ' - GC: ' + d.gc : 'Nome GC não informado')
-            );
-
-            // Cônjuges
-            $('#mc-nome1').text(d.nomeConjuge1);
-            $('#mc-email1').html('<i class="fas fa-envelope" style="margin-right:5px;color:var(--gray-300)"></i>' + d.emailConjuge1);
-            $('#mc-fone1').html('<i class="fas fa-phone" style="margin-right:5px;color:var(--gray-300)"></i>' + d.telefoneConjuge1);
-
-            $('#mc-nome2').text(d.nomeConjuge2);
-            $('#mc-email2').html('<i class="fas fa-envelope" style="margin-right:5px;color:var(--gray-300)"></i>' + d.emailConjuge2);
-            $('#mc-fone2').html('<i class="fas fa-phone" style="margin-right:5px;color:var(--gray-300)"></i>' + d.telefoneConjuge2);
-
-            // Endereço
-            var partes = [d.rua, d.numero, d.complemento, d.bairro, d.cidade + ' - ' + d.estado, d.cep]
-                .filter(function (p) { return p && p.trim() !== ''; });
-            $('#mc-endereco').text(partes.join(', '));         
-
-            // Exibe o conteúdo
-            $('#modalCasalLoading').hide();
-            $('#modalCasalConteudo').show();
-        }
-
-        // ── Helpers ──────────────────────────────────────────────────────
-        function traduzirStatus(s) {
-            var mapa = {
-                'Ativo': 'Ativo', 'Ativa': 'Ativa',
-                'Desistente': 'Desistente',
-                'Concluido': 'Concluído', 'Concluída': 'Concluída',
-                'Cancelada': 'Cancelada'
-            };
-            return mapa[s] || s;
-        }
-
-        function formatarData(iso) {
-            if (!iso) return '';
-            var d = new Date(iso);
-            return d.toLocaleDateString('pt-BR');
-        }
-
-    });
-</script>
-}
-
+                        function formatarData(iso) {
+                            if (!iso) return '';
+                            var d = new Date(iso);
+                            return d.toLocaleDateString('pt-BR');
+                        }
+                    });
+                </script>
+            }

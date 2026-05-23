@@ -78,7 +78,9 @@ public class InscricaoOnlineRepository : IInscricaoOnlineRepository
                 IdCurso = i.IdCurso,
                 Campus = i.Campus.Nome,
                 IdCampus = i.IdCampus,
-                DataInscricao = i.DataInscricao
+                DataInscricao = i.DataInscricao,
+                Convidado = i.Convidado,
+                NomeCasalConvidador = i.NomeCasalConvidador
             }).AsNoTracking()
             .ToList();
     }

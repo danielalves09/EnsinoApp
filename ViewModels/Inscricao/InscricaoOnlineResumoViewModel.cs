@@ -12,4 +12,8 @@ public class InscricaoOnlineResumoViewModel
     public int IdCampus { get; set; }
     public DateTime DataInscricao { get; set; }
 
+    // Convidado por casal formando
+    public bool Convidado { get; set; }
+    public string? NomeCasalConvidador { get; set; }
+
 }
