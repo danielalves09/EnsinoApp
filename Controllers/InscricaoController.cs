@@ -6,6 +6,7 @@ using EnsinoApp.Services.Inscricao;
 using EnsinoApp.Services.Licao;
 using EnsinoApp.Services.PeriodoInscricao;
 using EnsinoApp.ViewModels.Inscricao;
+using EnsinoApp.ViewModels.PeriodoInscricao;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -111,6 +112,28 @@ public class InscricaoController : Controller
         return Json(resultado.OrderBy(x => ((dynamic)x).nome));
     }
 
+    // ── API: dias disponíveis para campus + curso ─────────────────
+    [HttpGet]
+    public async Task<IActionResult> GetDiasDisponiveis(int campusId, int cursoId)
+    {
+        var periodo = await _periodoService.FindAtivoAsync(cursoId, campusId);
+
+        if (periodo == null || string.IsNullOrWhiteSpace(periodo.DiasDisponiveis))
+            return Json(new List<object>());
+
+        var dias = DiasDisponivelHelper.TodosOsDias
+            .Where(d => DiasDisponivelHelper
+                .ParseValores(periodo.DiasDisponiveis)
+                .Contains(d.Valor))
+            .Select(d => new { valor = d.Valor, label = d.Label })
+            .ToList();
+
+        return Json(dias);
+    }
+
+
+
+
     // ── POST /Inscricao/Cadastrar ────────────────────────────────
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -174,6 +197,7 @@ public class InscricaoController : Controller
             IdCurso = model.IdCurso,
             ParticipaGC = model.ParticipaGC,
             NomeGC = model.NomeGC,
+            DiaPreferencial = model.DiaPreferencial,
             Convidado = model.Convidado,
             NomeCasalConvidador = model.Convidado ? model.NomeCasalConvidador : null
         };
@@ -194,6 +218,7 @@ public class InscricaoController : Controller
             NomeCurso = _cursoService.FindById(inscricaoConfirmada.IdCurso)?.Nome ?? string.Empty,
             ParticipaGC = inscricaoConfirmada.ParticipaGC,
             NomeGC = inscricaoConfirmada.NomeGC,
+            DiaPreferencial = inscricaoConfirmada.DiaPreferencial,
             DataInscricao = inscricaoConfirmada.DataInscricao
         };
 

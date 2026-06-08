@@ -19,7 +19,13 @@ public class PeriodoInscricaoViewModel
 
     public bool Ativo { get; set; }
 
-    // Status calculado para exibição
+    /// <summary>Dias disponíveis separados por vírgula, ex: "Monday,Saturday"</summary>
+    public string? DiasDisponiveis { get; set; }
+
+    /// <summary>Lista de dias para exibição amigável na view.</summary>
+    public List<string> ListaDiasNomes =>
+        DiasDisponivelHelper.ParseNomes(DiasDisponiveis);
+
     public string StatusLabel
     {
         get
@@ -73,4 +79,63 @@ public class PeriodoInscricaoFormViewModel
     public int VagasTotal { get; set; } = 30;
 
     public bool Ativo { get; set; } = false;
+
+    /// <summary>
+    /// Dias da semana selecionados pelo administrador.
+    /// Armazenados como string separada por vírgula, ex: "Saturday,Sunday".
+    /// </summary>
+    [Display(Name = "Dias disponíveis")]
+    public List<string> DiasDisponiveis { get; set; } = new();
+
+    /// <summary>Converte a lista para a string que vai no banco.</summary>
+    public string DiasDisponiveisStr =>
+        DiasDisponiveis != null && DiasDisponiveis.Any()
+            ? string.Join(",", DiasDisponiveis.Where(d => !string.IsNullOrWhiteSpace(d)))
+            : string.Empty;
+}
+
+/// <summary>Helper estático para conversão dos dias.</summary>
+public static class DiasDisponivelHelper
+{
+    private static readonly Dictionary<string, string> _ptBr = new(StringComparer.OrdinalIgnoreCase)
+    {
+        { "Sunday",    "Domingo"       },
+        { "Monday",    "Segunda-feira" },
+        { "Tuesday",   "Terça-feira"   },
+        { "Wednesday", "Quarta-feira"  },
+        { "Thursday",  "Quinta-feira"  },
+        { "Friday",    "Sexta-feira"   },
+        { "Saturday",  "Sábado"        },
+    };
+
+    /// <summary>Ordem de exibição: começa na segunda, vai até domingo.</summary>
+    public static readonly List<(string Valor, string Label)> TodosOsDias = new()
+    {
+        ("Monday",    "Segunda-feira"),
+        ("Tuesday",   "Terça-feira"  ),
+        ("Wednesday", "Quarta-feira" ),
+        ("Thursday",  "Quinta-feira" ),
+        ("Friday",    "Sexta-feira"  ),
+        ("Saturday",  "Sábado"       ),
+        ("Sunday",    "Domingo"      ),
+    };
+
+    public static string ParaPtBr(string? dia) =>
+        !string.IsNullOrWhiteSpace(dia) && _ptBr.TryGetValue(dia, out var label) ? label : dia ?? "";
+
+    public static List<string> ParseNomes(string? diasStr)
+    {
+        if (string.IsNullOrWhiteSpace(diasStr)) return new List<string>();
+        return diasStr.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                      .Select(d => ParaPtBr(d.Trim()))
+                      .ToList();
+    }
+
+    public static List<string> ParseValores(string? diasStr)
+    {
+        if (string.IsNullOrWhiteSpace(diasStr)) return new List<string>();
+        return diasStr.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                      .Select(d => d.Trim())
+                      .ToList();
+    }
 }

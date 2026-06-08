@@ -5,6 +5,7 @@
 
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -32,70 +33,71 @@
                 <div class="login-courses">
                     <span class="login-course-pill"><i class="fas fa-heart" style="margin-right:4px"></i>Casados Para
                         Sempre</span>
-                        <span class="login-course-pill"><i class="fas fa-ring" style="margin-right:4px"></i>One</span>
-                        <span class="login-course-pill"><i class="fas fa-child" style="margin-right:4px"></i>Pais Para Toda
-                            Vida</span>
+                        <span class="login-course-pill"><i class="fas fa-ring" style="margin-right:4px"></i>ASU - Antes de
+                            Sermos um</span>
+                            <span class="login-course-pill"><i class="fas fa-child" style="margin-right:4px"></i>Pais Para Toda
+                                Vida</span>
+                            </div>
                         </div>
+                    </div>
+
+                    <!-- ── Painel direito (formulário) ───────────── -->
+                    <div class="login-panel-right">
+
+                        <img src="~/images/logo.png" class="login-logo" alt="Logo EnsinoApp" />
+                        <p class="login-subtitle">Acesse o sistema com suas credenciais</p>
+
+                        <form asp-action="Login" method="post" novalidate class="login-form">
+                            <div asp-validation-summary="ModelOnly" class="l-error"
+                                 style="margin-bottom:14px;padding:10px 14px;background:#fef2f2;border:1px solid #fca5a5;border-radius:var(--radius)">
+                            </div>
+
+                            <!-- Email -->
+                            <div class="l-field-group">
+                                <div class="l-field-wrap">
+                                    <input asp-for="Email" class="l-field-control" placeholder="Seu email" />
+                                    <i class="fas fa-envelope l-field-icon"></i>
+                                </div>
+                                <span asp-validation-for="Email" class="l-error"></span>
+                            </div>
+
+                            <!-- Senha -->
+                            <div class="l-field-group">
+                                <div class="l-field-wrap">
+                                    <input asp-for="Password" type="password" class="l-field-control" placeholder="Sua senha" />
+                                    <i class="fas fa-lock l-field-icon"></i>
+                                </div>
+                                <span asp-validation-for="Password" class="l-error"></span>
+                            </div>
+
+                            <!-- Lembrar -->
+                            <label class="l-remember">
+                                <input asp-for="RememberMe" type="checkbox" />
+                                Lembrar minha senha
+                            </label>
+
+                            <!-- Botão -->
+                            <button type="submit" class="btn-login">
+                                <i class="fas fa-sign-in-alt"></i> Entrar
+                            </button>
+
+                            <!-- Esqueceu -->
+                            <a asp-action="ForgotPassword" class="l-forgot">
+                                Esqueceu a senha? Clique aqui
+                            </a>
+
+                            <hr class="l-divider" />
+
+                            <p class="l-footer">
+                                © @DateTime.Now.Year <strong>EnsinoApp · Versão 1.0</strong>
+                            </p>
+                        </form>
+
                     </div>
                 </div>
 
-                <!-- ── Painel direito (formulário) ───────────── -->
-                <div class="login-panel-right">
+                <script src="~/loginResources/jquery.min.js"></script>
+                <partial name="_ValidationScriptsPartial" />
+            </body>
 
-                    <img src="~/images/logo.png" class="login-logo" alt="Logo EnsinoApp" />
-                    <p class="login-subtitle">Acesse o sistema com suas credenciais</p>
-
-                    <form asp-action="Login" method="post" novalidate class="login-form">
-                        <div asp-validation-summary="ModelOnly" class="l-error"
-                             style="margin-bottom:14px;padding:10px 14px;background:#fef2f2;border:1px solid #fca5a5;border-radius:var(--radius)">
-                        </div>
-
-                        <!-- Email -->
-                        <div class="l-field-group">
-                            <div class="l-field-wrap">
-                                <input asp-for="Email" class="l-field-control"                 placeholder="Seu email" />
-                                <i class="fas fa-envelope l-field-icon"></i>
-                            </div>
-                            <span asp-validation-for="Email" class="l-error"></span>
-                        </div>
-
-                        <!-- Senha -->
-                        <div class="l-field-group">
-                            <div class="l-field-wrap">
-                                <input asp-for="Password"                 type="password"               class="l-field-control"             placeholder="Sua senha" />
-                                <i class="fas fa-lock l-field-icon"></i>
-                            </div>
-                            <span asp-validation-for="Password" class="l-error"></span>
-                        </div>
-
-                        <!-- Lembrar -->
-                        <label class="l-remember">
-                            <input asp-for="RememberMe" type="checkbox" />
-                            Lembrar minha senha
-                        </label>
-
-                        <!-- Botão -->
-                        <button type="submit" class="btn-login">
-                            <i class="fas fa-sign-in-alt"></i> Entrar
-                        </button>
-
-                        <!-- Esqueceu -->
-                        <a asp-action="ForgotPassword" class="l-forgot">
-                            Esqueceu a senha? Clique aqui
-                        </a>
-
-                        <hr class="l-divider" />
-
-                        <p class="l-footer">
-                            © @DateTime.Now.Year <strong>EnsinoApp · Versão 1.0</strong>
-                        </p>
-                    </form>
-
-                </div>
-            </div>
-
-            <script src="~/loginResources/jquery.min.js"></script>
-            <partial name="_ValidationScriptsPartial" />
-        </body>
-
-    </html>
+        </html>

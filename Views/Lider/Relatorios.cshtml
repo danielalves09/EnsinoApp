@@ -1,10 +1,696 @@
 @using EnsinoApp.Models.Enums
 @model IEnumerable<EnsinoApp.Models.Entities.RelatorioSemanal>
 @{
-    ViewData["Title"] = "Relatórios";
+    ViewData["Title"] = "Relatórios Semanais";
     var idTurma = Model.FirstOrDefault()?.Matricula?.IdTurma;
+    var totalRelatorios = Model.Count();
+    var totalPresentes = Model.Count(r => r.Presenca == StatusPresenca.Presente);
+    var totalAusentes = Model.Count(r => r.Presenca == StatusPresenca.Ausente);
+    var totalDesistentes = Model.Count(r => r.Presenca == StatusPresenca.Desistente);
+    var taxaPresenca = totalRelatorios > 0 ? (int)Math.Round(totalPresentes / (double)totalRelatorios * 100) : 0;
+    var licoes = Model.Select(r => r.Licao?.Titulo).Where(t => t != null).Distinct().OrderBy(t => t).ToList();
+    var casais = Model
+        .Select(r => r.Matricula?.Casal?.NomeConjuge1 + " & " + r.Matricula?.Casal?.NomeConjuge2)
+        .Where(n => n != null).Distinct().OrderBy(n => n).ToList();
 }
 
+<style>
+    :root {
+        --primary: #2563eb;
+        --primary-light: #eff6ff;
+        --primary-mid: #bfdbfe;
+        --success: #16a34a;
+        --success-light: #f0fdf4;
+        --danger: #dc2626;
+        --danger-light: #fef2f2;
+        --warning: #d97706;
+        --warning-light: #fffbeb;
+        --purple: #7c3aed;
+        --purple-light: #f5f3ff;
+        --gray-50: #f8fafc;
+        --gray-100: #f1f5f9;
+        --gray-200: #e2e8f0;
+        --gray-300: #cbd5e1;
+        --gray-400: #94a3b8;
+        --gray-500: #64748b;
+        --gray-600: #475569;
+        --gray-700: #334155;
+        --gray-800: #1e293b;
+        --radius-sm: 6px;
+        --radius: 10px;
+        --radius-lg: 14px;
+        --font: 'Nunito', 'Segoe UI', sans-serif;
+    }
+
+    @@keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(12px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* ── Stat strip ──────────────────────────────────────── */
+    .rel-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .rel-stat-card {
+        background: #fff;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        padding: 16px 18px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        animation: fadeUp .3s ease both;
+    }
+
+    .rel-stat-card:nth-child(1) {
+        animation-delay: .04s
+    }
+
+    .rel-stat-card:nth-child(2) {
+        animation-delay: .08s
+    }
+
+    .rel-stat-card:nth-child(3) {
+        animation-delay: .12s
+    }
+
+    .rel-stat-card:nth-child(4) {
+        animation-delay: .16s
+    }
+
+    .rel-stat-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .rel-stat-icon.blue {
+        background: var(--primary-light);
+        color: var(--primary);
+    }
+
+    .rel-stat-icon.green {
+        background: var(--success-light);
+        color: var(--success);
+    }
+
+    .rel-stat-icon.red {
+        background: var(--danger-light);
+        color: var(--danger);
+    }
+
+    .rel-stat-icon.purple {
+        background: var(--purple-light);
+        color: var(--purple);
+    }
+
+    .rel-stat-num {
+        font-family: var(--font);
+        font-size: 1.6rem;
+        font-weight: 900;
+        color: var(--gray-800);
+        line-height: 1;
+        margin: 0 0 2px;
+        letter-spacing: -.5px;
+    }
+
+    .rel-stat-label {
+        font-size: .72rem;
+        color: var(--gray-400);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .3px;
+        margin: 0;
+    }
+
+    .rel-progress-bar {
+        height: 3px;
+        background: var(--gray-100);
+        border-radius: 20px;
+        overflow: hidden;
+        margin-top: 6px;
+    }
+
+    .rel-progress-fill {
+        height: 100%;
+        border-radius: 20px;
+        transition: width .6s ease;
+    }
+
+    /* ── Filter bar ──────────────────────────────────────── */
+    .rel-filter-bar {
+        background: #fff;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        padding: 16px 20px 14px;
+        margin-bottom: 18px;
+        animation: fadeUp .3s ease .2s both;
+    }
+
+    .rel-filter-title {
+        font-family: var(--font);
+        font-size: .72rem;
+        font-weight: 800;
+        color: var(--gray-400);
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        margin: 0 0 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .rel-filter-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: flex-end;
+    }
+
+    .rel-filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        flex: 1 1 160px;
+        min-width: 130px;
+    }
+
+    .rel-filter-label {
+        font-size: .68rem;
+        font-weight: 700;
+        color: var(--gray-400);
+        text-transform: uppercase;
+        letter-spacing: .4px;
+    }
+
+    .rel-filter-control {
+        border: 1.5px solid var(--gray-200);
+        border-radius: var(--radius);
+        padding: 7px 10px;
+        font-size: .82rem;
+        color: var(--gray-700);
+        background: var(--gray-50);
+        font-family: var(--font);
+        outline: none;
+        width: 100%;
+        transition: border-color .2s, background .2s;
+    }
+
+    .rel-filter-control:focus {
+        border-color: var(--primary);
+        background: #fff;
+    }
+
+    .rel-filter-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        border-radius: var(--radius);
+        font-size: .82rem;
+        font-weight: 700;
+        cursor: pointer;
+        border: none;
+        font-family: var(--font);
+        transition: opacity .18s, transform .12s;
+        white-space: nowrap;
+    }
+
+    .rel-filter-btn:hover {
+        opacity: .88;
+        transform: translateY(-1px);
+    }
+
+    .rel-filter-btn.primary {
+        background: var(--primary);
+        color: #fff;
+    }
+
+    .rel-filter-btn.ghost {
+        background: var(--gray-100);
+        color: var(--gray-600);
+        border: 1px solid var(--gray-200);
+    }
+
+    .rel-filter-btn.success {
+        background: #dcfce7;
+        color: var(--success);
+        border: 1px solid #bbf7d0;
+    }
+
+    .rel-filter-actions {
+        display: flex;
+        gap: 6px;
+        align-self: flex-end;
+        flex-wrap: wrap;
+    }
+
+    /* ── Results / sort bar ──────────────────────────────── */
+    .rel-results-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .rel-results-count {
+        font-size: .8rem;
+        color: var(--gray-400);
+        font-weight: 600;
+    }
+
+    .rel-sort-wrap {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .rel-sort-select {
+        border: 1.5px solid var(--gray-200);
+        border-radius: var(--radius-sm);
+        padding: 5px 10px;
+        font-size: .78rem;
+        color: var(--gray-600);
+        background: var(--gray-50);
+        font-family: var(--font);
+        outline: none;
+        cursor: pointer;
+        transition: border-color .2s;
+    }
+
+    .rel-sort-select:focus {
+        border-color: var(--primary);
+    }
+
+    .rel-view-btns {
+        display: flex;
+        gap: 4px;
+        background: var(--gray-100);
+        border-radius: var(--radius-sm);
+        padding: 3px;
+    }
+
+    .rel-view-btn {
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: .75rem;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
+        color: var(--gray-400);
+        background: transparent;
+        transition: all .15s;
+        font-family: var(--font);
+    }
+
+    .rel-view-btn.active {
+        background: #fff;
+        color: var(--primary);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, .07);
+    }
+
+    /* ── Cards grid ──────────────────────────────────────── */
+    .rel-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 14px;
+        margin-bottom: 8px;
+    }
+
+    .rel-grid.hidden {
+        display: none !important;
+    }
+
+    .rel-card {
+        background: #fff;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        animation: fadeUp .35s ease both;
+        transition: box-shadow .2s, transform .15s;
+        display: flex;
+        flex-direction: column;
+        border-left-width: 4px;
+    }
+
+    .rel-card:hover {
+        box-shadow: 0 6px 22px rgba(0, 0, 0, .09);
+        transform: translateY(-2px);
+    }
+
+    .rel-card.presente {
+        border-left-color: var(--success);
+    }
+
+    .rel-card.ausente {
+        border-left-color: var(--danger);
+    }
+
+    .rel-card.desistente {
+        border-left-color: var(--warning);
+    }
+
+    .rel-card-header {
+        padding: 14px 16px 10px;
+        border-bottom: 1px solid var(--gray-100);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .rel-card-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        font-size: .8rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-family: var(--font);
+        color: #fff;
+        background: linear-gradient(135deg, #818cf8, #6366f1);
+        letter-spacing: .5px;
+    }
+
+    .rel-card.presente .rel-card-avatar {
+        background: linear-gradient(135deg, #4ade80, #16a34a);
+    }
+
+    .rel-card.ausente .rel-card-avatar {
+        background: linear-gradient(135deg, #f87171, #dc2626);
+    }
+
+    .rel-card.desistente .rel-card-avatar {
+        background: linear-gradient(135deg, #fbbf24, #d97706);
+    }
+
+    .rel-card-couple {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .rel-card-couple-name {
+        font-family: var(--font);
+        font-size: .88rem;
+        font-weight: 800;
+        color: var(--gray-800);
+        margin: 0 0 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .rel-card-couple-sub {
+        font-size: .7rem;
+        color: var(--gray-400);
+        margin: 0;
+    }
+
+    .rel-card-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: .68rem;
+        font-weight: 800;
+        border-radius: 20px;
+        padding: 3px 9px;
+        border: 1px solid transparent;
+        flex-shrink: 0;
+        white-space: nowrap;
+    }
+
+    .badge-presente {
+        background: var(--success-light);
+        color: var(--success);
+        border-color: #bbf7d0;
+    }
+
+    .badge-ausente {
+        background: var(--danger-light);
+        color: var(--danger);
+        border-color: #fca5a5;
+    }
+
+    .badge-desistente {
+        background: var(--warning-light);
+        color: var(--warning);
+        border-color: #fde68a;
+    }
+
+    .rel-card-body {
+        padding: 12px 16px 8px;
+        flex: 1;
+    }
+
+    .rel-card-licao {
+        font-size: .83rem;
+        font-weight: 700;
+        color: var(--gray-800);
+        margin: 0 0 10px;
+        display: flex;
+        align-items: flex-start;
+        gap: 7px;
+        line-height: 1.4;
+    }
+
+    .rel-card-licao i {
+        color: var(--primary);
+        font-size: .72rem;
+        margin-top: 3px;
+        flex-shrink: 0;
+    }
+
+    .rel-card-obs-wrap {
+        position: relative;
+    }
+
+    .rel-card-obs {
+        font-size: .77rem;
+        color: var(--gray-500);
+        line-height: 1.55;
+        margin: 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        cursor: default;
+    }
+
+    .rel-card-obs-full {
+        display: none;
+        position: absolute;
+        bottom: calc(100% + 6px);
+        left: 0;
+        right: 0;
+        background: var(--gray-800);
+        color: #fff;
+        font-size: .76rem;
+        line-height: 1.5;
+        padding: 8px 12px;
+        border-radius: var(--radius-sm);
+        z-index: 50;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, .2);
+        pointer-events: none;
+    }
+
+    .rel-card-obs-wrap:hover .rel-card-obs-full {
+        display: block;
+    }
+
+    .rel-card-footer {
+        padding: 8px 14px 12px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 6px;
+        border-top: 1px solid var(--gray-100);
+        margin-top: auto;
+    }
+
+    .rel-action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: .73rem;
+        font-weight: 700;
+        border-radius: var(--radius-sm);
+        padding: 5px 11px;
+        border: 1px solid transparent;
+        cursor: pointer;
+        font-family: var(--font);
+        transition: opacity .15s, transform .1s;
+        text-decoration: none;
+    }
+
+    .rel-action-btn:hover {
+        opacity: .84;
+        transform: translateY(-1px);
+        text-decoration: none;
+    }
+
+    .rel-action-btn.view {
+        background: var(--primary-light);
+        color: var(--primary);
+        border-color: var(--primary-mid);
+    }
+
+    .rel-action-btn.edit {
+        background: #fffbeb;
+        color: #b45309;
+        border-color: #fde68a;
+    }
+
+    .rel-action-btn.delete {
+        background: var(--danger-light);
+        color: var(--danger);
+        border-color: #fca5a5;
+    }
+
+    /* ── Table view ──────────────────────────────────────── */
+    .rel-table-card {
+        background: #fff;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        display: none;
+        animation: fadeUp .3s ease both;
+        margin-bottom: 8px;
+    }
+
+    .rel-table-card.active {
+        display: block;
+    }
+
+    /* ── Pagination ──────────────────────────────────────── */
+    .rel-pagination {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        margin: 16px 0 24px;
+        flex-wrap: wrap;
+    }
+
+    .rel-page-btn {
+        min-width: 34px;
+        height: 34px;
+        padding: 0 10px;
+        border-radius: var(--radius-sm);
+        border: 1.5px solid var(--gray-200);
+        background: #fff;
+        color: var(--gray-600);
+        font-size: .8rem;
+        font-weight: 700;
+        font-family: var(--font);
+        cursor: pointer;
+        transition: all .15s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+    }
+
+    .rel-page-btn:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+
+    .rel-page-btn.active {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: #fff;
+    }
+
+    .rel-page-btn:disabled {
+        opacity: .4;
+        cursor: not-allowed;
+    }
+
+    /* ── Empty ───────────────────────────────────────────── */
+    .rel-empty {
+        background: #fff;
+        border: 1px dashed var(--gray-200);
+        border-radius: var(--radius-lg);
+        padding: 52px 24px;
+        text-align: center;
+        color: var(--gray-400);
+    }
+
+    .rel-empty i {
+        font-size: 2.4rem;
+        display: block;
+        margin-bottom: 12px;
+    }
+
+    .rel-empty h3 {
+        font-family: var(--font);
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--gray-500);
+        margin: 0 0 4px;
+    }
+
+    .rel-empty p {
+        font-size: .82rem;
+        margin: 0;
+    }
+
+    /* ── Responsive ──────────────────────────────────────── */
+    @@media (max-width: 1024px) {
+        .rel-stats {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @@media (max-width: 640px) {
+        .rel-stats {
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .rel-filter-bar {
+            padding: 12px 14px;
+        }
+
+        .rel-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .rel-results-bar {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+
+    @@media (max-width: 400px) {
+        .rel-stats {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<!-- ── Page header ──────────────────────────────────────── -->
 <section class="content-header" style="padding-bottom:0">
     <div class="container-fluid">
         @if (idTurma.HasValue)
@@ -14,9 +700,11 @@
             </a>
         }
         <div class="ea-page-title">
-            <h1><i class="fas fa-file-alt" style="color:var(--primary);margin-right:8px"></i>Histórico de Relatórios
+            <h1>
+                <i class="fas fa-file-alt" style="color:var(--primary);margin-right:8px"></i>
+                Histórico de Relatórios
             </h1>
-            <p>Registro de presenças e lições por semana</p>
+            <p>Registro de presenças e acompanhamento por lição</p>
         </div>
     </div>
 </section>
@@ -24,88 +712,580 @@
 <section class="content">
     <div class="container-fluid">
 
-        <div class="ea-table-card ea-fade">
-            <div class="ea-table-card-header">
-                <div class="ea-table-header-icon"><i class="fas fa-book-open"></i></div>
-                <h3 class="ea-table-card-title">Relatório das Lições</h3>
-                @if (Model.Any())
-                {
-                    <span class="ea-count-badge">@Model.Count() registros</span>
-                }
+        <!-- ── Stat strip ───────────────────────────────── -->
+        <div class="rel-stats">
+            <div class="rel-stat-card">
+                <div class="rel-stat-icon blue"><i class="fas fa-file-alt"></i></div>
+                <div>
+                    <p class="rel-stat-num">@totalRelatorios</p>
+                    <p class="rel-stat-label">Total de Registros</p>
+                </div>
             </div>
-
-            <div style="overflow-x:auto">
-                @if (Model.Any())
-                {
-                    <table class="ea-table">
-                        <thead>
-                            <tr>
-                                <th>Data</th>
-                                <th>Lição</th>
-                                <th>Casal</th>
-                                <th>Presença</th>
-                                <th>Observações</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var r in Model)
-                            {
-                                string pb = "ativo", pi = "fas fa-check";
-                                if (r.Presenca == StatusPresenca.Ausente) { pb = "cancelada"; pi = "fas fa-times"; }
-                                else if (r.Presenca == StatusPresenca.Desistente)
-                                {
-                                    pb = "pendente"; pi = "fas fa-exclamation";
-                                }
-
-                                <tr>
-                                    <td>
-                                        <span class="ea-date-pill">
-                                            <i class="fas fa-calendar-alt"></i>
-                                            @r.DataRegistro.ToString("dd/MM/yyyy")
-                                        </span>
-                                    </td>
-                                    <td
-                                        style="font-weight:700;color:var(--gray-800);max-width:200px;white-space:normal;line-height:1.3">
-                                        @r.Licao.Titulo
-                                    </td>
-                                    <td style="white-space:nowrap;font-weight:600;color:var(--gray-700)">
-                                        <i class="fas fa-heart" style="color:#fca5a5;font-size:.7rem;margin-right:5px"></i>
-                                        @r.Matricula.Casal.NomeConjuge1 &amp; @r.Matricula.Casal.NomeConjuge2
-                                    </td>
-                                    <td>
-                                        <span class="ea-badge @pb">
-                                            <i class="@pi" style="font-size:.6rem"></i>
-                                            @r.Presenca
-                                        </span>
-                                    </td>
-                                    <td
-                                        style="max-width:260px;font-size:.78rem;color:var(--gray-500);white-space:normal;line-height:1.5">
-                                        @if (!string.IsNullOrWhiteSpace(r.Observacoes))
-                                        {
-                                            @r.Observacoes
-                                        }
-                                        else
-                                        {
-
-                                            <span style="color:var(--gray-300);font-style:italic;font-size:.75rem">Sem
-                                                observações</span>
-                                            }
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    }
-                else
-                    {
-                        <div class="ea-empty" style="border:none;border-radius:0">
-                            <i class="fas fa-file-alt"></i>
-                            <h3>Nenhum relatório encontrado</h3>
-                            <p>Os relatórios aparecerão aqui após serem criados.</p>
+            <div class="rel-stat-card">
+                <div class="rel-stat-icon green"><i class="fas fa-check-circle"></i></div>
+                <div>
+                    <p class="rel-stat-num">@totalPresentes</p>
+                    <p class="rel-stat-label">Presentes &nbsp;<span
+                        style="font-size:.65rem;color:var(--success);font-weight:800">@taxaPresenca%</span></p>
+                        <div class="rel-progress-bar">
+                            <div class="rel-progress-fill" style="width:@taxaPresenca%;background:var(--success)"></div>
                         </div>
-                    }
+                    </div>
+                </div>
+                <div class="rel-stat-card">
+                    <div class="rel-stat-icon red"><i class="fas fa-times-circle"></i></div>
+                    <div>
+                        <p class="rel-stat-num">@totalAusentes</p>
+                        <p class="rel-stat-label">Ausentes</p>
+                        @if (totalRelatorios > 0)
+                        {
+                            var pctA = (int)Math.Round(totalAusentes / (double)totalRelatorios * 100);
+                            <div class="rel-progress-bar">
+                                <div class="rel-progress-fill" style="width:@pctA%;background:var(--danger)"></div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="rel-stat-card">
+                    <div class="rel-stat-icon purple"><i class="fas fa-exclamation-circle"></i></div>
+                    <div>
+                        <p class="rel-stat-num">@totalDesistentes</p>
+                        <p class="rel-stat-label">Desistentes</p>
+                        @if (totalRelatorios > 0)
+                        {
+                            var pctD = (int)Math.Round(totalDesistentes / (double)totalRelatorios * 100);
+                            <div class="rel-progress-bar">
+                                <div class="rel-progress-fill" style="width:@pctD%;background:var(--purple)"></div>
+                            </div>
+                        }
+                    </div>
                 </div>
             </div>
 
-        </div>
-    </section>
+            <!-- ── Filter bar ───────────────────────────────── -->
+            <div class="rel-filter-bar">
+                <p class="rel-filter-title"><i class="fas fa-sliders-h"></i> Filtros</p>
+                <div class="rel-filter-row">
+
+                    <div class="rel-filter-group" style="flex:1 1 200px">
+                        <span class="rel-filter-label"><i class="fas fa-search" style="margin-right:3px"></i>Buscar
+                            casal</span>
+                            <input type="text" id="filtroTexto" class="rel-filter-control" placeholder="Digite o nome..."
+                                   autocomplete="off" />
+                        </div>
+
+                        <div class="rel-filter-group">
+                            <span class="rel-filter-label"><i class="fas fa-book-open" style="margin-right:3px"></i>Lição</span>
+                            <select id="filtroLicao" class="rel-filter-control">
+                                <option value="">Todas as lições</option>
+                                @foreach (var l in licoes)
+                                {
+                                    <option value="@l">@l</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="rel-filter-group">
+                            <span class="rel-filter-label"><i class="fas fa-heart" style="margin-right:3px"></i>Casal</span>
+                            <select id="filtroCasal" class="rel-filter-control">
+                                <option value="">Todos os casais</option>
+                                @foreach (var c in casais)
+                                {
+                                    <option value="@c.ToLower()">@c</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="rel-filter-group">
+                            <span class="rel-filter-label"><i class="fas fa-user-check"
+                                                                  style="margin-right:3px"></i>Presença</span>
+                                <select id="filtroPresenca" class="rel-filter-control">
+                                    <option value="">Todos os status</option>
+                                    <option value="Presente">✅ Presente</option>
+                                    <option value="Ausente">❌ Ausente</option>
+                                    <option value="Desistente">⚠️ Desistente</option>
+                                </select>
+                            </div>
+
+                            <div class="rel-filter-group" style="flex:0 1 auto;min-width:130px">
+                                <span class="rel-filter-label"><i class="fas fa-calendar-alt" style="margin-right:3px"></i>Data
+                                    início</span>
+                                    <input type="date" id="filtroDataInicio" class="rel-filter-control" />
+                                </div>
+
+                                <div class="rel-filter-group" style="flex:0 1 auto;min-width:130px">
+                                    <span class="rel-filter-label">Data fim</span>
+                                    <input type="date" id="filtroDataFim" class="rel-filter-control" />
+                                </div>
+
+                                <div class="rel-filter-actions">
+                                    <button class="rel-filter-btn primary" onclick="aplicarFiltros()">
+                                        <i class="fas fa-filter"></i> Filtrar
+                                    </button>
+                                    <button class="rel-filter-btn ghost" onclick="limparFiltros()">
+                                        <i class="fas fa-times"></i> Limpar
+                                    </button>
+                                    <button class="rel-filter-btn success" onclick="exportarCSV()"
+                                            title="Exportar resultados filtrados">
+                                        <i class="fas fa-file-csv"></i> CSV
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (Model.Any())
+                        {
+                            <!-- ── Results / sort bar ───────────────────── -->
+                            <div class="rel-results-bar">
+                                <span class="rel-results-count">
+                                    <i class="fas fa-list" style="margin-right:5px;color:var(--gray-300)"></i>
+                                    <span id="txtContador">@totalRelatorios</span> registro(s) encontrado(s)
+                                </span>
+                                <div class="rel-sort-wrap">
+                                    <span style="font-size:.72rem;color:var(--gray-400);font-weight:600">Ordenar:</span>
+                                    <select class="rel-sort-select" id="sortSelect" onchange="ordenarEAtualizar()">
+                                        <option value="data-desc">Data (mais recente)</option>
+                                        <option value="data-asc">Data (mais antiga)</option>
+                                        <option value="casal-asc">Casal (A → Z)</option>
+                                        <option value="casal-desc">Casal (Z → A)</option>
+                                        <option value="licao-asc">Lição (A → Z)</option>
+                                    </select>
+                                    <span style="font-size:.72rem;color:var(--gray-400);font-weight:600">Visualizar:</span>
+                                    <div class="rel-view-btns">
+                                        <button class="rel-view-btn active" id="btnCards" onclick="setView('cards')">
+                                            <i class="fas fa-th-large"></i> Cards
+                                        </button>
+                                        <button class="rel-view-btn" id="btnTabela" onclick="setView('tabela')">
+                                            <i class="fas fa-list"></i> Tabela
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ── Cards grid ───────────────────────────── -->
+                            <div class="rel-grid" id="relGrid">
+                                @foreach (var r in Model.OrderByDescending(r => r.DataRegistro))
+                                {
+                                    var nomeCasal = $"{r.Matricula?.Casal?.NomeConjuge1} & {r.Matricula?.Casal?.NomeConjuge2}";
+                                    var iniciais = "";
+                                    if (!string.IsNullOrWhiteSpace(r.Matricula?.Casal?.NomeConjuge1))
+                                        iniciais += r.Matricula.Casal.NomeConjuge1[0];
+                                    if (!string.IsNullOrWhiteSpace(r.Matricula?.Casal?.NomeConjuge2))
+                                        iniciais += r.Matricula.Casal.NomeConjuge2[0];
+
+                                    string statusClass = r.Presenca == StatusPresenca.Presente ? "presente"
+                                                       : r.Presenca == StatusPresenca.Ausente ? "ausente"
+                                                       : "desistente";
+                                    string badgeClass = r.Presenca == StatusPresenca.Presente ? "badge-presente"
+                                                       : r.Presenca == StatusPresenca.Ausente ? "badge-ausente"
+                                                       : "badge-desistente";
+                                    string badgeIcon = r.Presenca == StatusPresenca.Presente ? "fa-check"
+                                                       : r.Presenca == StatusPresenca.Ausente ? "fa-times"
+                                                       : "fa-exclamation";
+
+                                    <div class="rel-card @statusClass" data-casal="@nomeCasal.ToLower()" data-licao="@(r.Licao?.Titulo ?? "")"
+                                         data-presenca="@r.Presenca" data-data="@r.DataRegistro.ToString("yyyy-MM-dd")">
+
+                                        <div class="rel-card-header">
+                                            <div class="rel-card-avatar">@iniciais.ToUpper()</div>
+                                            <div class="rel-card-couple">
+                                                <p class="rel-card-couple-name" title="@nomeCasal">
+                                                    <i class="fas fa-heart" style="color:#fca5a5;font-size:.58rem;margin-right:4px"></i>
+                                                    @nomeCasal
+                                                </p>
+                                                <p class="rel-card-couple-sub">
+                                                    <i class="fas fa-calendar-check" style="margin-right:3px"></i>
+                                                    Relatório: @r.DataRegistro.ToString("dd/MM/yyyy")
+                                                    &nbsp;&middot;&nbsp;
+                                                    <i class="fas fa-book" style="margin-right:3px"></i>
+                                                    Lição: @r.DataLicao.ToString("dd/MM/yyyy")
+                                                </p>
+                                            </div>
+                                            <span class="rel-card-badge @badgeClass">
+                                                <i class="fas @badgeIcon" style="font-size:.6rem"></i>
+                                                @r.Presenca
+                                            </span>
+                                        </div>
+
+                                        <div class="rel-card-body">
+                                            <p class="rel-card-licao">
+                                                <i class="fas fa-book-open"></i>
+                                                @(r.Licao?.Titulo ?? "Lição não informada")
+                                            </p>
+                                            <div class="rel-card-obs-wrap">
+                                                @if (!string.IsNullOrWhiteSpace(r.Observacoes))
+                                                {
+                                                    <p class="rel-card-obs" title="@r.Observacoes">
+                                                        <i class="fas fa-comment-alt"
+                                                           style="color:var(--gray-300);font-size:.65rem;margin-right:5px"></i>@r.Observacoes
+                                                    </p>
+                                                    @if (r.Observacoes.Length > 80)
+                                                    {
+                                                        <div class="rel-card-obs-full">@r.Observacoes</div>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <p class="rel-card-obs" style="color:var(--gray-300);font-style:italic">
+                                                        <i class="fas fa-comment-slash" style="font-size:.65rem;margin-right:5px"></i>Sem
+                                                        observações registradas
+                                                    </p>
+                                                }
+                                            </div>
+                                        </div>
+
+                                        <div class="rel-card-footer" style="display:none">
+                                            <a asp-action="Detalhes" asp-route-id="@r.Id" class="rel-action-btn view">
+                                                <i class="fas fa-eye"></i> Ver
+                                            </a>
+                                            <a asp-action="Editar" asp-route-id="@r.Id" class="rel-action-btn edit">
+                                                <i class="fas fa-pen"></i> Editar
+                                            </a>
+                                            <a asp-action="Excluir" asp-route-id="@r.Id" class="rel-action-btn delete"
+                                               onclick="return confirm('Confirmar exclusão deste relatório?')">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                            <!-- ── Paginação ─────────────────────────────── -->
+                            <div class="rel-pagination" id="paginacao"></div>
+
+                            <!-- ── Table view ───────────────────────────── -->
+                            <div class="rel-table-card" id="relTabela">
+                                <div class="ea-table-card-header">
+                                    <div class="ea-table-header-icon"><i class="fas fa-file-alt"></i></div>
+                                    <h3 class="ea-table-card-title">Relatórios Semanais</h3>
+                                    <span class="ea-count-badge" id="badgeCount">@totalRelatorios registros</span>
+                                </div>
+                                <div style="overflow-x:auto">
+                                    <table class="ea-table" id="tabelaRelatorios">
+                                        <thead>
+                                            <tr>
+                                                <th style="cursor:pointer" onclick="ordenarTabela('data')">
+                                                    Data <i class="fas fa-sort" style="font-size:.65rem;opacity:.5"></i>
+                                                </th>
+                                                <th style="cursor:pointer" onclick="ordenarTabela('licao')">
+                                                    Lição <i class="fas fa-sort" style="font-size:.65rem;opacity:.5"></i>
+                                                </th>
+                                                <th style="cursor:pointer" onclick="ordenarTabela('casal')">
+                                                    Casal <i class="fas fa-sort" style="font-size:.65rem;opacity:.5"></i>
+                                                </th>
+                                                <th>Presença</th>
+                                                <th>Observações</th>
+                                                <th style="text-align:right">Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tabelaBody">
+                                            @foreach (var r in Model.OrderByDescending(r => r.DataRegistro))
+                                            {
+                                                var nomeCasalT = $"{r.Matricula?.Casal?.NomeConjuge1} & {r.Matricula?.Casal?.NomeConjuge2}";
+                                                string pb = r.Presenca == StatusPresenca.Presente ? "ativo"
+                                                           : r.Presenca == StatusPresenca.Ausente ? "cancelada" : "pendente";
+                                                string pi = r.Presenca == StatusPresenca.Presente ? "fas fa-check"
+                                                           : r.Presenca == StatusPresenca.Ausente ? "fas fa-times" : "fas fa-exclamation";
+
+                                                <tr class="rel-table-row" data-casal="@nomeCasalT.ToLower()"
+                                                    data-licao="@(r.Licao?.Titulo ?? "")" data-presenca="@r.Presenca"
+                                                    data-data="@r.DataRegistro.ToString("yyyy-MM-dd")">
+                                                    <td>
+                                                        <span class="ea-date-pill">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                            @r.DataRegistro.ToString("dd/MM/yyyy")
+                                                        </span>
+                                                    </td>
+                                                    <td
+                                                        style="font-weight:700;color:var(--gray-800);max-width:200px;white-space:normal;line-height:1.4">
+                                                        @(r.Licao?.Titulo ?? "—")
+                                                    </td>
+                                                    <td style="white-space:nowrap;font-weight:600;color:var(--gray-700)">
+                                                        <i class="fas fa-heart" style="color:#fca5a5;font-size:.65rem;margin-right:5px"></i>
+                                                        @r.Matricula?.Casal?.NomeConjuge1 &amp; @r.Matricula?.Casal?.NomeConjuge2
+                                                    </td>
+                                                    <td>
+                                                        <span class="ea-badge @pb">
+                                                            <i class="@pi" style="font-size:.6rem"></i>
+                                                            @r.Presenca
+                                                        </span>
+                                                    </td>
+                                                    <td
+                                                        style="max-width:240px;font-size:.78rem;color:var(--gray-500);white-space:normal;line-height:1.5">
+                                                        @if (!string.IsNullOrWhiteSpace(r.Observacoes))
+                                                        {
+                                                            @r.Observacoes
+                                                        }
+                                                        else
+                                                        {
+
+                                                            <span style="color:var(--gray-300);font-style:italic;font-size:.75rem">—</span>
+                                                        }
+                                                    </td>
+                                                    <td style="text-align:right;white-space:nowrap">
+                                                        <a asp-action="Detalhes" asp-route-id="@r.Id" class="rel-action-btn view"
+                                                           style="margin-right:3px">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                        <a asp-action="Editar" asp-route-id="@r.Id" class="rel-action-btn edit"
+                                                           style="margin-right:3px">
+                                                            <i class="fas fa-pen"></i>
+                                                        </a>
+                                                        <a asp-action="Excluir" asp-route-id="@r.Id" class="rel-action-btn delete"
+                                                           onclick="return confirm('Confirmar exclusão?')">
+                                                            <i class="fas fa-trash"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- ── Sem resultados ────────────────────────── -->
+                            <div class="rel-empty" id="semResultados" style="display:none">
+                                <i class="fas fa-search"></i>
+                                <h3>Nenhum resultado encontrado</h3>
+                                <p>Tente ajustar os filtros para encontrar os registros desejados.</p>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="rel-empty">
+                                <i class="fas fa-file-alt"></i>
+                                <h3>Nenhum relatório cadastrado</h3>
+                                <p>Os relatórios aparecerão aqui após serem criados.</p>
+                            </div>
+                        }
+
+                    </div>
+                </section>
+
+                @section Scripts {
+                    <script>
+                        (function () {
+                            'use strict';
+
+                            /* ── Estado ───────────────────────────────────────────── */
+                            const POR_PAGINA = 12;
+                            let paginaAtual = 1;
+                            let modoAtual = 'cards';
+
+                            /* ── Helpers ──────────────────────────────────────────── */
+                            function allCards() { return Array.from(document.querySelectorAll('.rel-card')); }
+                            function allRows() { return Array.from(document.querySelectorAll('.rel-table-row')); }
+                            function val(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+
+                            function corresponde(el) {
+                                const texto = val('filtroTexto').toLowerCase();
+                                const licao = val('filtroLicao');
+                                const casal = val('filtroCasal');   // já gravado como lower
+                                const presenca = val('filtroPresenca');
+                                const dataInicio = val('filtroDataInicio');
+                                const dataFim = val('filtroDataFim');
+
+                                const dCasal = (el.dataset.casal || '');
+                                const dLicao = (el.dataset.licao || '');
+                                const dPresenca = (el.dataset.presenca || '');
+                                const dData = (el.dataset.data || '');
+
+                                if (texto && !dCasal.includes(texto)) return false;
+                                if (licao && dLicao !== licao) return false;
+                                if (casal && dCasal !== casal) return false;
+                                if (presenca && dPresenca !== presenca) return false;
+                                if (dataInicio && dData < dataInicio) return false;
+                                if (dataFim && dData > dataFim) return false;
+                                return true;
+                            }
+
+                            /* ── Filtro + paginação ───────────────────────────────── */
+                            window.aplicarFiltros = function () {
+                                paginaAtual = 1;
+                                renderizar();
+                            };
+
+                            window.limparFiltros = function () {
+                                ['filtroTexto', 'filtroLicao', 'filtroCasal', 'filtroPresenca', 'filtroDataInicio', 'filtroDataFim']
+                                    .forEach(function (id) { const el = document.getElementById(id); if (el) el.value = ''; });
+                                paginaAtual = 1;
+                                renderizar();
+                            };
+
+                            function renderizar() {
+                                const visiveisCards = allCards().filter(corresponde);
+                                const visiveisRows = allRows().filter(corresponde);
+                                const total = visiveisCards.length;
+
+                                /* Contador */
+                                const span = document.getElementById('txtContador');
+                                if (span) span.textContent = total;
+                                const badge = document.getElementById('badgeCount');
+                                if (badge) badge.textContent = total + ' registro(s)';
+
+                                /* Sem resultados */
+                                const semRes = document.getElementById('semResultados');
+                                const grid = document.getElementById('relGrid');
+
+                                if (total === 0) {
+                                    allCards().forEach(function (c) { c.style.display = 'none'; });
+                                    allRows().forEach(function (r) { r.style.display = 'none'; });
+                                    if (grid) grid.classList.add('hidden');
+                                    if (semRes) semRes.style.display = 'block';
+                                    renderPaginacao(0);
+                                    return;
+                                }
+
+                                if (semRes) semRes.style.display = 'none';
+                                if (grid) grid.classList.remove('hidden');
+
+                                /* Paginar cards */
+                                const inicio = (paginaAtual - 1) * POR_PAGINA;
+                                const fim = inicio + POR_PAGINA;
+
+                                allCards().forEach(function (c) { c.style.display = 'none'; });
+                                visiveisCards.forEach(function (c, i) {
+                                    c.style.display = (i >= inicio && i < fim) ? '' : 'none';
+                                });
+
+                                /* Tabela — sem paginação, exibe todos filtrados */
+                                allRows().forEach(function (r) { r.style.display = 'none'; });
+                                visiveisRows.forEach(function (r) { r.style.display = ''; });
+
+                                renderPaginacao(total);
+                            }
+
+                            /* ── Paginação ────────────────────────────────────────── */
+                            function renderPaginacao(total) {
+                                const wrap = document.getElementById('paginacao');
+                                if (!wrap) return;
+                                const totalPags = Math.ceil(total / POR_PAGINA);
+                                wrap.innerHTML = '';
+                                if (totalPags <= 1) return;
+
+                                function btn(label, pg, disabled, active) {
+                                    const b = document.createElement('button');
+                                    b.className = 'rel-page-btn' + (active ? ' active' : '');
+                                    b.innerHTML = label;
+                                    b.disabled = disabled;
+                                    b.onclick = function () { paginaAtual = pg; renderizar(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+                                    return b;
+                                }
+
+                                wrap.appendChild(btn('<i class="fas fa-chevron-left"></i>', paginaAtual - 1, paginaAtual === 1, false));
+
+                                for (let p = 1; p <= totalPags; p++) {
+                                    if (totalPags > 7 && (p > 2 && p < totalPags - 1 && Math.abs(p - paginaAtual) > 1)) {
+                                        if (p === 3 || p === totalPags - 2) {
+                                            const dots = document.createElement('span');
+                                            dots.textContent = '…';
+                                            dots.style.cssText = 'padding:0 6px;color:var(--gray-400);font-size:.85rem;align-self:center';
+                                            wrap.appendChild(dots);
+                                        }
+                                        continue;
+                                    }
+                                    wrap.appendChild(btn(p, p, false, p === paginaAtual));
+                                }
+
+                                wrap.appendChild(btn('<i class="fas fa-chevron-right"></i>', paginaAtual + 1, paginaAtual === totalPags, false));
+                            }
+
+                            /* ── Ordenação (cards) ────────────────────────────────── */
+                            window.ordenarEAtualizar = function () {
+                                const val = document.getElementById('sortSelect')?.value ?? 'data-desc';
+                                const grid = document.getElementById('relGrid');
+                                if (!grid) return;
+                                const cards = allCards();
+
+                                cards.sort(function (a, b) {
+                                    if (val === 'data-desc') return b.dataset.data.localeCompare(a.dataset.data);
+                                    if (val === 'data-asc') return a.dataset.data.localeCompare(b.dataset.data);
+                                    if (val === 'casal-asc') return a.dataset.casal.localeCompare(b.dataset.casal);
+                                    if (val === 'casal-desc') return b.dataset.casal.localeCompare(a.dataset.casal);
+                                    if (val === 'licao-asc') return a.dataset.licao.localeCompare(b.dataset.licao);
+                                    return 0;
+                                });
+
+                                cards.forEach(function (c) { grid.appendChild(c); });
+                                paginaAtual = 1;
+                                renderizar();
+                            };
+
+                            /* ── Ordenação (tabela — clique no th) ────────────────── */
+                            let tabelaOrdem = {};
+                            window.ordenarTabela = function (campo) {
+                                tabelaOrdem[campo] = tabelaOrdem[campo] === 'asc' ? 'desc' : 'asc';
+                                const dir = tabelaOrdem[campo];
+                                const body = document.getElementById('tabelaBody');
+                                if (!body) return;
+                                const rows = Array.from(body.querySelectorAll('tr'));
+                                rows.sort(function (a, b) {
+                                    const va = (a.dataset[campo] || '').toLowerCase();
+                                    const vb = (b.dataset[campo] || '').toLowerCase();
+                                    return dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+                                });
+                                rows.forEach(function (r) { body.appendChild(r); });
+                                renderizar();
+                            };
+
+                            /* ── View toggle ──────────────────────────────────────── */
+                            window.setView = function (modo) {
+                                modoAtual = modo;
+                                const grid = document.getElementById('relGrid');
+                                const tabela = document.getElementById('relTabela');
+                                const pag = document.getElementById('paginacao');
+                                document.getElementById('btnCards')?.classList.toggle('active', modo === 'cards');
+                                document.getElementById('btnTabela')?.classList.toggle('active', modo === 'tabela');
+
+                                if (modo === 'cards') {
+                                    grid?.classList.remove('hidden');
+                                    tabela?.classList.remove('active');
+                                    if (pag) pag.style.display = '';
+                                } else {
+                                    grid?.classList.add('hidden');
+                                    tabela?.classList.add('active');
+                                    if (pag) pag.style.display = 'none';
+                                }
+                                renderizar();
+                            };
+
+                            /* ── Exportar CSV ─────────────────────────────────────── */
+                            window.exportarCSV = function () {
+                                const visiveisRows = allRows().filter(corresponde);
+
+                                const header = ['Data', 'Lição', 'Casal', 'Presença', 'Observações'];
+                                const rows = visiveisRows.map(function (r) {
+                                    const cols = r.querySelectorAll('td');
+                                    return [
+                                        cols[0]?.innerText.trim().replace(/\s+/g, ' ') ?? '',
+                                        cols[1]?.innerText.trim() ?? '',
+                                        cols[2]?.innerText.trim() ?? '',
+                                        cols[3]?.innerText.trim() ?? '',
+                                        (cols[4]?.innerText.trim() ?? '').replace(/"/g, '""')
+                                    ].map(function (c) { return '"' + c + '"'; }).join(',');
+                                });
+
+                                const csv = [header.join(','), ...rows].join('\r\n');
+                                const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+                                const url = URL.createObjectURL(blob);
+                                const a = document.createElement('a');
+                                a.href = url;
+                                a.download = 'relatorios_' + new Date().toISOString().slice(0, 10) + '.csv';
+                                document.body.appendChild(a);
+                                a.click();
+                                document.body.removeChild(a);
+                                URL.revokeObjectURL(url);
+                            };
+
+                            /* ── Eventos em tempo real ────────────────────────────── */
+                            ['filtroTexto', 'filtroLicao', 'filtroCasal', 'filtroPresenca', 'filtroDataInicio', 'filtroDataFim']
+                                .forEach(function (id) {
+                                    const el = document.getElementById(id);
+                                    if (el) el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', aplicarFiltros);
+                                });
+
+                            /* ── Init ─────────────────────────────────────────────── */
+                            renderizar();
+                        })();
+                    </script>
+                }

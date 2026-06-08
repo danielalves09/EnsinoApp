@@ -98,5 +98,8 @@ public class InscricaoOnlineService : IInscricaoOnlineService
         return await _repository.GetUltimosMesesAsync(meses);
     }
 
-
+    public Task DeletarAsync(int id)
+    {
+        return _repository.DeleteAsync(id);
+    }
 }

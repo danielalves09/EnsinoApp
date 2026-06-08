@@ -8,6 +8,8 @@ public interface IInscricaoOnlineService
     Task<Models.Entities.InscricaoOnline?> FindByIdAsync(int id);
     Task<Models.Entities.InscricaoOnline?> CreateAsync(Models.Entities.InscricaoOnline inscricao);
     Task<Models.Entities.InscricaoOnline> UpdateAsync(Models.Entities.InscricaoOnline inscricao);
+
+    Task DeletarAsync(int id);
     Task ProcessarAsync(int id);
 
     int ContarTotal();

@@ -41,7 +41,8 @@ public class PeriodoInscricaoController : Controller
             DataEncerramento = p.DataEncerramento,
             VagasTotal = p.VagasTotal,
             VagasOcupadas = p.VagasOcupadas,
-            Ativo = p.Ativo
+            Ativo = p.Ativo,
+            DiasDisponiveis = p.DiasDisponiveis
         }).ToList();
 
         ViewBag.IdCurso = idCurso;
@@ -53,8 +54,7 @@ public class PeriodoInscricaoController : Controller
     // GET: /PeriodoInscricao/Adicionar?idCurso=1
     public IActionResult Adicionar(int idCurso, string nomeCurso)
     {
-        var campuses = _campusService.FindAll();
-        ViewBag.Campuses = campuses;
+        ViewBag.Campuses = _campusService.FindAll();
         ViewBag.NomeCurso = nomeCurso;
 
         return View(new PeriodoInscricaoFormViewModel
@@ -62,7 +62,8 @@ public class PeriodoInscricaoController : Controller
             IdCurso = idCurso,
             NomeCurso = nomeCurso,
             DataAbertura = DateTime.Today,
-            DataEncerramento = DateTime.Today.AddDays(30)
+            DataEncerramento = DateTime.Today.AddDays(30),
+            DiasDisponiveis = new List<string>()
         });
     }
 
@@ -95,7 +96,8 @@ public class PeriodoInscricaoController : Controller
             DataEncerramento = model.DataEncerramento,
             VagasTotal = model.VagasTotal,
             VagasOcupadas = 0,
-            Ativo = model.Ativo
+            Ativo = model.Ativo,
+            DiasDisponiveis = model.DiasDisponiveisStr
         };
 
         await _service.CreateAsync(periodo);
@@ -124,7 +126,8 @@ public class PeriodoInscricaoController : Controller
             DataAbertura = periodo.DataAbertura,
             DataEncerramento = periodo.DataEncerramento,
             VagasTotal = periodo.VagasTotal,
-            Ativo = periodo.Ativo
+            Ativo = periodo.Ativo,
+            DiasDisponiveis = DiasDisponivelHelper.ParseValores(periodo.DiasDisponiveis)
         });
     }
 
@@ -157,6 +160,7 @@ public class PeriodoInscricaoController : Controller
         periodo.DataEncerramento = model.DataEncerramento;
         periodo.VagasTotal = model.VagasTotal;
         periodo.Ativo = model.Ativo;
+        periodo.DiasDisponiveis = model.DiasDisponiveisStr;
 
         await _service.UpdateAsync(periodo);
         _notification.Success("Período atualizado com sucesso!");

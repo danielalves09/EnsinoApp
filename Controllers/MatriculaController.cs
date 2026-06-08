@@ -5,6 +5,7 @@ using EnsinoApp.Services.Casal;
 using EnsinoApp.Services.Cursos;
 using EnsinoApp.Services.Inscricao;
 using EnsinoApp.Services.Matricula;
+using EnsinoApp.Services.Notifications;
 using EnsinoApp.Services.Turmas;
 using EnsinoApp.ViewModels.Inscricao;
 using EnsinoApp.ViewModels.Matricula;
@@ -24,6 +25,7 @@ public class MatriculaController : Controller
 
     private readonly ICursoService _cursoService;
     private readonly ICampusService _campusService;
+    private readonly INotificationService _notificationService;
 
     private const int TAMANHO_PAGINA = 10;
     public MatriculaController(
@@ -32,7 +34,8 @@ public class MatriculaController : Controller
             IMatriculaService matriculaService,
             ITurmaService turmaService,
             ICursoService cursoService,
-            ICampusService campusService)
+            ICampusService campusService,
+            INotificationService notificationService)
     {
         _casalService = casalService;
         _inscricaoService = inscricaoService;
@@ -40,6 +43,7 @@ public class MatriculaController : Controller
         _turmaService = turmaService;
         _cursoService = cursoService;
         _campusService = campusService;
+        _notificationService = notificationService;
     }
 
     public async Task<IActionResult> Index(int? idCurso, int? idCampus, bool? apenasConvidados, int pagina = 1)
@@ -196,6 +200,18 @@ public class MatriculaController : Controller
         };
 
         return Json(vm);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> DeletarInscricao(int idInscricao)
+    {
+        var inscricao = await _inscricaoService.FindByIdAsync(idInscricao);
+        if (inscricao == null)
+            return NotFound();
+
+        await _inscricaoService.DeletarAsync(idInscricao);
+        _notificationService.Success("Inscrição deletada com sucesso.");
+        return RedirectToAction("Index");
     }
 
 

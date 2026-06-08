@@ -10,6 +10,8 @@ namespace EnsinoApp.ViewModels.Inscricao
         public string NomeCurso { get; set; } = null!;
         public bool ParticipaGC { get; set; }
         public string? NomeGC { get; set; }
+
+        public string? DiaPreferencial { get; set; }
         public DateTime DataInscricao { get; set; }
     }
 }

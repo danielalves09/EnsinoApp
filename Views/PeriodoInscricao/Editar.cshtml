@@ -1,3 +1,4 @@
+@using EnsinoApp.ViewModels.PeriodoInscricao
 @model EnsinoApp.ViewModels.PeriodoInscricao.PeriodoInscricaoFormViewModel
 @{
     ViewData["Title"] = "Editar Período de Inscrição";
@@ -70,8 +71,44 @@
                 </div>
             </div>
 
-            <!-- Datas -->
+            <!-- Dias disponíveis -->
             <div class="ea-form-card ea-fade ea-fade-2">
+                <div class="ea-form-card-header">
+                    <div class="ea-form-header-icon" style="background:var(--purple-light);color:var(--purple)">
+                        <i class="fas fa-calendar-week"></i>
+                    </div>
+                    <h3 class="ea-form-card-title">Dias Disponíveis para Aulas</h3>
+                </div>
+                <div class="ea-form-card-body">
+                    <div
+                        style="display:flex;align-items:center;gap:8px;background:var(--info-light);border:1px solid #a5f3fc;border-radius:var(--radius);padding:10px 14px;font-size:.78rem;color:var(--info);font-weight:600;margin-bottom:18px">
+                        <i class="fas fa-info-circle"></i>
+                        Selecione os dias da semana em que as turmas estarão disponíveis.
+                        O inscrito poderá escolher seu dia preferencial entre as opções marcadas.
+                        Se nenhum dia for selecionado, o campo não aparecerá na inscrição.
+                    </div>
+
+                    <div style="display:flex;flex-wrap:wrap;gap:10px">
+                        @foreach (var dia in DiasDisponivelHelper.TodosOsDias)
+                        {
+                            var isChecked = Model.DiasDisponiveis?.Contains(dia.Valor) ?? false;
+                            <label class="dia-toggle-label @(isChecked ? "selecionado" : "")" id="label-@dia.Valor">
+                                <input type="checkbox"
+                                       name="DiasDisponiveis"
+                                       value="@dia.Valor"
+                                       @(isChecked ? "checked" : "")
+                                       class="dia-checkbox"
+                                       data-label="label-@dia.Valor" />
+                                <i class="fas fa-calendar-day"></i>
+                                @dia.Label
+                            </label>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Datas -->
+            <div class="ea-form-card ea-fade ea-fade-3">
                 <div class="ea-form-card-header">
                     <div class="ea-form-header-icon" style="background:var(--success-light);color:var(--success)">
                         <i class="fas fa-calendar-alt"></i>
@@ -99,7 +136,7 @@
             </div>
 
             <!-- Ativar -->
-            <div class="ea-form-card ea-fade ea-fade-3">
+            <div class="ea-form-card ea-fade ea-fade-4">
                 <div class="ea-form-card-header">
                     <div class="ea-form-header-icon" style="background:var(--warning-light);color:var(--warning)">
                         <i class="fas fa-power-off"></i>
@@ -137,6 +174,43 @@
     </div>
 </section>
 
+<style>
+    .dia-toggle-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 10px 18px;
+        border: 2px solid var(--gray-200);
+        border-radius: var(--radius);
+        background: var(--gray-50);
+        font-size: .82rem;
+        font-weight: 700;
+        color: var(--gray-600);
+        cursor: pointer;
+        transition: border-color .18s, background .18s, color .18s;
+        user-select: none;
+    }
+    .dia-toggle-label input[type="checkbox"] { display: none; }
+    .dia-toggle-label:hover {
+        border-color: var(--primary);
+        background: var(--primary-light);
+        color: var(--primary);
+    }
+    .dia-toggle-label.selecionado {
+        border-color: var(--primary);
+        background: var(--primary-light);
+        color: var(--primary);
+    }
+</style>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.querySelectorAll('.dia-checkbox').forEach(function (cb) {
+            cb.addEventListener('change', function () {
+                var label = document.getElementById(this.dataset.label);
+                if (label) label.classList.toggle('selecionado', this.checked);
+            });
+        });
+    </script>
 }

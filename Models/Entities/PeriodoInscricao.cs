@@ -14,6 +14,8 @@ public class PeriodoInscricao
 
     public bool Ativo { get; set; } = false;
 
+    public string? DiasDisponiveis { get; set; }
+
     public Curso Curso { get; set; } = null!;
     public Campus Campus { get; set; } = null!;
 
@@ -22,4 +24,19 @@ public class PeriodoInscricao
         && DateTime.Now >= DataAbertura
         && DateTime.Now <= DataEncerramento
         && VagasRestantes > 0;
+
+
+    public List<DayOfWeek> ListaDiasDisponiveis()
+    {
+        if (string.IsNullOrWhiteSpace(DiasDisponiveis))
+            return new List<DayOfWeek>();
+
+        var result = new List<DayOfWeek>();
+        foreach (var parte in DiasDisponiveis.Split(',', StringSplitOptions.RemoveEmptyEntries))
+        {
+            if (Enum.TryParse<DayOfWeek>(parte.Trim(), true, out var dia))
+                result.Add(dia);
+        }
+        return result;
+    }
 }

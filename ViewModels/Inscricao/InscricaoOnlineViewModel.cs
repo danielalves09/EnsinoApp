@@ -56,6 +56,10 @@ public class InscricaoOnlineViewModel
     public string? NomeCasalConvidador { get; set; }
 
 
+    [DisplayName("Dia preferencial")]
+    public string? DiaPreferencial { get; set; }
+
+
 
     public DateTime DataInscricao { get; set; }
     public bool Processada { get; set; }

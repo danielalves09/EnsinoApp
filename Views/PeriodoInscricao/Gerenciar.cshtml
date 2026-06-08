@@ -1,3 +1,4 @@
+@using EnsinoApp.ViewModels.PeriodoInscricao
 @model IEnumerable<EnsinoApp.ViewModels.PeriodoInscricao.PeriodoInscricaoViewModel>
 @{
     ViewData["Title"] = "Períodos de Inscrição";
@@ -15,7 +16,7 @@
                 <i class="fas fa-calendar-check" style="color:var(--primary);margin-right:8px"></i>
                 Inscrições — @nomeCurso
             </h1>
-            <p>Gerencie os períodos, campus e vagas disponíveis para inscrição neste curso</p>
+            <p>Gerencie os períodos, campus, vagas e <strong>dias disponíveis</strong> para inscrição neste curso</p>
         </div>
     </div>
 </section>
@@ -52,6 +53,7 @@
                                 <th>Abertura</th>
                                 <th>Encerramento</th>
                                 <th>Vagas</th>
+                                <th>Dias disponíveis</th>
                                 <th>Status</th>
                                 <th style="text-align:right">Ações</th>
                             </tr>
@@ -60,7 +62,6 @@
                             @foreach (var p in Model)
                             {
                                 <tr>
-                                    <!-- Campus -->
                                     <td>
                                         <span style="font-weight:700;color:var(--gray-800)">
                                             <i class="fas fa-map-marker-alt"
@@ -68,8 +69,6 @@
                                             @p.NomeCampus
                                         </span>
                                     </td>
-
-                                    <!-- Datas -->
                                     <td>
                                         <span class="ea-date-pill">
                                             <i class="fas fa-calendar-alt"></i>
@@ -82,8 +81,6 @@
                                             @p.DataEncerramento.ToString("dd/MM/yyyy HH:mm")
                                         </span>
                                     </td>
-
-                                    <!-- Vagas -->
                                     <td>
                                         <div style="display:flex;flex-direction:column;gap:4px;min-width:120px">
                                             <div style="display:flex;justify-content:space-between;font-size:.72rem;font-weight:700;color:var(--gray-500)">
@@ -106,16 +103,31 @@
                                         </div>
                                     </td>
 
-                                    <!-- Status badge -->
+                                    <!-- Dias disponíveis -->
+                                    <td>
+                                        @if (p.ListaDiasNomes.Any())
+                                        {
+                                            <div style="display:flex;flex-wrap:wrap;gap:4px">
+                                                @foreach (var dia in p.ListaDiasNomes)
+                                                {
+                                                    <span style="display:inline-flex;align-items:center;gap:3px;background:var(--primary-light);color:var(--primary);border:1px solid var(--primary-mid);border-radius:20px;padding:2px 8px;font-size:.68rem;font-weight:700;white-space:nowrap">
+                                                        <i class="fas fa-calendar-day" style="font-size:.55rem"></i>
+                                                        @dia
+                                                    </span>
+                                                }
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span style="color:var(--gray-300);font-size:.75rem;font-style:italic">Qualquer dia</span>
+                                        }
+                                    </td>
+
                                     <td>
                                         <span class="ea-badge @p.StatusBadge">@p.StatusLabel</span>
                                     </td>
-
-                                    <!-- Ações -->
                                     <td>
                                         <div style="display:flex;gap:6px;justify-content:flex-end">
-
-                                            <!-- Toggle ativo/inativo -->
                                             <form asp-action="ToggleAtivo" method="post" style="display:inline">
                                                 <input type="hidden" name="id" value="@p.Id" />
                                                 <input type="hidden" name="idCurso" value="@idCurso" />
@@ -127,14 +139,10 @@
                                                     <i class="fas @(p.Ativo ? "fa-toggle-on" : "fa-toggle-off")"></i>
                                                 </button>
                                             </form>
-
-                                            <!-- Editar -->
                                             <a asp-action="Editar" asp-route-id="@p.Id"
                                                class="ea-action-btn primary" title="Editar">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-
-                                            <!-- Excluir -->
                                             <form asp-action="Excluir" method="post" style="display:inline"
                                                   onsubmit="return confirm('Excluir este período?')">
                                                 <input type="hidden" name="id" value="@p.Id" />
@@ -154,7 +162,6 @@
                 </div>
             </div>
 
-            <!-- Legenda de status -->
             <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;font-size:.75rem;color:var(--gray-400)">
                 <span><span class="ea-badge ativo" style="font-size:.68rem">Aberto</span> — período vigente com vagas</span>
                 <span><span class="ea-badge acomecar" style="font-size:.68rem">Agendado</span> — ainda não iniciou</span>

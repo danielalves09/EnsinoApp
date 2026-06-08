@@ -83,11 +83,19 @@
                 <div class="ea-filter-group">
                     <div class="ea-filter-item">
                         <label><i class="fas fa-graduation-cap" style="margin-right:3px"></i>Curso</label>
-                        @Html.DropDownList("IdCurso",(SelectList)ViewBag.Cursos,"Todos os cursos",new{@class="ea-filter-select"})
+                        @Html.DropDownList("IdCurso", (SelectList)ViewBag.Cursos, "Todos os cursos", new
+                        {
+                            @class =
+          "ea-filter-select"
+                        })
                     </div>
                     <div class="ea-filter-item">
                         <label><i class="fas fa-map-marker-alt" style="margin-right:3px"></i>Campus</label>
-                        @Html.DropDownList("IdCampus",(SelectList)ViewBag.Campuses,"Todos os campi",new{@class="ea-filter-select"})
+                        @Html.DropDownList("IdCampus", (SelectList)ViewBag.Campuses, "Todos os campi", new
+                        {
+                            @class =
+ "ea-filter-select"
+                        })
                     </div>
                     <div class="ea-filter-item">
                         <label><i class="fas fa-star" style="margin-right:3px;color:#f59e0b"></i>Tipo</label>
@@ -234,7 +242,7 @@
                     @if (ViewBag.NumeroPagina > 1)
                     {
                         <a class="ea-page-btn"
-                           href="@Url.Action("Index","Matricula",new{idCurso=ViewBag.IdCursoSelecionado,idCampus=ViewBag.IdCampusSelecionado,Pagina=ViewBag.NumeroPagina-1})">
+                           href="@Url.Action("Index", "Matricula", new { idCurso = ViewBag.IdCursoSelecionado, idCampus = ViewBag.IdCampusSelecionado, Pagina = ViewBag.NumeroPagina - 1 })">
                             <i class="fas fa-chevron-left"></i>
                         </a>
                     }
@@ -242,7 +250,7 @@
                     @if (ViewBag.NumeroPagina < ViewBag.TotalPaginas)
                     {
                         <a class="ea-page-btn"
-                           href="@Url.Action("Index","Matricula",new{idCurso=ViewBag.IdCursoSelecionado,idCampus=ViewBag.IdCampusSelecionado,Pagina=ViewBag.NumeroPagina+1})">
+                           href="@Url.Action("Index", "Matricula", new { idCurso = ViewBag.IdCursoSelecionado, idCampus = ViewBag.IdCampusSelecionado, Pagina = ViewBag.NumeroPagina + 1 })">
                             <i class="fas fa-chevron-right"></i>
                         </a>
                     }
@@ -328,11 +336,21 @@
                                         <div>
                                             <p
                                                 style="font-size:.72rem;font-weight:700;color:#92400e;text-transform:uppercase;letter-spacing:.3px;margin:0 0 2px">
-                                                Convidado com Prioridade</p>
+                                                Casal Convidado</p>
                                                 <p id="mc-convidador" style="font-size:.82rem;color:#b45309;font-weight:600;margin:0">
                                                 </p>
                                             </div>
                                         </div>
+                                    </div>
+                                    <div
+                                        style="display:flex;justify-content:flex-end;gap:10px;padding:14px 24px;border-bottom:1px solid var(--gray-100);background:#fefce8">
+                                        <form method="post" action="/Matricula/DeletarInscricao">
+                                            <input type="hidden" name="idInscricao" id="deletarIdInscricao" value="" />
+                                            <button type="submit" onclick="return confirm('Deseja realmente remover esta inscrição?')"
+                                                    style="display:inline-flex;align-items:center;gap:5px;background:#f87171;color:#fff;border:none;border-radius:var(--radius-sm);padding:6px 12px;font-size:.75rem;font-weight:700;text-decoration:none;transition:background .18s">
+                                                <i class="fas fa-trash"></i> Remover inscrição
+                                            </button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -366,6 +384,9 @@
                         $(function () {
                             $(document).on('click', '.btn-ver-casal', function () {
                                 var id = $(this).data('id');
+
+                                $('#deletarIdInscricao').val(id);
+
                                 $('#modalCasalNome').text('Carregando...');
                                 $('#modalCasalCampus').text('');
                                 $('#modalCasalLoading').show();
@@ -410,7 +431,7 @@
                                 $('#mc-endereco').text(partes.join(', '));
 
                                 if (d.convidado && d.nomeCasalConvidador) {
-                                    $('#mc-convidador').text('Indicado por: ' + d.nomeCasalConvidador);
+                                    $('#mc-convidador').text('convidado por: ' + d.nomeCasalConvidador);
                                     $('#mc-convidado-wrap').show();
                                 } else {
                                     $('#mc-convidado-wrap').hide();

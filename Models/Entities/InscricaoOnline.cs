@@ -42,6 +42,9 @@ public class InscricaoOnline
     public bool Convidado { get; set; } = false;
     public string? NomeCasalConvidador { get; set; }
 
+    /// <summary>Dia da semana preferencial escolhido pelo casal (ex: "Sábado").</summary>
+    public string? DiaPreferencial { get; set; }
+
     // Controle da inscrição
     public DateTime DataInscricao { get; set; } = DateTime.Now;
     public bool Processada { get; set; } = false;

@@ -19,6 +19,75 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
     <link rel="stylesheet" href="~/css/inscricao-online.css" />
+
+    <style>
+        /* ── Passo de dia preferencial ─────────────────────────── */
+        .dias-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 12px;
+            margin-top: 8px;
+        }
+        .dia-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 22px 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: #f8fafc;
+            cursor: pointer;
+            transition: border-color .18s, background .18s, transform .15s, box-shadow .18s;
+            text-align: center;
+            user-select: none;
+        }
+        .dia-card:hover {
+            border-color: #2563eb;
+            background: #eff6ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 14px rgba(37,99,235,.12);
+        }
+        .dia-card.selecionado {
+            border-color: #2563eb;
+            background: #eff6ff;
+            box-shadow: 0 0 0 3px rgba(37,99,235,.15);
+        }
+        .dia-card .dia-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: #dbeafe;
+            color: #2563eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.15rem;
+            transition: background .18s, color .18s;
+        }
+        .dia-card.selecionado .dia-icon { background: #2563eb; color: #fff; }
+        .dia-card .dia-nome {
+            font-family: 'Nunito', sans-serif;
+            font-size: .85rem;
+            font-weight: 800;
+            color: #334155;
+        }
+        .dia-card.selecionado .dia-nome { color: #1e40af; }
+        /* badge no breadcrumb */
+        .bc-dia {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #eff6ff;
+            color: #2563eb;
+            border: 1px solid #bfdbfe;
+            border-radius: 20px;
+            padding: 2px 10px;
+            font-size: .75rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+    </style>
 </head>
 
 <body>
@@ -32,7 +101,7 @@
 
     <div class="insc-wrapper">
 
-        <!-- ══ STEPPER ═════════════════════════════════════════════ -->
+        <!-- ══ STEPPER — agora com 4 passos ═══════════════════════ -->
         <div class="insc-stepper" id="stepper">
             <div class="insc-step active" id="dot-1">
                 <div class="step-dot" id="dot-num-1">1</div>
@@ -52,7 +121,14 @@
                 <div class="step-dot" id="dot-num-3">3</div>
                 <div class="step-info">
                     <p class="step-label">Passo 3</p>
-                    <p class="step-value" id="dot-val-3">Seus dados</p>
+                    <p class="step-value" id="dot-val-3">Dia preferencial</p>
+                </div>
+            </div>
+            <div class="insc-step" id="dot-4">
+                <div class="step-dot" id="dot-num-4">4</div>
+                <div class="step-info">
+                    <p class="step-label">Passo 4</p>
+                    <p class="step-value" id="dot-val-4">Seus dados</p>
                 </div>
             </div>
         </div>
@@ -67,6 +143,11 @@
             <span class="bc-item" id="bc-curso" onclick="goToStep(2)" style="display:none">
                 <i class="fas fa-graduation-cap"></i>
                 <span id="bc-curso-nome"></span>
+            </span>
+            <span class="bc-sep" id="bc-sep-2" style="display:none">›</span>
+            <span class="bc-dia" id="bc-dia" onclick="goToStep(3)" style="display:none">
+                <i class="fas fa-calendar-day"></i>
+                <span id="bc-dia-nome"></span>
             </span>
             <span class="bc-change" id="bc-change-hint"></span>
         </div>
@@ -104,8 +185,31 @@
             </div>
         </div>
 
-        <!-- ══ PANE 3 — Formulário ═══════════════════════════════════ -->
+        <!-- ══ PANE 3 — Dia Preferencial ════════════════════════════ -->
         <div class="insc-pane" id="pane-3">
+            <h2 class="insc-section-title">Qual dia da semana você prefere?</h2>
+            <p class="insc-section-sub">Escolha o dia da semana em que prefere ter as aulas do curso.</p>
+
+            <div id="dia-loading" class="insc-loading" style="display:none">
+                <i class="fas fa-circle-notch spin"></i> Carregando dias disponíveis…
+            </div>
+
+            <div id="dias-grid" class="dias-grid"></div>
+
+            <div id="dia-empty" class="insc-empty" style="display:none">
+                <i class="fas fa-calendar-alt"></i>
+                <p>Nenhum dia específico configurado para este curso.</p>
+            </div>
+
+            <div style="margin-top:20px">
+                <button class="btn-step-back" onclick="goToStep(2)">
+                    <i class="fas fa-arrow-left"></i> Trocar curso
+                </button>
+            </div>
+        </div>
+
+        <!-- ══ PANE 4 — Formulário ═══════════════════════════════════ -->
+        <div class="insc-pane" id="pane-4">
 
             <h2 class="insc-section-title">Preencha seus dados</h2>
             <p class="insc-section-sub">Informe os dados do casal para finalizar a inscrição.</p>
@@ -116,10 +220,11 @@
                      style="font-size:.8rem;margin-bottom:12px;background:#fff;border-radius:var(--radius);padding:12px 16px;border:1px solid #fca5a5;display:none"
                      id="validation-summary"></div>
 
-                <input type="hidden" asp-for="IdCampus" id="hid-campus" />
-                <input type="hidden" asp-for="IdCurso" id="hid-curso" />
-                <input type="hidden" name="ParticipaGC" id="hid-participa-gc" value="false" />
-                <input type="hidden" name="Convidado" id="hid-convidado" value="false" />
+                <input type="hidden" asp-for="IdCampus"        id="hid-campus" />
+                <input type="hidden" asp-for="IdCurso"         id="hid-curso" />
+                <input type="hidden" asp-for="DiaPreferencial" id="hid-dia" />
+                <input type="hidden" name="ParticipaGC"        id="hid-participa-gc" value="false" />
+                <input type="hidden" name="Convidado"          id="hid-convidado" value="false" />
 
                 <!-- ── Dados do casal ──────────────────────────── -->
                 <div class="insc-form-card">
@@ -265,7 +370,7 @@
                                     <select asp-for="Estado" class="f-control" id="Estado">
                                         <option value="">Selecione o Estado</option>
                                         @foreach (var uf in new[] {
-            "AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS",
+                                            "AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS",
                                             "MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO" })
                                         {
                                             <option value="@uf">@uf</option>
@@ -337,207 +442,396 @@
                                 <div class="f-group">
                                     <label asp-for="NomeCasalConvidador" class="f-label">Nome do Casal que os
                                         Convidou</label>
-                                        <input asp-for="NomeCasalConvidador" class="f-control"
-                                               placeholder="Ex: João e Maria Silva" />
-                                        <span asp-validation-for="NomeCasalConvidador" class="f-error"></span>
-                                    </div>
+                                    <input asp-for="NomeCasalConvidador" class="f-control"
+                                           placeholder="Ex: João e Maria Silva" />
+                                    <span asp-validation-for="NomeCasalConvidador" class="f-error"></span>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- ── Botões ──────────────────────────────────── -->
-                    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:4px">
-                        <button type="button" class="btn-step-back" onclick="goToStep(2)">
-                            <i class="fas fa-arrow-left"></i> Trocar curso
+                <!-- ── Botões ──────────────────────────────────── -->
+                <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:4px">
+                    <button type="button" class="btn-step-back" onclick="goToStep(3)">
+                        <i class="fas fa-arrow-left"></i> Voltar
+                    </button>
+                    <div style="flex:1">
+                        <button type="submit" class="btn-submit-insc" id="btn-submit">
+                            <i class="fas fa-paper-plane"></i> Enviar Inscrição
                         </button>
-                        <div style="flex:1">
-                            <button type="submit" class="btn-submit-insc" id="btn-submit">
-                                <i class="fas fa-paper-plane"></i> Enviar Inscrição
-                            </button>
-                        </div>
                     </div>
+                </div>
 
-                </form>
-            </div>
-
-            <p class="insc-footer-txt">© @DateTime.Now.Year EnsinoApp · CCVideira · Todos os direitos reservados</p>
+            </form>
         </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-        <partial name="_ValidationScriptsPartial" />
+        <p class="insc-footer-txt">© @DateTime.Now.Year EnsinoApp · CCVideira · Todos os direitos reservados</p>
+    </div>
 
-        <script>
-            const state = { step: 1, campus: null, curso: null };
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
 
-            function goToStep(n) {
-            if (n === 2 && !state.campus) return;
-            if (n === 3 && (!state.campus || !state.curso)) return;
-            state.step = n;
-            document.querySelectorAll('.insc-pane').forEach(p => p.classList.remove('active'));
-            document.getElementById('pane-' + n).classList.add('active');
-            for (let i = 1; i <= 3; i++) {
+    <script>
+    // ════════════════════════════════════════════════════════════════
+    //  Estado global
+    // ════════════════════════════════════════════════════════════════
+    const state = {
+        step:    1,
+        campus:  null,   // { id, nome, vagasRestantes }
+        curso:   null,   // { id, nome, descricao, licoes, vagasRestantes }
+        dia:     null,   // { valor, label }  — null quando não há dias configurados
+        temDias: false   // true quando o período tem dias cadastrados
+    };
+
+    const TOTAL_STEPS = 4;
+
+    // ────────────────────────────────────────────────────────────────
+    //  Navegação
+    // ────────────────────────────────────────────────────────────────
+    function goToStep(n) {
+        if (n === 2 && !state.campus) return;
+        if (n === 3 && (!state.campus || !state.curso)) return;
+        if (n === 4 && (!state.campus || !state.curso)) return;
+
+        state.step = n;
+
+        document.querySelectorAll('.insc-pane').forEach(p => p.classList.remove('active'));
+        document.getElementById('pane-' + n).classList.add('active');
+
+        for (let i = 1; i <= TOTAL_STEPS; i++) {
             const dot = document.getElementById('dot-' + i);
             dot.classList.remove('active', 'done');
             if (i < n) dot.classList.add('done');
             if (i === n) dot.classList.add('active');
             const num = document.getElementById('dot-num-' + i);
             num.innerHTML = i < n ? '<i class="fas fa-check" style="font-size:.75rem"></i>' : i;
-            }
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            updateBreadcrumb();
-            updateStepValues();
-            }
+        }
 
-            function updateBreadcrumb() {
-            const bc = document.getElementById('breadcrumb');
-            const bcCamp = document.getElementById('bc-campus');
-            const bcCurs = document.getElementById('bc-curso');
-            const sep = document.getElementById('bc-sep-1');
-            const hint = document.getElementById('bc-change-hint');
-            if (state.step === 1) { bc.classList.remove('visible'); return; }
-            bc.classList.add('visible');
-            if (state.campus) { document.getElementById('bc-campus-nome').textContent = state.campus.nome; bcCamp.style.display = 'flex'; }
-            if (state.step === 3 && state.curso) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        updateBreadcrumb();
+        updateStepValues();
+    }
+
+    // ────────────────────────────────────────────────────────────────
+    //  Breadcrumb
+    // ────────────────────────────────────────────────────────────────
+    function updateBreadcrumb() {
+        const bc     = document.getElementById('breadcrumb');
+        const bcCamp = document.getElementById('bc-campus');
+        const bcCurs = document.getElementById('bc-curso');
+        const bcDia  = document.getElementById('bc-dia');
+        const sep1   = document.getElementById('bc-sep-1');
+        const sep2   = document.getElementById('bc-sep-2');
+        const hint   = document.getElementById('bc-change-hint');
+
+        if (state.step === 1) { bc.classList.remove('visible'); return; }
+        bc.classList.add('visible');
+
+        if (state.campus) {
+            document.getElementById('bc-campus-nome').textContent = state.campus.nome;
+            bcCamp.style.display = 'flex';
+        }
+
+        if (state.step >= 3 && state.curso) {
             document.getElementById('bc-curso-nome').textContent = state.curso.nome;
-            bcCurs.style.display = 'flex'; sep.style.display = 'inline';
-            hint.textContent = '← Clique para alterar';
-            } else { bcCurs.style.display = 'none'; sep.style.display = 'none'; hint.textContent = '← Clique para alterar o campus'; }
-            }
+            bcCurs.style.display = 'flex';
+            sep1.style.display   = 'inline';
+        } else {
+            bcCurs.style.display = 'none';
+            sep1.style.display   = 'none';
+        }
 
-            function updateStepValues() {
-            document.getElementById('dot-val-1').textContent = state.campus ? state.campus.nome : 'Escolha o campus';
-            document.getElementById('dot-val-2').textContent = state.curso ? state.curso.nome : 'Escolha o curso';
-            }
+        if (state.step >= 4 && state.dia) {
+            document.getElementById('bc-dia-nome').textContent = state.dia.label;
+            bcDia.style.display = 'inline-flex';
+            sep2.style.display  = 'inline';
+        } else {
+            bcDia.style.display = 'none';
+            sep2.style.display  = 'none';
+        }
 
-            function carregarCampus() {
-            const grid = document.getElementById('campus-grid');
-            const loading = document.getElementById('campus-loading');
-            const empty = document.getElementById('campus-empty');
-            loading.style.display = 'flex'; grid.style.display = 'none'; empty.style.display = 'none';
-            $.getJSON('@Url.Action("GetCampusAbertos", "Inscricao")', function (data) {
+        hint.textContent = '← Clique para alterar';
+    }
+
+    function updateStepValues() {
+        document.getElementById('dot-val-1').textContent = state.campus ? state.campus.nome  : 'Escolha o campus';
+        document.getElementById('dot-val-2').textContent = state.curso  ? state.curso.nome   : 'Escolha o curso';
+        document.getElementById('dot-val-3').textContent = state.dia    ? state.dia.label    : 'Dia preferencial';
+        document.getElementById('dot-val-4').textContent = 'Seus dados';
+    }
+
+    // ────────────────────────────────────────────────────────────────
+    //  Passo 1 — Campus
+    // ────────────────────────────────────────────────────────────────
+    function carregarCampus() {
+        const grid    = document.getElementById('campus-grid');
+        const loading = document.getElementById('campus-loading');
+        const empty   = document.getElementById('campus-empty');
+
+        loading.style.display = 'flex';
+        grid.style.display    = 'none';
+        empty.style.display   = 'none';
+
+        $.getJSON('@Url.Action("GetCampusAbertos", "Inscricao")', function (data) {
             loading.style.display = 'none';
             if (!data || data.length === 0) { empty.style.display = 'block'; return; }
             grid.innerHTML = '';
             data.forEach(function (c) {
-            const card = document.createElement('div');
-            card.className = 'campus-card';
-            card.innerHTML = `<div class="campus-icon"><i class="fas fa-building"></i></div><div><p class="campus-card-name">${c.nome}</p><p class="campus-vagas"><span>${c.vagasRestantes}</span> vaga(s) disponível(is)</p></div>`;
-            card.addEventListener('click', function () { selecionarCampus(c.id, c.nome, c.vagasRestantes); });
-            grid.appendChild(card);
+                const card = document.createElement('div');
+                card.className = 'campus-card';
+                card.innerHTML = `
+                    <div class="campus-icon"><i class="fas fa-building"></i></div>
+                    <div>
+                        <p class="campus-card-name">${c.nome}</p>
+                        <p class="campus-vagas"><span>${c.vagasRestantes}</span> vaga(s) disponível(is)</p>
+                    </div>`;
+                card.addEventListener('click', function () {
+                    selecionarCampus(c.id, c.nome, c.vagasRestantes);
+                });
+                grid.appendChild(card);
             });
             grid.style.display = 'grid';
-            }).fail(function () { loading.style.display = 'none'; empty.style.display = 'block'; });
-            }
+        }).fail(function () {
+            loading.style.display = 'none';
+            empty.style.display   = 'block';
+        });
+    }
 
-            function selecionarCampus(id, nome, vagasRestantes) {
-            state.campus = { id, nome, vagasRestantes }; state.curso = null;
-            document.querySelectorAll('.campus-card').forEach(c => c.classList.remove('selected'));
-            const sel = document.querySelector(`.campus-card[data-id="${id}"]`);
-            if (sel) sel.classList.add('selected');
-            document.getElementById('hid-campus').value = id;
-            document.getElementById('pane2-sub').textContent = 'Cursos disponíveis em ' + nome + ':';
-            setTimeout(function () { carregarCursos(id); goToStep(2); }, 180);
-            }
+    function selecionarCampus(id, nome, vagasRestantes) {
+        state.campus = { id, nome, vagasRestantes };
+        state.curso  = null;
+        state.dia    = null;
 
-            function carregarCursos(campusId) {
-            const grid = document.getElementById('curso-grid');
-            const loading = document.getElementById('curso-loading');
-            const empty = document.getElementById('curso-empty');
-            loading.style.display = 'flex'; grid.innerHTML = ''; grid.style.display = 'none'; empty.style.display = 'none';
-            $.getJSON('@Url.Action("GetCursosAbertos", "Inscricao")', { campusId: campusId }, function (data) {
+        document.querySelectorAll('.campus-card').forEach(c => c.classList.remove('selected'));
+        const sel = document.querySelector(`.campus-card[data-id="${id}"]`);
+        if (sel) sel.classList.add('selected');
+
+        document.getElementById('hid-campus').value = id;
+        document.getElementById('pane2-sub').textContent = 'Cursos disponíveis em ' + nome + ':';
+
+        setTimeout(function () { carregarCursos(id); goToStep(2); }, 180);
+    }
+
+    // ────────────────────────────────────────────────────────────────
+    //  Passo 2 — Curso
+    // ────────────────────────────────────────────────────────────────
+    function carregarCursos(campusId) {
+        const grid    = document.getElementById('curso-grid');
+        const loading = document.getElementById('curso-loading');
+        const empty   = document.getElementById('curso-empty');
+
+        loading.style.display = 'flex';
+        grid.innerHTML        = '';
+        grid.style.display    = 'none';
+        empty.style.display   = 'none';
+
+        $.getJSON('@Url.Action("GetCursosAbertos", "Inscricao")', { campusId: campusId }, function (data) {
             loading.style.display = 'none';
             if (!data || data.length === 0) { empty.style.display = 'block'; return; }
+
             data.forEach(function (c) {
-            const licoesTags = (c.licoes || []).slice(0, 8).map(l => `<span class="licao-tag">${escapeHtml(l)}</span>`).join('');
-            const maisLicoes = c.licoes && c.licoes.length > 8 ? `<span class="licao-tag">+${c.licoes.length - 8} mais</span>` : '';
-            const card = document.createElement('div');
-            card.className = 'curso-card';
-            card.innerHTML = `<div class="curso-card-top"><div class="curso-card-icon"><i class="fas fa-graduation-cap"></i></div><p class="curso-card-name">${escapeHtml(c.nome)}</p><p class="curso-card-vagas"><i class="fas fa-ticket-alt" style="margin-right:4px"></i>${c.vagasRestantes} vaga(s) restante(s)</p></div><div class="curso-card-body"><p class="curso-desc">${escapeHtml(c.descricao || '')}</p>${licoesTags || maisLicoes ? `<div><p class="curso-licoes-title"><i class="fas fa-list" style="margin-right:4px"></i>Temas abordados</p><div class="curso-licoes-list">${licoesTags}${maisLicoes}</div></div>` : ''}</div><div class="curso-card-footer"><span style="font-size:.75rem;color:var(--gray-400);font-weight:600"><i class="fas fa-book-open" style="margin-right:4px"></i>${(c.licoes || []).length} lição(ões)</span><button class="btn-selecionar">Selecionar <i class="fas fa-arrow-right"></i></button></div>`;
-            card.querySelector('.btn-selecionar').addEventListener('click', function (e) { e.stopPropagation(); selecionarCurso(c.id, c.nome, c.descricao, c.licoes, c.vagasRestantes); });
-            card.addEventListener('click', function () { selecionarCurso(c.id, c.nome, c.descricao, c.licoes, c.vagasRestantes); });
-            grid.appendChild(card);
+                const licoesTags = (c.licoes || []).slice(0, 8)
+                    .map(l => `<span class="licao-tag">${escapeHtml(l)}</span>`).join('');
+                const maisLicoes = c.licoes && c.licoes.length > 8
+                    ? `<span class="licao-tag">+${c.licoes.length - 8} mais</span>` : '';
+
+                const card = document.createElement('div');
+                card.className = 'curso-card';
+                card.innerHTML = `
+                    <div class="curso-card-top">
+                        <div class="curso-card-icon"><i class="fas fa-graduation-cap"></i></div>
+                        <p class="curso-card-name">${escapeHtml(c.nome)}</p>
+                        <p class="curso-card-vagas"><i class="fas fa-ticket-alt" style="margin-right:4px"></i>${c.vagasRestantes} vaga(s) restante(s)</p>
+                    </div>
+                    <div class="curso-card-body">
+                        <p class="curso-desc">${escapeHtml(c.descricao || '')}</p>
+                        ${licoesTags || maisLicoes ? `<div><p class="curso-licoes-title"><i class="fas fa-list" style="margin-right:4px"></i>Temas abordados</p><div class="curso-licoes-list">${licoesTags}${maisLicoes}</div></div>` : ''}
+                    </div>
+                    <div class="curso-card-footer">
+                        <span style="font-size:.75rem;color:var(--gray-400);font-weight:600">
+                            <i class="fas fa-book-open" style="margin-right:4px"></i>${(c.licoes || []).length} lição(ões)
+                        </span>
+                        <button class="btn-selecionar">Selecionar <i class="fas fa-arrow-right"></i></button>
+                    </div>`;
+
+                card.querySelector('.btn-selecionar').addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    selecionarCurso(c.id, c.nome, c.descricao, c.licoes, c.vagasRestantes);
+                });
+                card.addEventListener('click', function () {
+                    selecionarCurso(c.id, c.nome, c.descricao, c.licoes, c.vagasRestantes);
+                });
+                grid.appendChild(card);
             });
             grid.style.display = 'grid';
-            }).fail(function () { loading.style.display = 'none'; empty.style.display = 'block'; });
+        }).fail(function () {
+            loading.style.display = 'none';
+            empty.style.display   = 'block';
+        });
+    }
+
+    function selecionarCurso(id, nome, descricao, licoes, vagasRestantes) {
+        state.curso = { id, nome, descricao, licoes, vagasRestantes };
+        state.dia   = null;
+        document.getElementById('hid-curso').value = id;
+        document.getElementById('hid-dia').value   = '';
+        setTimeout(function () { carregarDias(state.campus.id, id); goToStep(3); }, 180);
+    }
+
+    // ────────────────────────────────────────────────────────────────
+    //  Passo 3 — Dia Preferencial
+    // ────────────────────────────────────────────────────────────────
+    function carregarDias(campusId, cursoId) {
+        const grid    = document.getElementById('dias-grid');
+        const loading = document.getElementById('dia-loading');
+        const empty   = document.getElementById('dia-empty');
+
+        grid.innerHTML        = '';
+        loading.style.display = 'flex';
+        empty.style.display   = 'none';
+
+        $.getJSON('@Url.Action("GetDiasDisponiveis", "Inscricao")', { campusId, cursoId }, function (data) {
+            loading.style.display = 'none';
+
+            if (!data || data.length === 0) {
+                // Sem dias configurados → pula direto para o passo 4
+                state.temDias = false;
+                state.dia     = null;
+                document.getElementById('hid-dia').value = '';
+                empty.style.display = 'block';
+                setTimeout(function () { goToStep(4); }, 1200);
+                return;
             }
 
-            function selecionarCurso(id, nome, descricao, licoes, vagasRestantes) {
-            state.curso = { id, nome, descricao, licoes, vagasRestantes };
-            document.getElementById('hid-curso').value = id;
-            setTimeout(function () { goToStep(3); }, 180);
-            }
+            state.temDias = true;
 
-            function escapeHtml(str) {
-            if (!str) return '';
-            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-            }
+            const icones = {
+                Monday:    'fas fa-briefcase',
+                Tuesday:   'fas fa-briefcase',
+                Wednesday: 'fas fa-briefcase',
+                Thursday:  'fas fa-briefcase',
+                Friday:    'fas fa-briefcase',
+                Saturday:  'fas fa-sun',
+                Sunday:    'fas fa-church'
+            };
 
-            // GC toggle
-            function toggleGC() {
-            const val = document.getElementById('ParticipaGC').value;
-            document.getElementById('nomeGCContainer').style.display = val === 'true' ? 'block' : 'none';
-            document.getElementById('hid-participa-gc').value = val === 'true' ? 'true' : 'false';
-            if (val !== 'true') document.getElementById('NomeGC').value = '';
-            }
+            data.forEach(function (d) {
+                const card = document.createElement('div');
+                card.className     = 'dia-card';
+                card.dataset.valor = d.valor;
+                card.dataset.label = d.label;
+                card.innerHTML = `
+                    <div class="dia-icon"><i class="${icones[d.valor] || 'fas fa-calendar-day'}"></i></div>
+                    <span class="dia-nome">${d.label}</span>`;
 
-            // Convidado toggle
-            function toggleConvidado() {
-            const val = document.getElementById('selectConvidado').value;
-            document.getElementById('nomeCasalConvidadorContainer').style.display = val === 'true' ? 'block' : 'none';
-            document.getElementById('hid-convidado').value = val === 'true' ? 'true' : 'false';
-            if (val !== 'true') {
+                card.addEventListener('click', function () {
+                    document.querySelectorAll('.dia-card').forEach(c => c.classList.remove('selecionado'));
+                    card.classList.add('selecionado');
+                    selecionarDia(d.valor, d.label);
+                });
+                grid.appendChild(card);
+            });
+        }).fail(function () {
+            loading.style.display = 'none';
+            // Em caso de erro na API, pula para o passo 4 sem bloquear
+            state.temDias = false;
+            goToStep(4);
+        });
+    }
+
+    function selecionarDia(valor, label) {
+        state.dia = { valor, label };
+        document.getElementById('hid-dia').value = valor;
+        setTimeout(function () { goToStep(4); }, 200);
+    }
+
+    // ────────────────────────────────────────────────────────────────
+    //  Utilitários
+    // ────────────────────────────────────────────────────────────────
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // GC toggle — preservado integralmente
+    function toggleGC() {
+        const val = document.getElementById('ParticipaGC').value;
+        document.getElementById('nomeGCContainer').style.display = val === 'true' ? 'block' : 'none';
+        document.getElementById('hid-participa-gc').value = val === 'true' ? 'true' : 'false';
+        if (val !== 'true') document.getElementById('NomeGC').value = '';
+    }
+
+    // Convidado toggle — preservado integralmente
+    function toggleConvidado() {
+        const val = document.getElementById('selectConvidado').value;
+        document.getElementById('nomeCasalConvidadorContainer').style.display = val === 'true' ? 'block' : 'none';
+        document.getElementById('hid-convidado').value = val === 'true' ? 'true' : 'false';
+        if (val !== 'true') {
             const inp = document.getElementById('NomeCasalConvidador');
             if (inp) inp.value = '';
-            }
-            }
+        }
+    }
 
-            // CEP autocomplete
-            function buscarCep() {
-            var cep = document.getElementById('Cep').value.replace(/\D/g, '');
-            if (cep.length !== 8) return;
-            document.getElementById('cepSpin').style.display = 'block';
-            $.getJSON('https://viacep.com.br/ws/' + cep + '/json/', function (data) {
+    // CEP autocomplete — preservado integralmente
+    function buscarCep() {
+        var cep = document.getElementById('Cep').value.replace(/\D/g, '');
+        if (cep.length !== 8) return;
+        document.getElementById('cepSpin').style.display = 'block';
+        $.getJSON('https://viacep.com.br/ws/' + cep + '/json/', function (data) {
             if (!data.erro) {
-            document.getElementById('Rua').value = data.logradouro || '';
-            document.getElementById('Bairro').value = data.bairro || '';
-            document.getElementById('Cidade').value = data.localidade || '';
-            document.getElementById('Estado').value = data.uf || '';
+                document.getElementById('Rua').value    = data.logradouro || '';
+                document.getElementById('Bairro').value = data.bairro     || '';
+                document.getElementById('Cidade').value = data.localidade || '';
+                document.getElementById('Estado').value = data.uf         || '';
             }
-            }).always(function () { document.getElementById('cepSpin').style.display = 'none'; });
-            }
+        }).always(function () { document.getElementById('cepSpin').style.display = 'none'; });
+    }
 
-            // Submit guard
-            document.getElementById('formInscricao').addEventListener('submit', function (e) {
-            if (!state.campus || !state.curso) {
+    // Submit guard — bloqueia se há dias configurados e nenhum foi escolhido
+    document.getElementById('formInscricao').addEventListener('submit', function (e) {
+        if (!state.campus || !state.curso) {
             e.preventDefault();
             alert('Selecione o campus e o curso antes de enviar.');
-            goToStep(1); return;
-            }
+            goToStep(1);
+            return;
+        }
+        if (state.temDias && !state.dia) {
+            e.preventDefault();
+            alert('Por favor, selecione o dia preferencial antes de continuar.');
+            goToStep(3);
+            return;
+        }
+        document.getElementById('hid-campus').value = state.campus.id;
+        document.getElementById('hid-curso').value  = state.curso.id;
+        document.getElementById('hid-dia').value    = state.dia ? state.dia.valor : '';
+    });
+
+    // ────────────────────────────────────────────────────────────────
+    //  Inicialização
+    // ────────────────────────────────────────────────────────────────
+    $(document).ready(function () {
+        $('.telefone').mask('(00) 00000-0000');
+        $('#ParticipaGC').on('change', toggleGC);
+        $('#selectConvidado').on('change', toggleConvidado);
+        $('#Cep').on('blur', buscarCep);
+        carregarCampus();
+
+        @if (ViewBag.ErroValidacao != null)
+        {
+            <text>
+            state.campus  = { id: @(ViewBag.IdCampus ?? 0), nome: '@(ViewBag.NomeCampus ?? "")', vagasRestantes: 0 };
+            state.curso   = { id: @(ViewBag.IdCurso ?? 0),  nome: '@(ViewBag.NomeCurso ?? "")',  vagasRestantes: 0 };
+            state.temDias = false;
             document.getElementById('hid-campus').value = state.campus.id;
-            document.getElementById('hid-curso').value = state.curso.id;
-            });
+            document.getElementById('hid-curso').value  = state.curso.id;
+            goToStep(4);
+            </text>
+        }
+    });
+    </script>
 
-            $(document).ready(function () {
-            $('.telefone').mask('(00) 00000-0000');
-            $('#ParticipaGC').on('change', toggleGC);
-            $('#selectConvidado').on('change', toggleConvidado);
-            $('#Cep').on('blur', buscarCep);
-            carregarCampus();
-
-            @if (ViewBag.ErroValidacao != null)
-            {
-                <text>
-                    state.campus = {id: @(ViewBag.IdCampus ?? 0), nome: '@(ViewBag.NomeCampus ?? "")', vagasRestantes: 0 };
-                    state.curso  = {id: @(ViewBag.IdCurso ?? 0),  nome: '@(ViewBag.NomeCurso ?? "")',  vagasRestantes: 0 };
-                    document.getElementById('hid-campus').value = state.campus.id;
-                    document.getElementById('hid-curso').value  = state.curso.id;
-                    goToStep(3);
-                </text>
-            }
-            });
-        </script>
-
-    </body>
-
+</body>
 </html>

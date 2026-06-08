@@ -50,7 +50,7 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
-//builder.Host.UseSerilog();
+builder.Host.UseSerilog();
 
 // ================= CARREGAR DLLS NATIVAS DINKTOPDF ==================
 string nativeLibPath;
@@ -64,7 +64,7 @@ else
     throw new PlatformNotSupportedException("Sistema operacional não suportado para DinkToPdf");
 
 var context = new CustomAssemblyLoadContext();
-//context.LoadUnmanagedLibrary(nativeLibPath);
+context.LoadUnmanagedLibrary(nativeLibPath);
 
 
 // ==================== DATA PROTECTION - IIS =====================
