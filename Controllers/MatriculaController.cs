@@ -124,28 +124,45 @@ public class MatriculaController : Controller
         if (inscricao == null)
             return NotFound();
 
-        var casal = new Casal
+        // ── Verifica se o casal já existe pelo e-mail de qualquer cônjuge ────
+        var casal = await _casalService.FindByEmailAsync(inscricao.EmailMarido)
+                 ?? await _casalService.FindByEmailAsync(inscricao.EmailEsposa);
+
+        if (casal != null)
         {
-            NomeConjuge1 = inscricao.NomeMarido,
-            NomeConjuge2 = inscricao.NomeEsposa,
-            TelefoneConjuge1 = inscricao.TelefoneMarido,
-            TelefoneConjuge2 = inscricao.TelefoneEsposa,
-            EmailConjuge1 = inscricao.EmailMarido,
-            EmailConjuge2 = inscricao.EmailEsposa,
-            Rua = inscricao.Rua,
-            Numero = inscricao.Numero,
-            Complemento = inscricao.Complemento,
-            Bairro = inscricao.Bairro,
-            Cidade = inscricao.Cidade,
-            Estado = inscricao.Estado,
-            Cep = inscricao.Cep,
-            Status = StatusCasal.Ativo,
-            IdCampus = inscricao.IdCampus
-        };
+            // Casal já existe — usa o registro existente e notifica o usuário
+            _notificationService.Success(
+                $"Matricula realizada com sucesso! " +
+                $"Casal já cadastrado no sistema. Reutilizando o registro de " +
+                $"{casal.NomeConjuge1} e {casal.NomeConjuge2}.");
+        }
+        else
+        {
+            // Casal não existe — cria um novo registro
+            casal = new Casal
+            {
+                NomeConjuge1 = inscricao.NomeMarido,
+                NomeConjuge2 = inscricao.NomeEsposa,
+                TelefoneConjuge1 = inscricao.TelefoneMarido,
+                TelefoneConjuge2 = inscricao.TelefoneEsposa,
+                EmailConjuge1 = inscricao.EmailMarido,
+                EmailConjuge2 = inscricao.EmailEsposa,
+                DataNascimentoConjuge1 = inscricao.DataNascimentoMarido,
+                DataNascimentoConjuge2 = inscricao.DataNascimentoEsposa,
+                Rua = inscricao.Rua,
+                Numero = inscricao.Numero,
+                Complemento = inscricao.Complemento,
+                Bairro = inscricao.Bairro,
+                Cidade = inscricao.Cidade,
+                Estado = inscricao.Estado,
+                Cep = inscricao.Cep,
+                Status = StatusCasal.Ativo,
+                IdCampus = inscricao.IdCampus
+            };
 
-
-        casal = await _casalService.CreateAsync(casal);
-
+            casal = await _casalService.CreateAsync(casal);
+        }
+        // ─────────────────────────────────────────────────────────────────────
 
         var matricula = new Matricula
         {
@@ -158,11 +175,8 @@ public class MatriculaController : Controller
 
         await _matriculaService.CreateAsync(matricula);
 
-
         inscricao.Processada = true;
         await _inscricaoService.UpdateAsync(inscricao);
-
-
 
         return RedirectToAction("Index");
     }

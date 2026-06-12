@@ -19,4 +19,10 @@ public interface ICasalRepository
     public List<CasalResumoViewModel> ObterResumoCasais();
 
     Task<Models.Entities.Casal?> FindByIdComMatriculasAsync(int id);
+
+    /// <summary>
+    /// Busca casal cujo EmailConjuge1 ou EmailConjuge2 corresponda ao email informado.
+    /// Retorna null se não encontrar.
+    /// </summary>
+    Task<Models.Entities.Casal?> FindByEmailAsync(string email);
 }

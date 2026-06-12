@@ -3,6 +3,7 @@ using System.Security.Claims;
 using EnsinoApp.Data.Configurations;
 using EnsinoApp.Models.Entities;
 using EnsinoApp.Models.Enums;
+using EnsinoApp.Services.Casal;
 using EnsinoApp.Services.Certificado;
 using EnsinoApp.Services.LayoutCertificado;
 using EnsinoApp.Services.Licao;
@@ -11,6 +12,7 @@ using EnsinoApp.Services.Matricula;
 using EnsinoApp.Services.Notifications;
 using EnsinoApp.Services.Turmas;
 using EnsinoApp.Services.Util;
+using EnsinoApp.ViewModels.Casal;
 using EnsinoApp.ViewModels.Certificado;
 using EnsinoApp.ViewModels.Lider;
 using EnsinoApp.ViewModels.Matricula;
@@ -42,7 +44,9 @@ public class LiderController : Controller
 
     private readonly ILayoutCertificadoService _layoutService;
 
-    public LiderController(ILiderService service, ILicaoService licaoService, ITurmaService turmaService, IMatriculaService matriculaService, UserManager<Usuario> userManager, ICertificadoService certificadoService, IWebHostEnvironment env, IOptions<AppSettings> options, INotificationService notification, IUtilService utilService, ILayoutCertificadoService layoutService)
+    private readonly ICasalService _casalService;
+
+    public LiderController(ILiderService service, ILicaoService licaoService, ITurmaService turmaService, IMatriculaService matriculaService, UserManager<Usuario> userManager, ICertificadoService certificadoService, IWebHostEnvironment env, IOptions<AppSettings> options, INotificationService notification, IUtilService utilService, ILayoutCertificadoService layoutService, ICasalService casalService)
     {
         _service = service;
         _licaoService = licaoService;
@@ -55,6 +59,7 @@ public class LiderController : Controller
         _notification = notification;
         _utilService = utilService;
         _layoutService = layoutService;
+        _casalService = casalService;
     }
 
     public async Task<IActionResult> Index()
@@ -122,6 +127,7 @@ public class LiderController : Controller
             Status = turma.Status,
             CasaisMatriculados = turma.Matriculas.Select(m => new ViewModels.Turmas.CasalMatriculadoViewModel
             {
+                Id = m.Casal.Id,
                 Nome = $"{m.Casal.NomeConjuge1} / {m.Casal.NomeConjuge2}",
                 PrimeiroNome = $"{m.Casal.NomeConjuge1.Split(' ')[0]} e {m.Casal.NomeConjuge2.Split(' ')[0]}",
                 Presenca = m.Relatorios.OrderByDescending(r => r.DataRegistro).FirstOrDefault()?.Presenca ?? StatusPresenca.Ausente,
@@ -459,6 +465,47 @@ public class LiderController : Controller
         return Redirect(matricula.CaminhoCertificado);
     }
 
+    [HttpGet]
+    public async Task<IActionResult> Detalhes(int id)
+    {
+        var casal = await _casalService.FindByIdComMatriculasAsync(id);
 
+        if (casal is null)
+            return NotFound(new { mensagem = "Casal não encontrado." });
+
+        var vm = new CasalDetalheViewModel
+        {
+            Id = casal.Id,
+            NomeConjuge1 = casal.NomeConjuge1,
+            NomeConjuge2 = casal.NomeConjuge2,
+            EmailConjuge1 = casal.EmailConjuge1,
+            EmailConjuge2 = casal.EmailConjuge2,
+            TelefoneConjuge1 = casal.TelefoneConjuge1,
+            TelefoneConjuge2 = casal.TelefoneConjuge2,
+            Rua = casal.Rua,
+            Numero = casal.Numero,
+            Complemento = casal.Complemento,
+            Bairro = casal.Bairro,
+            Cidade = casal.Cidade,
+            Estado = casal.Estado,
+            Cep = casal.Cep,
+            NomeCampus = casal.Campus?.Nome ?? string.Empty,
+            Status = casal.Status.ToString(),
+
+            Matriculas = casal.Matriculas.Select(m => new CasalDetalheViewModel.MatriculaResumoViewModel
+            {
+                NomeCurso = m.Turma?.Curso?.Nome ?? string.Empty,
+                NomeTurma = $"Turma #{m.IdTurma}",
+                Status = m.Status.ToString(),
+                DataMatricula = m.DataMatricula,
+                DataConclusao = m.DataConclusao,
+                CertificadoEmitido = m.CertificadoEmitido
+            })
+            .OrderByDescending(m => m.DataMatricula)
+            .ToList()
+        };
+
+        return Json(vm);
+    }
 
 }

@@ -13,6 +13,9 @@ namespace EnsinoApp.Models.Entities
         public string EmailConjuge1 { get; set; } = null!;
         public string EmailConjuge2 { get; set; } = null!;
 
+        public DateTime? DataNascimentoConjuge1 { get; set; }
+        public DateTime? DataNascimentoConjuge2 { get; set; }
+
         public StatusCasal Status { get; set; }
 
         // Endereço

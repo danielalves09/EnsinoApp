@@ -101,4 +101,18 @@ public class CasalRepository : ICasalRepository
             .FirstOrDefaultAsync(c => c.Id == id);
     }
 
+    public async Task<Models.Entities.Casal?> FindByEmailAsync(string email)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+            return null;
+
+        var emailNorm = email.Trim().ToLower();
+
+        return await _context.Set<Models.Entities.Casal>()
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c =>
+                c.EmailConjuge1.ToLower() == emailNorm ||
+                c.EmailConjuge2.ToLower() == emailNorm);
+    }
+
 }

@@ -80,7 +80,8 @@ public class InscricaoOnlineRepository : IInscricaoOnlineRepository
                 IdCampus = i.IdCampus,
                 DataInscricao = i.DataInscricao,
                 Convidado = i.Convidado,
-                NomeCasalConvidador = i.NomeCasalConvidador
+                NomeCasalConvidador = i.NomeCasalConvidador,
+                DiaPreferencial = i.DiaPreferencial
             }).AsNoTracking()
             .ToList();
     }

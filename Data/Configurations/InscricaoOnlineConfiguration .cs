@@ -34,8 +34,8 @@ public class InscricaoOnlineConfiguration : IEntityTypeConfiguration<InscricaoOn
         builder.Property(i => i.EmailEsposa)
             .IsRequired();
 
-        builder.HasIndex(c => c.EmailMarido).IsUnique();
-        builder.HasIndex(c => c.EmailEsposa).IsUnique();
+        //builder.HasIndex(c => c.EmailMarido).IsUnique();
+        //builder.HasIndex(c => c.EmailEsposa).IsUnique();
 
         builder.Property(i => i.NomeGC)
             .HasMaxLength(100);

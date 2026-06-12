@@ -2,6 +2,7 @@ using EnsinoApp.Models.Entities;
 using EnsinoApp.Services.Campus;
 using EnsinoApp.Services.Email;
 using EnsinoApp.Services.Notifications;
+using EnsinoApp.Services.Supervisao;
 using EnsinoApp.Services.Usuarios;
 using EnsinoApp.Services.Util;
 using EnsinoApp.ViewModels.Usuario;
@@ -22,10 +23,13 @@ public class UsuariosController : Controller
     private readonly INotificationService _notification;
     private readonly IEmailService _emailService;
 
+    private readonly ICampusService _campusService;
+    private readonly ISupervisaoService _supervisaoService;
+
     private readonly IUtilService _utilService;
     private const int TAMANHO_PAGINA = 10;
 
-    public UsuariosController(UserManager<Usuario> userManager, RoleManager<IdentityRole<int>> roleManager, IUsuariosService usuarioService, IWebHostEnvironment env, INotificationService notification, SignInManager<Usuario> signInManager, IUtilService utilService, IEmailService emailService)
+    public UsuariosController(UserManager<Usuario> userManager, RoleManager<IdentityRole<int>> roleManager, IUsuariosService usuarioService, IWebHostEnvironment env, INotificationService notification, SignInManager<Usuario> signInManager, IUtilService utilService, IEmailService emailService, ICampusService campusService, ISupervisaoService supervisaoService)
     {
         _userManager = userManager;
         _roleManager = roleManager;
@@ -35,6 +39,8 @@ public class UsuariosController : Controller
         _signInManager = signInManager;
         _utilService = utilService;
         _emailService = emailService;
+        _campusService = campusService;
+        _supervisaoService = supervisaoService;
     }
 
     [Authorize(Roles = "Admin,Pastor,Coordenador,Supervisor")]
@@ -126,6 +132,143 @@ public class UsuariosController : Controller
 
         return RedirectToAction(nameof(Index));
     }
+
+    [Authorize(Roles = "Admin,Pastor,Coordenador,Supervisor")]
+    public async Task<IActionResult> Editar(int id)
+    {
+        var usuario = _usuarioService.FindById(id);
+        if (usuario == null) return NotFound();
+
+        var campus = _campusService.FindById(usuario.IdCampus);
+        var supervisao = usuario.IdSupervisao.HasValue
+            ? _supervisaoService.FindById(usuario.IdSupervisao.Value)
+            : null;
+
+        var roles = await _userManager.GetRolesAsync(usuario);
+
+        var model = new EditarUsuarioViewModel
+        {
+            Id = id,
+            Email = usuario.Email ?? string.Empty,
+            NomeMarido = usuario.NomeMarido,
+            NomeEsposa = usuario.NomeEsposa,
+            IdCampus = usuario.IdCampus,
+            NomeCampus = campus?.Nome ?? string.Empty,
+            IdSupervisao = usuario.IdSupervisao,
+            NomeSupervisao = supervisao?.Nome ?? string.Empty,
+            Role = roles.FirstOrDefault() ?? string.Empty,
+            Ativo = usuario.Ativo,
+            // Senha deixada em branco intencionalmente — campo opcional na edição
+        };
+
+        return View(model);
+    }
+
+
+    [Authorize(Roles = "Admin,Pastor,Coordenador,Supervisor")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Editar(EditarUsuarioViewModel model)
+    {
+        // Na edição a senha é opcional — remove os erros de validação de senha se vazio
+        if (string.IsNullOrWhiteSpace(model.Senha))
+        {
+            ModelState.Remove(nameof(model.Senha));
+            ModelState.Remove(nameof(model.ConfirmarSenha));
+        }
+
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var usuario = await _userManager.FindByIdAsync(model.Id.ToString());
+        if (usuario == null) return NotFound();
+
+        // Atualiza os dados básicos
+        usuario.NomeMarido = model.NomeMarido ?? string.Empty;
+        usuario.NomeEsposa = model.NomeEsposa ?? string.Empty;
+        usuario.Email = model.Email;
+        usuario.UserName = model.Email;
+        usuario.IdCampus = model.IdCampus;
+        usuario.IdSupervisao = model.IdSupervisao;
+        usuario.Ativo = model.Ativo;
+
+        var updateResult = await _userManager.UpdateAsync(usuario);
+        if (!updateResult.Succeeded)
+        {
+            foreach (var erro in updateResult.Errors)
+                ModelState.AddModelError("", erro.Description);
+            return View(model);
+        }
+
+        // Atualiza role se informada
+        if (!string.IsNullOrWhiteSpace(model.Role))
+        {
+            var rolesAtuais = await _userManager.GetRolesAsync(usuario);
+            if (rolesAtuais.Any())
+                await _userManager.RemoveFromRolesAsync(usuario, rolesAtuais);
+
+            if (!await _roleManager.RoleExistsAsync(model.Role))
+                await _roleManager.CreateAsync(new IdentityRole<int>(model.Role));
+
+            await _userManager.AddToRoleAsync(usuario, model.Role);
+        }
+
+        // Atualiza senha somente se preenchida
+        if (!string.IsNullOrWhiteSpace(model.Senha))
+        {
+            if (model.Senha != model.ConfirmarSenha)
+            {
+                ModelState.AddModelError(nameof(model.ConfirmarSenha), "As senhas não conferem.");
+                return View(model);
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(usuario);
+            var senhaResult = await _userManager.ResetPasswordAsync(usuario, token, model.Senha);
+
+            if (!senhaResult.Succeeded)
+            {
+                foreach (var erro in senhaResult.Errors)
+                    ModelState.AddModelError("", erro.Description);
+                return View(model);
+            }
+        }
+
+        // Se o usuário editado é o próprio logado, atualiza o cookie
+        var usuarioLogado = await _userManager.GetUserAsync(User);
+        if (usuarioLogado?.Id == usuario.Id)
+            await _signInManager.RefreshSignInAsync(usuario);
+
+        _notification.Success("Usuário atualizado com sucesso.");
+        return RedirectToAction(nameof(Index));
+    }
+
+
+    [Authorize(Roles = "Admin,Pastor,Coordenador,Supervisor")]
+    public async Task<IActionResult> Excluir(int id)
+    {
+        var usuarioLogado = await _userManager.GetUserAsync(User);
+        if (usuarioLogado?.Id == id)
+        {
+            _notification.Error("Você não pode excluir sua própria conta.");
+            return RedirectToAction(nameof(Index));
+        }
+
+        var usuario = await _userManager.FindByIdAsync(id.ToString());
+        if (usuario == null) return NotFound();
+
+        var resultado = await _userManager.DeleteAsync(usuario);
+        if (!resultado.Succeeded)
+        {
+            _notification.Error("Não foi possível excluir o usuário.");
+            return RedirectToAction(nameof(Index));
+        }
+
+        _notification.Success("Usuário excluído com sucesso.");
+        return RedirectToAction(nameof(Index));
+    }
+
+
+
 
     [HttpGet]
     public IActionResult Buscar(string filtro)

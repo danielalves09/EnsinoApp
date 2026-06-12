@@ -15,4 +15,10 @@ public interface ICasalService
     Task<IEnumerable<(string Campus, int Total)>> GetCasaisPorCampusAsync();
 
     Task<Models.Entities.Casal?> FindByIdComMatriculasAsync(int id);
+
+    /// <summary>
+    /// Busca um casal pelo email de qualquer um dos cônjuges.
+    /// Usado para evitar duplicação ao matricular a partir de uma inscrição online.
+    /// </summary>
+    Task<Models.Entities.Casal?> FindByEmailAsync(string email);
 }

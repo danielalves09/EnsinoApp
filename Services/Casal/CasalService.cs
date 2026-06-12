@@ -44,5 +44,8 @@ public class CasalService : ICasalService
 
     public Task<Models.Entities.Casal?> FindByIdComMatriculasAsync(int id) =>
        _casalRepository.FindByIdComMatriculasAsync(id);
+
+    public Task<Models.Entities.Casal?> FindByEmailAsync(string email)
+     => _casalRepository.FindByEmailAsync(email);
 }
 

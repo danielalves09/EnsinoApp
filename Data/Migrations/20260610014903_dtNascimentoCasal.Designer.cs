@@ -4,6 +4,7 @@ using EnsinoApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EnsinoApp.Data.Migrations
 {
     [DbContext(typeof(EnsinoAppContext))]
-    partial class EnsinoAppContextModelSnapshot : ModelSnapshot
+    [Migration("20260610014903_dtNascimentoCasal")]
+    partial class dtNascimentoCasal
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -273,11 +276,11 @@ namespace EnsinoApp.Data.Migrations
 
                     b.Property<string>("EmailEsposa")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("EmailMarido")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Estado")
                         .HasColumnType("nvarchar(max)");
@@ -326,6 +329,12 @@ namespace EnsinoApp.Data.Migrations
                         .HasColumnType("nvarchar(20)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EmailEsposa")
+                        .IsUnique();
+
+                    b.HasIndex("EmailMarido")
+                        .IsUnique();
 
                     b.HasIndex("IdCampus");
 

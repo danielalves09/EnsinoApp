@@ -16,4 +16,7 @@ public class InscricaoOnlineResumoViewModel
     public bool Convidado { get; set; }
     public string? NomeCasalConvidador { get; set; }
 
+    // Dia preferencial
+    public string? DiaPreferencial { get; set; }
+
 }

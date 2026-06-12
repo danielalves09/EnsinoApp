@@ -77,7 +77,7 @@ public class TurmaController : Controller
         ViewBag.Campuses = new SelectList(_campusService.FindAll(), "Id", "Nome", idCampus);
         ViewBag.Status = new SelectList(Enum.GetValues(typeof(StatusTurma)), status);
 
-        const int TAMANHO_PAGINA = 10;
+        const int TAMANHO_PAGINA = 20;
         ViewBag.NumeroPagina = pagina;
         ViewBag.TotalPaginas = Math.Ceiling((decimal)viewModel.Count() / TAMANHO_PAGINA);
 
@@ -187,50 +187,50 @@ public class TurmaController : Controller
     } */
 
     public IActionResult Editar(int id)
-{
-    var turma = _turmaService.FindById(id);
-    if (turma == null) return NotFound();
- 
-    var model = new TurmaViewModel
     {
-        Id = turma.Id,
-        IdCurso = turma.IdCurso,
-        NomeCurso = turma.Curso.Nome,
-        IdCampus = turma.IdCampus,
-        NomeCampus = turma.Campus.Nome,
-        IdLider = turma.IdLider,
-        NomeLider = _utilService.GetNomeSobrenome(turma.Lider.NomeMarido, turma.Lider.NomeEsposa),
-        imgLider = turma.Lider.FotoPerfil,
-        DataInicio = turma.DataInicio,
-        DataFim = turma.DataFim,
-        Status = turma.Status
-    };
- 
-    return View(model);
-}
- 
-[HttpPost]
-[ValidateAntiForgeryToken]
-public IActionResult Editar(TurmaViewModel model)
-{
-    if (!ModelState.IsValid)
+        var turma = _turmaService.FindById(id);
+        if (turma == null) return NotFound();
+
+        var model = new TurmaViewModel
+        {
+            Id = turma.Id,
+            IdCurso = turma.IdCurso,
+            NomeCurso = turma.Curso.Nome,
+            IdCampus = turma.IdCampus,
+            NomeCampus = turma.Campus.Nome,
+            IdLider = turma.IdLider,
+            NomeLider = _utilService.GetNomeSobrenome(turma.Lider.NomeMarido, turma.Lider.NomeEsposa),
+            imgLider = turma.Lider.FotoPerfil,
+            DataInicio = turma.DataInicio,
+            DataFim = turma.DataFim,
+            Status = turma.Status
+        };
+
         return View(model);
- 
-    var turma = _turmaService.FindById(model.Id);
-    if (turma == null) return NotFound();
- 
-    turma.IdCurso = model.IdCurso;
-    turma.IdCampus = model.IdCampus;
-    turma.IdLider = model.IdLider;
-    turma.DataInicio = model.DataInicio;
-    turma.DataFim = model.DataFim;
-    turma.Status = model.Status;
- 
-    _turmaService.Update(turma);
-    _notification.Success("Turma atualizada com sucesso!");
- 
-    return RedirectToAction(nameof(Index));
-}
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult Editar(TurmaViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var turma = _turmaService.FindById(model.Id);
+        if (turma == null) return NotFound();
+
+        turma.IdCurso = model.IdCurso;
+        turma.IdCampus = model.IdCampus;
+        turma.IdLider = model.IdLider;
+        turma.DataInicio = model.DataInicio;
+        turma.DataFim = model.DataFim;
+        turma.Status = model.Status;
+
+        _turmaService.Update(turma);
+        _notification.Success("Turma atualizada com sucesso!");
+
+        return RedirectToAction(nameof(Index));
+    }
 
 
     public async Task<IActionResult> Relatorios(int idTurma)
