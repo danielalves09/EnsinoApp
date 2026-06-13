@@ -5,6 +5,7 @@ using EnsinoApp.Services.Casal;
 using EnsinoApp.Services.Notifications;
 using EnsinoApp.ViewModels.Casal;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -16,17 +17,42 @@ public class CasalController : Controller
     private readonly ICasalService _casalService;
     private readonly ICampusService _campusService;
     private readonly INotificationService _notification;
+    private readonly UserManager<Usuario> _userManager;
     private const int TAMANHO_PAGINA = 15;
 
-    public CasalController(ICasalService casalService, ICampusService campusService, INotificationService notification)
+    public CasalController(
+        ICasalService casalService,
+        ICampusService campusService,
+        INotificationService notification,
+        UserManager<Usuario> userManager)
     {
         _casalService = casalService;
         _campusService = campusService;
         _notification = notification;
+        _userManager = userManager;
+    }
+
+    // ── Retorna IdCampus do usuário se não for Admin, null se for Admin ──
+    private async Task<int?> GetCampusFiltroAsync()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null) return null;
+
+        var roles = await _userManager.GetRolesAsync(user);
+        if (roles.Contains("Admin"))
+            return null;
+
+        return user.IdCampus;
     }
 
     public async Task<IActionResult> Index(int? idCampus, StatusCasal? status, string? filtro, int pagina = 1)
     {
+        var campusFiltro = await GetCampusFiltroAsync();
+
+        // Se não é Admin, força o campus do usuário e ignora filtro da URL
+        if (campusFiltro.HasValue)
+            idCampus = campusFiltro.Value;
+
         var casais = await _casalService.FindAllAsync();
 
         // Filtros
@@ -47,9 +73,15 @@ public class CasalController : Controller
             ).ToList();
         }
 
-        ViewBag.Campuses = new SelectList(_campusService.FindAll(), "Id", "Nome", idCampus);
+        // Campus no dropdown filtrado pelo campus do usuário quando não for Admin
+        var campusList = campusFiltro.HasValue
+            ? _campusService.FindAll().Where(c => c.Id == campusFiltro.Value)
+            : _campusService.FindAll();
+
+        ViewBag.Campuses = new SelectList(campusList, "Id", "Nome", idCampus);
         ViewBag.Status = new SelectList(Enum.GetValues(typeof(StatusCasal)), status);
         ViewBag.Filtro = filtro;
+        ViewBag.EhAdmin = !campusFiltro.HasValue;
         ViewBag.NumeroPagina = pagina;
         ViewBag.TotalPaginas = (int)Math.Ceiling((decimal)casais.Count / TAMANHO_PAGINA);
 
@@ -67,6 +99,11 @@ public class CasalController : Controller
     {
         if (!ModelState.IsValid)
             return View(model);
+
+        // Verifica acesso ao campus informado no formulário
+        var campusFiltro = await GetCampusFiltroAsync();
+        if (campusFiltro.HasValue && model.IdCampus != campusFiltro.Value)
+            return Forbid();
 
         var casal = new Casal
         {
@@ -96,6 +133,11 @@ public class CasalController : Controller
     {
         var casal = await _casalService.FindByIdAsync(id);
         if (casal == null) return NotFound();
+
+        // Verifica acesso
+        var campusFiltro = await GetCampusFiltroAsync();
+        if (campusFiltro.HasValue && casal.IdCampus != campusFiltro.Value)
+            return Forbid();
 
         var campus = _campusService.FindById(casal.IdCampus);
 
@@ -133,6 +175,11 @@ public class CasalController : Controller
         var casal = await _casalService.FindByIdAsync(model.Id);
         if (casal == null) return NotFound();
 
+        // Verifica acesso ao casal original
+        var campusFiltro = await GetCampusFiltroAsync();
+        if (campusFiltro.HasValue && casal.IdCampus != campusFiltro.Value)
+            return Forbid();
+
         casal.NomeConjuge1 = model.NomeConjuge1;
         casal.NomeConjuge2 = model.NomeConjuge2;
         casal.TelefoneConjuge1 = model.TelefoneConjuge1;
@@ -159,11 +206,15 @@ public class CasalController : Controller
         var casal = await _casalService.FindByIdAsync(id);
         if (casal == null) return NotFound();
 
+        // Verifica acesso
+        var campusFiltro = await GetCampusFiltroAsync();
+        if (campusFiltro.HasValue && casal.IdCampus != campusFiltro.Value)
+            return Forbid();
+
         await _casalService.DeleteAsync(id);
         _notification.Success("Casal excluído com sucesso!");
         return RedirectToAction(nameof(Index));
     }
-
 
     [HttpGet]
     public async Task<IActionResult> Detalhes(int id)
@@ -172,6 +223,11 @@ public class CasalController : Controller
 
         if (casal is null)
             return NotFound(new { mensagem = "Casal não encontrado." });
+
+        // Verifica acesso
+        var campusFiltro = await GetCampusFiltroAsync();
+        if (campusFiltro.HasValue && casal.IdCampus != campusFiltro.Value)
+            return Forbid();
 
         var vm = new CasalDetalheViewModel
         {

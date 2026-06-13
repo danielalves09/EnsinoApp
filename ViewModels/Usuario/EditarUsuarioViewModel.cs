@@ -12,14 +12,13 @@ public class EditarUsuarioViewModel
     [EmailAddress]
     public string Email { get; set; } = string.Empty;
 
-    
+
     [DataType(DataType.Password)]
     public string Senha { get; set; } = string.Empty;
 
-    
+
     [DataType(DataType.Password)]
     [Compare("Senha", ErrorMessage = "As senhas não conferem")]
-
     [Display(Name = "Confirmar Senha")]
     public string ConfirmarSenha { get; set; } = string.Empty;
 

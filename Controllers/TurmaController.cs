@@ -10,6 +10,7 @@ using EnsinoApp.Services.Turmas;
 using EnsinoApp.Services.Util;
 using EnsinoApp.ViewModels.Turmas;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -21,17 +22,23 @@ public class TurmaController : Controller
     private readonly ITurmaService _turmaService;
     private readonly ICursoService _cursoService;
     private readonly ICampusService _campusService;
-
     private readonly ILiderService _liderService;
-
     private readonly IAgendaService _agendaService;
     private readonly ILicaoService _licaoService;
-
     private readonly IUtilService _utilService;
-
     private readonly INotificationService _notification;
+    private readonly UserManager<Usuario> _userManager;
 
-    public TurmaController(ITurmaService turmaService, ICursoService cursoService, ICampusService campusService, ILiderService liderService, INotificationService notification, IUtilService utilService, IAgendaService agendaService, ILicaoService licaoService)
+    public TurmaController(
+        ITurmaService turmaService,
+        ICursoService cursoService,
+        ICampusService campusService,
+        ILiderService liderService,
+        INotificationService notification,
+        IUtilService utilService,
+        IAgendaService agendaService,
+        ILicaoService licaoService,
+        UserManager<Usuario> userManager)
     {
         _turmaService = turmaService;
         _cursoService = cursoService;
@@ -41,16 +48,30 @@ public class TurmaController : Controller
         _utilService = utilService;
         _agendaService = agendaService;
         _licaoService = licaoService;
+        _userManager = userManager;
     }
 
-    /*public IActionResult Index()
+    // ── Retorna IdCampus do usuário se não for Admin, null se for Admin ──
+    private async Task<int?> GetCampusFiltroAsync()
     {
-        var turmas = _turmaService.FindAll();
-        return View(turmas);
-    }*/
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null) return null;
 
-    public IActionResult Index(int? idCurso, int? idCampus, StatusTurma? status, int pagina = 1)
+        var roles = await _userManager.GetRolesAsync(user);
+        if (roles.Contains("Admin"))
+            return null;
+
+        return user.IdCampus;
+    }
+
+    public async Task<IActionResult> Index(int? idCurso, int? idCampus, StatusTurma? status, int pagina = 1)
     {
+        var campusFiltro = await GetCampusFiltroAsync();
+
+        // Se não é Admin, força o campus do usuário e ignora filtro da URL
+        if (campusFiltro.HasValue)
+            idCampus = campusFiltro.Value;
+
         var turmas = _turmaService.FindAll();
 
         if (idCurso.HasValue)
@@ -73,9 +94,19 @@ public class TurmaController : Controller
             Status = t.Status
         }).ToList();
 
-        ViewBag.Cursos = new SelectList(_cursoService.FindAll(), "Id", "Nome", idCurso);
-        ViewBag.Campuses = new SelectList(_campusService.FindAll(), "Id", "Nome", idCampus);
+        // Cursos e campus filtrados pelo campus do usuário quando não for Admin
+        var cursos = campusFiltro.HasValue
+            ? _cursoService.FindAll().Where(c => c.IdCampus == campusFiltro.Value)
+            : _cursoService.FindAll();
+
+        var campusList = campusFiltro.HasValue
+            ? _campusService.FindAll().Where(c => c.Id == campusFiltro.Value)
+            : _campusService.FindAll();
+
+        ViewBag.Cursos = new SelectList(cursos, "Id", "Nome", idCurso);
+        ViewBag.Campuses = new SelectList(campusList, "Id", "Nome", idCampus);
         ViewBag.Status = new SelectList(Enum.GetValues(typeof(StatusTurma)), status);
+        ViewBag.EhAdmin = !campusFiltro.HasValue;
 
         const int TAMANHO_PAGINA = 20;
         ViewBag.NumeroPagina = pagina;
@@ -84,10 +115,15 @@ public class TurmaController : Controller
         return View(viewModel.Skip((pagina - 1) * TAMANHO_PAGINA).Take(TAMANHO_PAGINA));
     }
 
-    public IActionResult Dashboard(int id)
+    public async Task<IActionResult> Dashboard(int id)
     {
         var turma = _turmaService.FindById(id);
         if (turma == null) return NotFound();
+
+        // Verifica acesso
+        var campusFiltro = await GetCampusFiltroAsync();
+        if (campusFiltro.HasValue && turma.IdCampus != campusFiltro.Value)
+            return Forbid();
 
         var viewModel = new TurmaDashboardViewModel
         {
@@ -116,8 +152,6 @@ public class TurmaController : Controller
         return View(viewModel);
     }
 
-
-
     public IActionResult Adicionar()
     {
         return View(new TurmaViewModel
@@ -134,6 +168,11 @@ public class TurmaController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
+        // Verifica acesso ao campus informado no formulário
+        var campusFiltro = await GetCampusFiltroAsync();
+        if (campusFiltro.HasValue && model.IdCampus != campusFiltro.Value)
+            return Forbid();
+
         var turma = new Turma
         {
             IdCurso = model.IdCurso,
@@ -148,7 +187,6 @@ public class TurmaController : Controller
         _turmaService.Create(turma);
 
         // ── Geração automática da agenda ─────────────────────────────────────────
-        // Busca as lições do curso para gerar as datas
         var licoes = await _licaoService.FindByCursoAsync(turma.IdCurso);
 
         if (licoes.Any())
@@ -165,31 +203,15 @@ public class TurmaController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    /* [HttpPost]
-    [ValidateAntiForgeryToken]
-    public IActionResult Adicionar(TurmaViewModel model)
-    {
-        if (!ModelState.IsValid)
-            return View(model);
-
-        var turma = new Turma
-        {
-            IdCurso = model.IdCurso,
-            IdCampus = model.IdCampus,
-            IdLider = model.IdLider,
-            DataInicio = model.DataInicio,
-            DataFim = model.DataFim,
-            Status = model.Status
-        };
-
-        _turmaService.Create(turma);
-        return RedirectToAction(nameof(Index));
-    } */
-
-    public IActionResult Editar(int id)
+    public async Task<IActionResult> Editar(int id)
     {
         var turma = _turmaService.FindById(id);
         if (turma == null) return NotFound();
+
+        // Verifica acesso
+        var campusFiltro = await GetCampusFiltroAsync();
+        if (campusFiltro.HasValue && turma.IdCampus != campusFiltro.Value)
+            return Forbid();
 
         var model = new TurmaViewModel
         {
@@ -211,13 +233,18 @@ public class TurmaController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Editar(TurmaViewModel model)
+    public async Task<IActionResult> Editar(TurmaViewModel model)
     {
         if (!ModelState.IsValid)
             return View(model);
 
         var turma = _turmaService.FindById(model.Id);
         if (turma == null) return NotFound();
+
+        // Verifica acesso à turma original
+        var campusFiltro = await GetCampusFiltroAsync();
+        if (campusFiltro.HasValue && turma.IdCampus != campusFiltro.Value)
+            return Forbid();
 
         turma.IdCurso = model.IdCurso;
         turma.IdCampus = model.IdCampus;
@@ -232,9 +259,17 @@ public class TurmaController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-
     public async Task<IActionResult> Relatorios(int idTurma)
     {
+        // Verifica acesso à turma
+        var turma = _turmaService.FindById(idTurma);
+        if (turma != null)
+        {
+            var campusFiltro = await GetCampusFiltroAsync();
+            if (campusFiltro.HasValue && turma.IdCampus != campusFiltro.Value)
+                return Forbid();
+        }
+
         var relatorios = await _liderService.ObterRelatoriosAsync(idTurma);
         if (relatorios.Count > 0)
         {
